@@ -1,0 +1,98 @@
+# <!-- Powered by BMAD™ Core -->
+workflow:
+  id: template-base-enhancement
+  name: Template Base Enhancement Workflow
+  description: >-
+    Workflow especializado para adicionar funcionalidades a projetos baseados
+    no template Gabi Clean. Integra automaticamente com i18n, Supabase e sistema de branding.
+  type: brownfield
+  project_types:
+    - template-based
+    - dashboard-app
+    - saas-template
+    - admin-template
+    - multi-tenant-app
+
+  sequence:
+    - agent: pm
+      creates: feature-prd.md
+      uses: brownfield-prd-tmpl
+      notes: >-
+        Cria PRD focado na nova funcionalidade mantendo compatibilidade com:
+        - Sistema de i18n (pt, en, es)
+        - Estrutura Supabase existente
+        - Branding system (ness theme)
+        - Componentes shadcn/ui padrão
+      output_location: docs/
+
+    - agent: architect
+      creates: feature-architecture.md
+      requires: feature-prd.md
+      uses: brownfield-architecture-tmpl
+      notes: >-
+        Planeja arquitetura considerando:
+        - Integração com Supabase (tabelas, RLS, funções)
+        - Suporte multiidiomas (adicionar chaves de tradução)
+        - Compatibilidade com branding system
+        - Estrutura [locale] do Next.js App Router
+      output_location: docs/
+
+    - agent: ux-expert
+      creates: feature-ui-spec.md
+      requires: feature-architecture.md
+      uses: front-end-spec-tmpl
+      notes: >-
+        Especifica UI garantindo:
+        - Uso de componentes shadcn/ui existentes
+        - Tradução em todos os textos (i18n)
+        - Compatibilidade com tema claro/escuro
+        - Branding "ness" aplicado
+      output_location: docs/
+
+    - agent: developer
+      creates: implementation
+      requires:
+        - feature-architecture.md
+        - feature-ui-spec.md
+      notes: >-
+        Implementa seguindo:
+        1. Criar/atualizar traduções em i18n/messages/*.json
+        2. Criar/atualizar tabelas no Supabase se necessário
+        3. Implementar componentes em components/[feature]/
+        4. Criar páginas em app/[locale]/[feature]/
+        5. Usar createClient() do Supabase (client ou server)
+        6. Aplicar traduções com useTranslations() ou getTranslations()
+        7. Manter branding através de classes Tailwind existentes
+
+    - agent: qa
+      validates: implementation
+      uses:
+        - story-draft-checklist
+      notes: >-
+        Valida:
+        - Traduções em todos os idiomas funcionando
+        - Conexão Supabase funcionando
+        - Tema claro/escuro funcionando
+        - Componentes responsivos
+        - Acessibilidade mantida
+      checklist_focus:
+        - i18n_coverage
+        - supabase_integration
+        - branding_consistency
+        - responsive_design
+
+    - agent: pm
+      updates: documentation
+      notes: >-
+        Atualiza documentação:
+        - README.md com novas funcionalidades
+        - README-CONFIG.md se necessário
+        - SUPABASE-SETUP.md se schema mudou
+
+  completion_criteria:
+    - feature implementada e testada
+    - traduções em todos os idiomas
+    - Supabase configurado (se aplicável)
+    - documentação atualizada
+    - tema claro/escuro funcionando
+

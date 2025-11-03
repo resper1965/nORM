@@ -1,0 +1,35 @@
+# <!-- Powered by BMAD™ Core -->
+bundle:
+  name: Team Template Base
+  icon: 🚀
+  description: >-
+    Especializado para projetos baseados no template Gabi Clean.
+    Inclui agentes especializados em Next.js, i18n, Supabase e branding.
+    Ideal para desenvolvimento rápido com stack moderna pré-configurada.
+agents:
+  - bmad-orchestrator
+  - pm
+  - architect
+  - developer
+  - qa
+  - ux-expert
+workflows:
+  - greenfield-fullstack.yaml
+  - brownfield-fullstack.yaml
+  - template-base-enhancement.yaml
+metadata:
+  stack:
+    - next.js
+    - typescript
+    - tailwind-css
+    - shadcn-ui
+    - next-intl
+    - supabase
+    - recharts
+  features:
+    - multi-language-i18n
+    - supabase-integration
+    - branding-system
+    - dashboard-components
+    - docker-setup
+

@@ -1,0 +1,121 @@
+# <!-- Powered by BMAD™ Core -->
+workflow:
+  id: template-base-greenfield
+  name: Template Base Greenfield Project
+  description: >-
+    Workflow completo para criar novos projetos usando o template Gabi Clean.
+    Inclui setup de i18n, Supabase, branding e estrutura completa do zero.
+  type: greenfield
+  project_types:
+    - saas-app
+    - dashboard-app
+    - admin-panel
+    - multi-tenant-app
+    - template-customization
+
+  sequence:
+    - agent: analyst
+      creates: project-brief.md
+      optional_steps:
+        - brainstorming_session
+        - market_research_prompt
+      notes: >-
+        Cria brief do projeto considerando que será baseado no template Gabi Clean.
+        Identifica necessidade de customizações no branding, idiomas adicionais,
+        e funcionalidades específicas do Supabase.
+      output_location: docs/
+
+    - agent: pm
+      creates: prd.md
+      requires: project-brief.md
+      uses: prd-tmpl
+      notes: >-
+        Cria PRD completo com:
+        - Requisitos de funcionalidades principais
+        - Definição de idiomas necessários (pt, en, es ou mais)
+        - Estrutura de dados para Supabase
+        - Requisitos de branding/identidade visual
+        - Integrações necessárias
+      output_location: docs/
+
+    - agent: architect
+      creates: architecture.md
+      requires: prd.md
+      uses: fullstack-architecture-tmpl
+      notes: >-
+        Define arquitetura considerando:
+        - Estrutura Next.js com App Router e [locale]
+        - Schema do Supabase (tabelas, RLS, funções)
+        - Estrutura de traduções (i18n/messages/*.json)
+        - Sistema de branding personalizado
+        - APIs e endpoints necessários
+      output_location: docs/
+
+    - agent: ux-expert
+      creates: front-end-spec.md
+      requires: prd.md
+      uses: front-end-spec-tmpl
+      notes: >-
+        Especifica UI/UX com:
+        - Design system baseado em shadcn/ui
+        - Componentes reutilizáveis
+        - Fluxos de navegação multiidiomas
+        - Tema personalizado mantendo claro/escuro
+        - Componentes do dashboard necessários
+      output_location: docs/
+
+    - agent: developer
+      creates: project-setup
+      requires:
+        - architecture.md
+        - front-end-spec.md
+      notes: >-
+        Setup inicial do projeto:
+        1. Clonar template base
+        2. Configurar .env.local com Supabase
+        3. Criar schema inicial no Supabase
+        4. Adicionar traduções necessárias
+        5. Personalizar branding em lib/branding/theme.ts
+        6. Configurar middleware de autenticação (se necessário)
+        7. Criar estrutura inicial de páginas em app/[locale]/
+
+    - agent: developer
+      creates: core-features
+      requires: project-setup
+      notes: >-
+        Implementa features core:
+        - Autenticação com Supabase (se necessário)
+        - CRUD básico com Supabase
+        - Páginas principais do dashboard
+        - Integração com traduções
+        - Aplicação de branding
+
+    - agent: qa
+      validates: core-features
+      uses:
+        - story-draft-checklist
+      notes: >-
+        Testa:
+        - Funcionamento em todos os idiomas
+        - Conexão e queries Supabase
+        - Tema claro/escuro
+        - Responsividade
+        - Acessibilidade
+
+    - agent: pm
+      creates: project-documentation
+      notes: >-
+        Cria documentação:
+        - README.md específico do projeto
+        - Guia de setup Supabase
+        - Guia de personalização de branding
+        - Documentação de estrutura de dados
+
+  completion_criteria:
+    - Projeto base criado e funcionando
+    - Supabase configurado e conectado
+    - i18n funcionando em todos os idiomas
+    - Branding aplicado e funcionando
+    - Features core implementadas
+    - Documentação completa
+
