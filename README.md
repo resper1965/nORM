@@ -1,6 +1,6 @@
-# Ness Theme - Template Base
+# nORM - Next Online Reputation Manager
 
-Template base para projetos futuros criado a partir do tema [tweakcn dashboard](https://tweakcn.com/themes/cmhf58ysi000304l8eexg3lzq).
+Sistema inteligente de gestão e monitoramento de reputação online baseado no template [Ness Theme](https://github.com/resper1965/ness-theme).
 
 ## 🎨 Branding "Ness"
 
