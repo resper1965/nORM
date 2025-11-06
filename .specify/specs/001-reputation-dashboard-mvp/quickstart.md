@@ -243,6 +243,18 @@ See [contracts/api-spec.json](./contracts/api-spec.json) for full API documentat
 
 ## Database Access
 
+### Access via MCP (Model Context Protocol)
+
+Para acessar o Supabase via MCP no Cursor:
+
+**URL MCP**: https://mcp.supabase.com/mcp?project_ref=hyeifxvxifhrapfdvfry
+
+**Configuração**:
+1. Abra as configurações do Cursor
+2. Navegue até MCP Settings
+3. Adicione o servidor MCP do Supabase com a URL acima
+4. O MCP permitirá acesso direto ao banco de dados e schema
+
 ### Using Supabase Client
 
 ```typescript
@@ -252,7 +264,7 @@ const supabase = createClient()
 
 // Server client
 import { createClient } from '@/lib/supabase/server'
-const supabase = createClient()
+const supabase = await createClient()
 ```
 
 ### Direct SQL Access

@@ -2,21 +2,29 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { env } from '@/lib/config/env';
 
+const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
 export async function updateSession(request: NextRequest) {
+  // Create an unmodified response
   let supabaseResponse = NextResponse.next({
-    request,
+    request: {
+      headers: request.headers,
+    },
   });
 
   const supabase = createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabaseUrl!,
+    supabaseKey!,
     {
       cookies: {
         getAll() {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value));
+          cookiesToSet.forEach(({ name, value, options }) => 
+            request.cookies.set(name, value)
+          );
           supabaseResponse = NextResponse.next({
             request,
           });
@@ -36,28 +44,28 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  // Protected routes - redirect to login if not authenticated
+  const isProtectedRoute = 
+    request.nextUrl.pathname.startsWith('/dashboard') ||
+    request.nextUrl.pathname.startsWith('/clients') ||
+    request.nextUrl.pathname.startsWith('/reputation') ||
+    request.nextUrl.pathname.startsWith('/social') ||
+    request.nextUrl.pathname.startsWith('/content') ||
+    request.nextUrl.pathname.startsWith('/settings');
+
+  if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    return NextResponse.redirect(url);
+    // Copy cookies to redirect response
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    return redirectResponse;
   }
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the authentication to not work.
+  // IMPORTANT: You *must* return the supabaseResponse object as it is.
+  // If you're creating a new response object, make sure to copy over the cookies.
 
   return supabaseResponse;
 }

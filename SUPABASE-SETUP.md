@@ -9,6 +9,7 @@ Complete guide for setting up Supabase database for the nORM project.
 - **Project ID**: hyeifxvxifhrapfdvfry
 - **Region**: East US (default)
 - **Dashboard**: https://app.supabase.com/project/hyeifxvxifhrapfdvfry
+- **MCP Access**: https://mcp.supabase.com/mcp?project_ref=hyeifxvxifhrapfdvfry
 
 ## 🔑 Getting API Keys
 
@@ -241,6 +242,25 @@ SELECT cron.schedule(
 ```
 
 ## 🔍 Database Access
+
+### Access via MCP (Model Context Protocol)
+
+Para acessar o Supabase via MCP no Cursor ou outras ferramentas compatíveis:
+
+**URL MCP**: https://mcp.supabase.com/mcp?project_ref=hyeifxvxifhrapfdvfry
+
+**Configuração no Cursor**:
+1. Abra as configurações do Cursor
+2. Navegue até MCP Settings
+3. Adicione o servidor MCP do Supabase com a URL acima
+4. O MCP permitirá acesso direto ao banco de dados, schema, e funcionalidades do Supabase
+
+**Benefícios do MCP**:
+- Acesso direto ao schema do banco de dados
+- Consultas SQL via interface
+- Gerenciamento de tabelas e migrations
+- Visualização de dados em tempo real
+- Integração com ferramentas de IA para análise de dados
 
 ### Using Supabase Client (Next.js)
 
