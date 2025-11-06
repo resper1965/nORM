@@ -3,6 +3,8 @@ import { locales, defaultLocale } from './i18n/config';
 import { updateSession } from './lib/supabase/middleware';
 import { NextRequest } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
