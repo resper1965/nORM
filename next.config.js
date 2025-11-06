@@ -9,9 +9,8 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
-  // Force Node.js runtime for middleware to avoid Edge Runtime issues with Supabase
-  serverRuntimeConfig: {},
-  publicRuntimeConfig: {},
+  // Disable static optimization for dynamic routes to avoid client-reference-manifest issues
+  output: 'standalone',
 };
 
 module.exports = withNextIntl(nextConfig);
