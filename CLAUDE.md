@@ -38,7 +38,9 @@ To be determined during feature planning.
 
 ## Recent Changes
 
-- Initial setup with GitHub Spec Kit
+- **2025-11-06**: Established project constitution v1.0.0 with 10 core principles
+- **2025-11-06**: Configured Vercel deployment with comprehensive environment variables
+- **2025-11-06**: Initial setup with GitHub Spec Kit
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
