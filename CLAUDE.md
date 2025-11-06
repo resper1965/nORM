@@ -66,6 +66,7 @@ To be determined during feature planning.
 
 ## Recent Changes
 
+- **2025-11-06**: Created tasks.md with 97 implementation tasks organized by user story
 - **2025-11-06**: Created technical implementation plan for nORM MVP (001-reputation-dashboard-mvp)
 - **2025-11-06**: Generated Phase 1 artifacts: data-model.md, API contracts, quickstart.md
 - **2025-11-06**: Established project constitution v1.0.0 with 10 core principles
@@ -87,11 +88,12 @@ To be determined during feature planning.
 - ✅ `contracts/api-spec.json` - OpenAPI 3.0 API specification
 - ✅ `contracts/supabase-schema.sql` - Database schema SQL
 - ✅ `quickstart.md` - Developer onboarding guide
+- ✅ `tasks.md` - Implementation tasks breakdown (97 tasks organized by user story)
 
 **Next Steps**:
-1. Review and approve technical plan
-2. Run `/speckit.tasks` to generate implementation tasks
-3. Run `/speckit.implement` to start building MVP
+1. Review and approve task breakdown
+2. Run `/speckit.implement` to start building MVP
+3. Track progress by checking off tasks as they're completed
 
 **Estimated Effort**: 80-120 hours (2-4 weeks @ 40h/week)
 
