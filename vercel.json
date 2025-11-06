@@ -7,11 +7,11 @@
   "crons": [
     {
       "path": "/api/cron/scrape-news",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 6 * * *"
     },
     {
       "path": "/api/cron/sync-social",
-      "schedule": "0 */4 * * *"
+      "schedule": "0 12 * * *"
     },
     {
       "path": "/api/cron/calculate-reputation",
@@ -19,7 +19,7 @@
     },
     {
       "path": "/api/cron/check-serp",
-      "schedule": "0 */12 * * *"
+      "schedule": "0 18 * * *"
     }
   ]
 }
