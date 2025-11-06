@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import type { ReputationResponse } from '@/lib/types/api';
 
 interface ReputationScoreCardProps {
-  score: ReputationResponse;
+  score: ReputationResponse | null;
   isLoading?: boolean;
 }
 
