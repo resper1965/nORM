@@ -6,6 +6,8 @@ import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
 import type { SocialMentionsResponse, ErrorResponse } from '@/lib/types/api';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/social/mentions
  * Get aggregated social media mentions

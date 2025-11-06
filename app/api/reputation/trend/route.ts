@@ -5,6 +5,8 @@ import { logger } from '@/lib/utils/logger';
 import { AppError, NotFoundError } from '@/lib/errors/errors';
 import type { ErrorResponse } from '@/lib/types/api';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/reputation/trend
  * Get reputation trend data for a client
