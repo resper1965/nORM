@@ -4,7 +4,35 @@ Auto-generated from all feature plans. Last updated: 2025-11-06
 
 ## Active Technologies
 
-To be determined during feature planning.
+**Frontend**:
+- Next.js 14 (App Router)
+- React 18
+- TypeScript 5.5+
+- Tailwind CSS
+- shadcn/ui components
+- next-intl (i18n)
+
+**Backend**:
+- Supabase (PostgreSQL, Auth, Edge Functions)
+- Deno runtime (Edge Functions)
+
+**AI & APIs**:
+- OpenAI GPT-4 (content generation, sentiment analysis)
+- SerpAPI (SERP tracking)
+- Meta Graph API (Instagram, Facebook)
+- LinkedIn API v2
+- WordPress REST API
+- Resend (email notifications)
+
+**Testing**:
+- Vitest (unit tests)
+- Playwright (E2E tests)
+- React Testing Library
+- MSW (API mocking)
+
+**Deployment**:
+- Vercel (frontend)
+- Supabase (backend, database)
 
 ## Project Structure
 
@@ -38,9 +66,34 @@ To be determined during feature planning.
 
 ## Recent Changes
 
+- **2025-11-06**: Created technical implementation plan for nORM MVP (001-reputation-dashboard-mvp)
+- **2025-11-06**: Generated Phase 1 artifacts: data-model.md, API contracts, quickstart.md
 - **2025-11-06**: Established project constitution v1.0.0 with 10 core principles
 - **2025-11-06**: Configured Vercel deployment with comprehensive environment variables
 - **2025-11-06**: Initial setup with GitHub Spec Kit
+
+## Active Feature Development
+
+### Feature: 001-reputation-dashboard-mvp
+
+**Status**: Planning Complete, Ready for Implementation
+
+**Location**: `.specify/specs/001-reputation-dashboard-mvp/`
+
+**Artifacts**:
+- ✅ `spec.md` - Feature specification with user stories and requirements
+- ✅ `plan.md` - Technical implementation plan with architecture and design decisions
+- ✅ `data-model.md` - Complete database schema and entity relationships
+- ✅ `contracts/api-spec.json` - OpenAPI 3.0 API specification
+- ✅ `contracts/supabase-schema.sql` - Database schema SQL
+- ✅ `quickstart.md` - Developer onboarding guide
+
+**Next Steps**:
+1. Review and approve technical plan
+2. Run `/speckit.tasks` to generate implementation tasks
+3. Run `/speckit.implement` to start building MVP
+
+**Estimated Effort**: 80-120 hours (2-4 weeks @ 40h/week)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
