@@ -10,8 +10,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Ness Theme - Template Base",
-  description: "Template base para projetos futuros com Next.js, shadcn/ui e Tailwind CSS",
+  title: "nORM - Online Reputation Manager",
+  description: "Sistema de gerenciamento de reputação online com IA",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export function generateStaticParams() {
