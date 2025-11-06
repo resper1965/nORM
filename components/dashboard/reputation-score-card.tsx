@@ -10,7 +10,7 @@ interface ReputationScoreCardProps {
 }
 
 export function ReputationScoreCard({ score, isLoading }: ReputationScoreCardProps) {
-  if (isLoading) {
+  if (isLoading || !score) {
     return (
       <Card>
         <CardHeader>
