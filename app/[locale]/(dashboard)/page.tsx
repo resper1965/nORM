@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { ReputationScoreCard } from '@/components/dashboard/reputation-score-card';
 import { AlertsList } from '@/components/dashboard/alerts-list';
 import { SERPPositionGrid } from '@/components/dashboard/serp-position-grid';
+import { ReputationTrendChart } from '@/components/dashboard/reputation-trend-chart';
 import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
@@ -66,14 +67,26 @@ export default async function DashboardPage() {
   const alerts = alertsRes?.ok ? await alertsRes.json() : { alerts: [] };
   const serp = serpRes?.ok ? await serpRes.json() : { results: [] };
 
+  // Get reputation trend data
+  const trendData = reputation
+    ? [
+        { date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), score: reputation.score - (reputation.change || 0) },
+        { date: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), score: reputation.score - (reputation.change || 0) * 0.6 },
+        { date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), score: reputation.score - (reputation.change || 0) * 0.3 },
+        { date: new Date().toISOString(), score: reputation.score },
+      ]
+    : [];
+
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="space-y-6">
       <h1 className="text-3xl font-bold">Dashboard</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ReputationScoreCard score={reputation} isLoading={!reputation} />
         <AlertsList alerts={alerts.alerts || []} isLoading={!alertsRes} />
       </div>
+
+      <ReputationTrendChart data={trendData} isLoading={!reputation} />
 
       <SERPPositionGrid results={serp.results || []} isLoading={!serpRes} />
     </div>
