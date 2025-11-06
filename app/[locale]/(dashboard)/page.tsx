@@ -4,6 +4,8 @@ import { AlertsList } from '@/components/dashboard/alerts-list';
 import { SERPPositionGrid } from '@/components/dashboard/serp-position-grid';
 import { ReputationTrendChart } from '@/components/dashboard/reputation-trend-chart';
 import { redirect } from 'next/navigation';
+import { getUserClients } from '@/lib/auth/rbac';
+import { calculateReputationScore, calculateTrend } from '@/lib/reputation/calculator';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,40 +48,97 @@ export default async function DashboardPage() {
 
   const clientId = clientUsers[0].client_id;
 
-  // Fetch data in parallel
-  const [reputationRes, alertsRes, serpRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/clients/${clientId}/reputation`, {
-      headers: {
-        'Cookie': (await import('next/headers')).cookies().toString(),
-      },
-    }).catch(() => null),
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/alerts?client_id=${clientId}&status=active&limit=10`, {
-      headers: {
-        'Cookie': (await import('next/headers')).cookies().toString(),
-      },
-    }).catch(() => null),
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/clients/${clientId}/serp`, {
-      headers: {
-        'Cookie': (await import('next/headers')).cookies().toString(),
-      },
-    }).catch(() => null),
-  ]);
+  // Calculate reputation score
+  const periodEnd = new Date();
+  const periodStart = new Date();
+  periodStart.setDate(periodStart.getDate() - 30);
 
-  const reputation = reputationRes?.ok ? await reputationRes.json() : null;
-  const alerts = alertsRes?.ok ? await alertsRes.json() : { alerts: [] };
-  const serp = serpRes?.ok ? await serpRes.json() : { results: [] };
+  let reputation = null;
+  try {
+    const { score, breakdown } = await calculateReputationScore({
+      clientId,
+      periodStart,
+      periodEnd,
+    });
+
+    const previousPeriodEnd = periodStart;
+    const previousPeriodStart = new Date(previousPeriodEnd);
+    previousPeriodStart.setDate(previousPeriodStart.getDate() - 30);
+
+    const { score: previousScore } = await calculateReputationScore({
+      clientId,
+      periodStart: previousPeriodStart,
+      periodEnd: previousPeriodEnd,
+    });
+
+    const trend = calculateTrend(score, previousScore);
+    const change = score - previousScore;
+
+    reputation = {
+      score,
+      breakdown,
+      trend,
+      change: Math.round(change * 100) / 100,
+    };
+  } catch (error) {
+    console.error('Error calculating reputation:', error);
+  }
+
+  // Get alerts
+  const userClientIds = await getUserClients(user.id);
+  const { data: alertsData } = await supabase
+    .from('alerts')
+    .select('*')
+    .in('client_id', userClientIds)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  // Get SERP results
+  const { data: serpData } = await supabase
+    .from('serp_results')
+    .select(`
+      *,
+      keywords!inner (
+        id,
+        keyword,
+        client_id
+      )
+    `)
+    .eq('keywords.client_id', clientId)
+    .order('checked_at', { ascending: false })
+    .limit(1000);
+
+  // Get latest result for each keyword
+  const keywordMap = new Map();
+  for (const result of serpData || []) {
+    const keywordId = (result as any).keywords.id;
+    if (!keywordMap.has(keywordId)) {
+      keywordMap.set(keywordId, result);
+    }
+  }
+
+  const serpResults = Array.from(keywordMap.values()).map((result: any) => ({
+    keyword: result.keywords.keyword,
+    position: result.position,
+    url: result.url,
+    title: result.title,
+    snippet: result.snippet,
+    checked_at: result.checked_at,
+  }));
 
   // Get reputation trend data
-  const trendRes = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/reputation/trend?client_id=${clientId}&days=30`,
-    {
-      headers: {
-        'Cookie': (await import('next/headers')).cookies().toString(),
-      },
-    }
-  ).catch(() => null);
+  const { data: scoresData } = await supabase
+    .from('reputation_scores')
+    .select('score, calculated_at')
+    .eq('client_id', clientId)
+    .gte('calculated_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+    .order('calculated_at', { ascending: true });
 
-  const trendData = trendRes?.ok ? (await trendRes.json()).data : [];
+  const trendData = (scoresData || []).map((score) => ({
+    date: score.calculated_at,
+    score: score.score,
+  }));
 
   return (
     <div className="space-y-6">
@@ -87,13 +146,12 @@ export default async function DashboardPage() {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ReputationScoreCard score={reputation} isLoading={!reputation} />
-        <AlertsList alerts={alerts.alerts || []} isLoading={!alertsRes} />
+        <AlertsList alerts={alertsData || []} isLoading={false} />
       </div>
 
-      <ReputationTrendChart data={trendData} isLoading={!reputation} />
+      <ReputationTrendChart data={trendData} isLoading={false} />
 
-      <SERPPositionGrid results={serp.results || []} isLoading={!serpRes} />
+      <SERPPositionGrid results={serpResults} isLoading={false} />
     </div>
   );
 }
-
