@@ -1,93 +1,397 @@
-# Setup Supabase - Guia Rápido
+# 🗄️ Supabase Setup Guide - nORM
 
-## 1. Criar Projeto no Supabase
+Complete guide for setting up Supabase database for the nORM project.
 
-1. Acesse [https://supabase.com](https://supabase.com)
-2. Faça login ou crie uma conta
-3. Clique em "New Project"
-4. Preencha:
-   - **Nome do projeto**: Ex: `gabi-clean-dashboard`
-   - **Database Password**: Escolha uma senha forte
-   - **Region**: Escolha a região mais próxima
-5. Clique em "Create new project"
+## 📊 Project Information
 
-## 2. Obter Credenciais
+- **Project Name**: nORM
+- **Project URL**: https://hyeifxvxifhrapfdvfry.supabase.co
+- **Project ID**: hyeifxvxifhrapfdvfry
+- **Region**: East US (default)
+- **Dashboard**: https://app.supabase.com/project/hyeifxvxifhrapfdvfry
 
-1. No dashboard do projeto, vá em **Settings** → **API**
-2. Copie as seguintes informações:
-   - **Project URL** (NEXT_PUBLIC_SUPABASE_URL)
-   - **anon public** key (NEXT_PUBLIC_SUPABASE_ANON_KEY)
-   - **service_role** key (SUPABASE_SERVICE_ROLE_KEY) - **NÃO EXPONHA NO CLIENTE**
+## 🔑 Getting API Keys
 
-## 3. Configurar Variáveis de Ambiente
+### 1. Navigate to API Settings
 
-1. Copie `.env.example` para `.env.local`:
+Go to: https://app.supabase.com/project/hyeifxvxifhrapfdvfry/settings/api
+
+### 2. Copy the following keys:
+
+- **Project URL**: Already set to `https://hyeifxvxifhrapfdvfry.supabase.co`
+- **Anon/Public Key**: Copy and add to `.env.local` as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **Service Role Key**: Copy and add to `.env.local` as `SUPABASE_SERVICE_ROLE_KEY` (⚠️ Never expose this publicly!)
+
+## 📁 Database Schema
+
+### Core Tables
+
+The nORM database consists of the following main tables:
+
+#### 1. Clients Management
+```sql
+-- clients: Client companies being monitored
+-- client_users: User access to client accounts
+```
+
+#### 2. Reputation Monitoring
+```sql
+-- reputation_scores: Historical reputation scores
+-- reputation_alerts: Critical alerts and incidents
+```
+
+#### 3. Media Monitoring
+```sql
+-- media_mentions: News articles and online mentions
+```
+
+#### 4. Social Media
+```sql
+-- social_accounts: Connected social media accounts
+-- social_posts: Posts and mentions from social media
+```
+
+#### 5. Content Generation
+```sql
+-- content_posts: Blog posts and generated content
+-- seo_keywords: Tracked keywords for SEO
+```
+
+#### 6. Backlinks
+```sql
+-- backlinks: Current backlinks
+-- backlink_opportunities: Potential backlink opportunities
+```
+
+#### 7. Audit & Security
+```sql
+-- audit_logs: Complete audit trail
+```
+
+## 🚀 Setup Instructions
+
+### Method 1: Using Supabase CLI (Recommended)
+
 ```bash
-cp .env.example .env.local
+# 1. Install Supabase CLI
+npm install -g supabase
+
+# 2. Login to Supabase
+supabase login
+
+# 3. Link to your project
+supabase link --project-ref hyeifxvxifhrapfdvfry
+
+# 4. Create migration files (will be created in next steps)
+cd /home/user/nORM
+mkdir -p supabase/migrations
+
+# 5. Apply migrations (after migrations are created)
+supabase db push
+
+# 6. Generate TypeScript types
+supabase gen types typescript --project-id hyeifxvxifhrapfdvfry > lib/types/supabase.ts
 ```
 
-2. Preencha as variáveis:
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+### Method 2: Using Supabase Dashboard
+
+1. Go to: https://app.supabase.com/project/hyeifxvxifhrapfdvfry/editor
+2. Open SQL Editor
+3. Run each migration file manually
+
+## 📋 Database Migrations
+
+### Migration Files Structure
+
+```
+supabase/
+├── migrations/
+│   ├── 001_initial_schema.sql          # Core tables
+│   ├── 002_clients_and_users.sql       # Client management
+│   ├── 003_reputation_monitoring.sql    # Reputation tracking
+│   ├── 004_media_monitoring.sql         # News and media
+│   ├── 005_social_media.sql             # Social platforms
+│   ├── 006_content_generation.sql       # Content & SEO
+│   ├── 007_backlinks.sql                # Backlink tracking
+│   ├── 008_audit_logs.sql               # Security & audit
+│   ├── 009_rls_policies.sql             # Row Level Security
+│   └── 010_functions_and_triggers.sql   # Stored procedures
+└── seed.sql                              # Sample data (optional)
 ```
 
-## 4. Estrutura Pré-configurada
+### Creating Migrations
 
-O projeto já está configurado com:
+We'll create these migrations in the next steps. Each migration will:
+- Create tables with proper constraints
+- Add indexes for performance
+- Set up Row Level Security (RLS)
+- Create triggers for audit logging
 
-### Cliente Browser (`lib/supabase/client.ts`)
-```tsx
-import { createClient } from '@/lib/supabase/client';
-const supabase = createClient();
+## 🔐 Row Level Security (RLS)
+
+RLS will be enabled on ALL tables to ensure users can only access data they're authorized for.
+
+**Policies Pattern:**
+```sql
+-- Users can only read their own client data
+CREATE POLICY "Users read own clients"
+  ON clients FOR SELECT
+  USING (auth.uid() IN (
+    SELECT user_id FROM client_users WHERE client_id = clients.id
+  ));
+
+-- Admins can manage everything
+CREATE POLICY "Admins full access"
+  ON clients FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM client_users
+      WHERE user_id = auth.uid() AND role = 'admin'
+    )
+  );
 ```
 
-### Cliente Server (`lib/supabase/server.ts`)
-```tsx
-import { createClient } from '@/lib/supabase/server';
-const supabase = await createClient();
+## ⚙️ Supabase Functions (Edge Functions)
+
+### Background Jobs
+
+Create Edge Functions for async processing:
+
+```bash
+# Structure
+supabase/functions/
+├── scrape-news/
+│   ├── index.ts
+│   └── deno.json
+├── sync-social-media/
+│   ├── index.ts
+│   └── deno.json
+└── calculate-reputation/
+    ├── index.ts
+    └── deno.json
 ```
 
-### Middleware de Autenticação (`lib/supabase/middleware.ts`)
-- Gerenciamento automático de sessões
-- Proteção de rotas
-- Refresh de tokens
+### Deploy Functions
 
-## 5. Testar Conexão
+```bash
+# Deploy all functions
+supabase functions deploy scrape-news
+supabase functions deploy sync-social-media
+supabase functions deploy calculate-reputation
 
-Crie um arquivo de teste em `app/[locale]/test-supabase/page.tsx`:
+# Set secrets (never commit these!)
+supabase secrets set OPENAI_API_KEY=sk-...
+supabase secrets set NEWS_API_KEY=your-key
+supabase secrets set TWITTER_BEARER_TOKEN=your-token
+```
 
-```tsx
-import { createClient } from '@/lib/supabase/server';
+### Invoke Functions Manually
 
-export default async function TestSupabase() {
-  const supabase = await createClient();
-  
-  const { data, error } = await supabase
-    .from('tabela_teste')
-    .select('*')
-    .limit(1);
-  
-  if (error) {
-    return <div>Erro: {error.message}</div>;
-  }
-  
-  return <div>Conexão OK! {JSON.stringify(data)}</div>;
+```bash
+# Test news scraping
+supabase functions invoke scrape-news --data '{"client_id":"uuid-here"}'
+
+# Test social sync
+supabase functions invoke sync-social-media --data '{"client_id":"uuid-here"}'
+```
+
+## 🕐 Cron Jobs
+
+Set up scheduled jobs using Supabase's pg_cron extension:
+
+```sql
+-- Enable pg_cron extension
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+-- Schedule reputation score calculation (every hour)
+SELECT cron.schedule(
+  'calculate-reputation-scores',
+  '0 * * * *',
+  $$
+  SELECT net.http_post(
+    url := 'https://hyeifxvxifhrapfdvfry.supabase.co/functions/v1/calculate-reputation',
+    headers := '{"Content-Type": "application/json", "Authorization": "Bearer ' || current_setting('app.settings.service_role_key') || '"}'::jsonb
+  );
+  $$
+);
+
+-- Schedule news scraping (every hour)
+SELECT cron.schedule(
+  'scrape-news',
+  '0 * * * *',
+  $$
+  SELECT net.http_post(
+    url := 'https://hyeifxvxifhrapfdvfry.supabase.co/functions/v1/scrape-news',
+    headers := '{"Content-Type": "application/json", "Authorization": "Bearer ' || current_setting('app.settings.service_role_key') || '"}'::jsonb
+  );
+  $$
+);
+
+-- Schedule social media sync (every 15 minutes)
+SELECT cron.schedule(
+  'sync-social-media',
+  '*/15 * * * *',
+  $$
+  SELECT net.http_post(
+    url := 'https://hyeifxvxifhrapfdvfry.supabase.co/functions/v1/sync-social-media',
+    headers := '{"Content-Type": "application/json", "Authorization": "Bearer ' || current_setting('app.settings.service_role_key') || '"}'::jsonb
+  );
+  $$
+);
+```
+
+## 🔍 Database Access
+
+### Using Supabase Client (Next.js)
+
+```typescript
+// lib/supabase/client.ts (browser)
+import { createBrowserClient } from '@supabase/ssr'
+
+export const createClient = () =>
+  createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+// lib/supabase/server.ts (server)
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+export const createClient = () => {
+  const cookieStore = cookies()
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+      },
+    }
+  )
 }
 ```
 
-## 6. Próximos Passos
+### Direct Database Connection
 
-- ✅ Configurar autenticação
-- ✅ Criar tabelas no Supabase
-- ✅ Configurar RLS (Row Level Security)
-- ✅ Criar funções e triggers
-- ✅ Configurar storage para arquivos
+For admin tasks or local development:
 
-## Recursos Úteis
+```bash
+# Connection string format:
+postgresql://postgres:[YOUR-PASSWORD]@db.hyeifxvxifhrapfdvfry.supabase.co:5432/postgres
 
-- [Documentação Supabase](https://supabase.com/docs)
-- [Guia de Autenticação](https://supabase.com/docs/guides/auth)
-- [Guia de Banco de Dados](https://supabase.com/docs/guides/database)
+# Get your password from:
+# https://app.supabase.com/project/hyeifxvxifhrapfdvfry/settings/database
+```
 
+## 📊 Monitoring & Performance
+
+### Enable Realtime (if needed)
+
+```sql
+-- Enable realtime for specific tables
+ALTER PUBLICATION supabase_realtime ADD TABLE reputation_scores;
+ALTER PUBLICATION supabase_realtime ADD TABLE reputation_alerts;
+```
+
+### Indexes for Performance
+
+All migrations include proper indexes, but here are key ones:
+
+```sql
+-- Client lookups
+CREATE INDEX idx_clients_active ON clients(is_active) WHERE is_active = true;
+
+-- Reputation scores by client and date
+CREATE INDEX idx_reputation_scores_client_date ON reputation_scores(client_id, calculated_at DESC);
+
+-- Media mentions by client and sentiment
+CREATE INDEX idx_media_mentions_client_sentiment ON media_mentions(client_id, sentiment, published_at DESC);
+
+-- Audit logs by date (for compliance)
+CREATE INDEX idx_audit_logs_created ON audit_logs(created_at DESC);
+```
+
+## 🔧 Environment Variables Setup
+
+### Local Development (.env.local)
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://hyeifxvxifhrapfdvfry.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+### Vercel Production
+
+Add these in Vercel Dashboard → Settings → Environment Variables:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://hyeifxvxifhrapfdvfry.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+## 🧪 Testing Database Connection
+
+Create a test file to verify connection:
+
+```typescript
+// scripts/test-supabase.ts
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+async function testConnection() {
+  try {
+    const { data, error } = await supabase.from('clients').select('count')
+
+    if (error) throw error
+
+    console.log('✅ Supabase connection successful!')
+    console.log('Clients count:', data)
+  } catch (error) {
+    console.error('❌ Supabase connection failed:', error)
+  }
+}
+
+testConnection()
+```
+
+Run with:
+```bash
+npx tsx scripts/test-supabase.ts
+```
+
+## 📚 Additional Resources
+
+- **Supabase Docs**: https://supabase.com/docs
+- **JavaScript Client**: https://supabase.com/docs/reference/javascript/introduction
+- **PostgreSQL Docs**: https://www.postgresql.org/docs/
+- **Row Level Security**: https://supabase.com/docs/guides/auth/row-level-security
+
+## 🆘 Troubleshooting
+
+### Issue: "Invalid API key"
+**Solution**: Double-check your keys in the Supabase dashboard. Make sure you're using the correct project keys.
+
+### Issue: "Row level security policy violation"
+**Solution**: RLS policies need to be set up. Run migration 009_rls_policies.sql.
+
+### Issue: "Connection timeout"
+**Solution**: Check if your IP is allowed. Supabase allows all IPs by default, but verify in Settings → Database → Connection pooling.
+
+### Issue: "Function not found"
+**Solution**: Deploy Edge Functions using `supabase functions deploy <function-name>`.
+
+---
+
+**Last updated**: 2025-11-06
+**Project**: nORM v1.0.0
+**Supabase Project ID**: hyeifxvxifhrapfdvfry
