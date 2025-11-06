@@ -12,9 +12,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "nORM - Online Reputation Manager",
   description: "Sistema de gerenciamento de reputação online com IA",
-  icons: {
-    icon: '/favicon.ico',
-  },
 };
 
 export function generateStaticParams() {
