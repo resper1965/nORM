@@ -5,6 +5,8 @@ import { SERPPositionGrid } from '@/components/dashboard/serp-position-grid';
 import { ReputationTrendChart } from '@/components/dashboard/reputation-trend-chart';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const supabase = await createClient();
 

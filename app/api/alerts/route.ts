@@ -5,6 +5,8 @@ import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
 import type { AlertsResponse, ErrorResponse } from '@/lib/types/api';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/alerts
  * Get active alerts for all clients user has access to
