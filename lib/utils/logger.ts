@@ -1,59 +1,68 @@
 /**
- * Sistema de logging estruturado
- * Em produção, pode ser integrado com serviços como Sentry, LogRocket, etc.
+ * Logging utility
+ * Centralized logging with different levels
  */
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
-interface LogContext {
-  [key: string]: unknown;
+interface LogEntry {
+  level: LogLevel;
+  message: string;
+  timestamp: Date;
+  metadata?: Record<string, unknown>;
+  error?: Error;
 }
 
 class Logger {
   private isDevelopment = process.env.NODE_ENV === 'development';
 
-  private formatMessage(level: LogLevel, message: string, context?: LogContext): string {
-    const timestamp = new Date().toISOString();
-    const contextStr = context ? ` ${JSON.stringify(context)}` : '';
-    return `[${timestamp}] [${level.toUpperCase()}] ${message}${contextStr}`;
-  }
-
-  debug(message: string, context?: LogContext): void {
-    if (this.isDevelopment) {
-      console.debug(this.formatMessage('debug', message, context));
-    }
-  }
-
-  info(message: string, context?: LogContext): void {
-    if (this.isDevelopment) {
-      console.info(this.formatMessage('info', message, context));
-    }
-    // Em produção, enviar para serviço de logging
-  }
-
-  warn(message: string, context?: LogContext): void {
-    console.warn(this.formatMessage('warn', message, context));
-    // Em produção, enviar para serviço de logging
-  }
-
-  error(message: string, error?: Error | unknown, context?: LogContext): void {
-    const errorContext = {
-      ...context,
-      error: error instanceof Error ? {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-      } : error,
+  private log(level: LogLevel, message: string, metadata?: Record<string, unknown>, error?: Error) {
+    const entry: LogEntry = {
+      level,
+      message,
+      timestamp: new Date(),
+      metadata,
+      error,
     };
 
-    console.error(this.formatMessage('error', message, errorContext));
+    // In production, only log errors and warnings
+    if (!this.isDevelopment && (level === 'debug' || level === 'info')) {
+      return;
+    }
+
+    const logMethod = level === 'error' ? console.error : 
+                     level === 'warn' ? console.warn :
+                     level === 'info' ? console.info : 
+                     console.debug;
+
+    const prefix = `[${level.toUpperCase()}] [${entry.timestamp.toISOString()}]`;
     
-    // Em produção, enviar para serviço de monitoramento (Sentry, etc.)
-    // if (!this.isDevelopment) {
-    //   Sentry.captureException(error, { contexts: context });
-    // }
+    if (error) {
+      logMethod(prefix, message, metadata, error);
+    } else if (metadata) {
+      logMethod(prefix, message, metadata);
+    } else {
+      logMethod(prefix, message);
+    }
+
+    // TODO: In production, send to logging service (e.g., Sentry, LogRocket)
+  }
+
+  debug(message: string, metadata?: Record<string, unknown>) {
+    this.log('debug', message, metadata);
+  }
+
+  info(message: string, metadata?: Record<string, unknown>) {
+    this.log('info', message, metadata);
+  }
+
+  warn(message: string, metadata?: Record<string, unknown>) {
+    this.log('warn', message, metadata);
+  }
+
+  error(message: string, error?: Error, metadata?: Record<string, unknown>) {
+    this.log('error', message, metadata, error);
   }
 }
 
 export const logger = new Logger();
-

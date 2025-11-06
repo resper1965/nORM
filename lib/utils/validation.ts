@@ -1,44 +1,53 @@
 /**
- * Utilitários de validação usando Zod
+ * Validation utilities
+ * Zod schemas for common validations
  */
 
 import { z } from 'zod';
 
-// Schemas comuns de validação
-export const emailSchema = z.string().email('Email inválido');
+// UUID validation
+export const uuidSchema = z.string().uuid();
 
-export const passwordSchema = z
-  .string()
-  .min(8, 'Senha deve ter no mínimo 8 caracteres')
-  .regex(/[A-Z]/, 'Senha deve conter pelo menos uma letra maiúscula')
-  .regex(/[a-z]/, 'Senha deve conter pelo menos uma letra minúscula')
-  .regex(/[0-9]/, 'Senha deve conter pelo menos um número');
+// Email validation
+export const emailSchema = z.string().email();
 
-export const urlSchema = z.string().url('URL inválida');
+// URL validation
+export const urlSchema = z.string().url();
 
-// Helper para validação de formulários
-export function validateForm<T>(
-  schema: z.ZodSchema<T>,
-  data: unknown
-): { success: true; data: T } | { success: false; errors: z.ZodError<unknown> } {
-  const result = schema.safeParse(data);
-  
-  if (result.success) {
-    return { success: true, data: result.data };
-  }
-  
-  return { success: false, errors: result.error };
-}
+// Sentiment score validation (-1.0 to 1.0)
+export const sentimentScoreSchema = z.number().min(-1).max(1);
 
-// Helper para formatar erros do Zod para exibição
-export function formatZodErrors(error: z.ZodError<unknown>): Record<string, string> {
-  const formatted: Record<string, string> = {};
-  
-  error.issues.forEach((issue) => {
-    const path = issue.path.join('.') || 'root';
-    formatted[path] = issue.message;
-  });
-  
-  return formatted;
-}
+// Confidence score validation (0.0 to 1.0)
+export const confidenceScoreSchema = z.number().min(0).max(1);
 
+// Reputation score validation (0 to 100)
+export const reputationScoreSchema = z.number().min(0).max(100);
+
+// SEO score validation (0 to 100)
+export const seoScoreSchema = z.number().min(0).max(100);
+
+// Client role validation
+export const clientRoleSchema = z.enum(['admin', 'editor', 'viewer']);
+
+// Alert severity validation
+export const alertSeveritySchema = z.enum(['low', 'medium', 'high', 'critical']);
+
+// Social platform validation
+export const socialPlatformSchema = z.enum(['instagram', 'linkedin', 'facebook']);
+
+// Content status validation
+export const contentStatusSchema = z.enum(['draft', 'published', 'archived']);
+
+// Pagination schema
+export const paginationSchema = z.object({
+  page: z.number().int().positive().default(1),
+  limit: z.number().int().positive().max(100).default(50),
+});
+
+// Date range schema
+export const dateRangeSchema = z.object({
+  start: z.date(),
+  end: z.date(),
+}).refine((data) => data.end >= data.start, {
+  message: 'End date must be after start date',
+});
