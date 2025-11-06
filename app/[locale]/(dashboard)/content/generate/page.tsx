@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
@@ -15,7 +15,7 @@ export default function GenerateContentPage() {
   const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
 
   // Load clients on mount
-  useState(() => {
+  useEffect(() => {
     const loadClients = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -38,7 +38,7 @@ export default function GenerateContentPage() {
       }
     };
     loadClients();
-  });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
