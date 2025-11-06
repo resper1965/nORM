@@ -1,34 +1,17 @@
 import createMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n/config';
-import { updateSession } from './lib/supabase/middleware';
 import { NextRequest } from 'next/server';
 
-export const runtime = 'nodejs';
-
+// Middleware apenas para i18n
+// Autenticação será feita nas páginas usando Server Components
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'as-needed'
 });
 
-export default async function middleware(request: NextRequest) {
-  // Atualiza sessão do Supabase (autenticação)
-  const supabaseResponse = await updateSession(request);
-
-  // Se o Supabase redirecionou (ex: para login), retorna a resposta de redirecionamento
-  if (supabaseResponse.status === 307 || supabaseResponse.status === 308) {
-    return supabaseResponse;
-  }
-
-  // Processa middleware de i18n e mantém os cookies do Supabase
-  const intlResponse = intlMiddleware(request);
-  
-  // Copia cookies do Supabase para a resposta do i18n
-  supabaseResponse.cookies.getAll().forEach((cookie) => {
-    intlResponse.cookies.set(cookie.name, cookie.value);
-  });
-
-  return intlResponse;
+export default function middleware(request: NextRequest) {
+  return intlMiddleware(request);
 }
 
 export const config = {

@@ -9,6 +9,9 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  // Force Node.js runtime for middleware to avoid Edge Runtime issues with Supabase
+  serverRuntimeConfig: {},
+  publicRuntimeConfig: {},
 };
 
 module.exports = withNextIntl(nextConfig);
