@@ -1,0 +1,155 @@
+/**
+ * SERP Tracker Service
+ * Tracks SERP positions and detects changes
+ */
+
+import { createClient } from '@/lib/supabase/server';
+import { checkSERPPosition, checkSERPPositionsBatch } from './serp';
+import { logger } from '@/lib/utils/logger';
+import type { SERPResult as SERPResultType } from './serp';
+import type { SERPResult as DBSERPResult } from '@/lib/types/domain';
+
+/**
+ * Track SERP position for a keyword
+ */
+export async function trackSERPPosition(
+  keywordId: string,
+  keyword: string
+): Promise<DBSERPResult[]> {
+  const supabase = await createClient();
+
+  try {
+    // Check current SERP position
+    const serpResponse = await checkSERPPosition(keyword);
+
+    // Save results to database
+    const results: DBSERPResult[] = [];
+
+    for (const result of serpResponse.results) {
+      const { data, error } = await supabase
+        .from('serp_results')
+        .insert({
+          keyword_id: keywordId,
+          position: result.position,
+          url: result.url,
+          title: result.title,
+          snippet: result.snippet,
+          domain: result.domain,
+          checked_at: new Date().toISOString(),
+          is_client_content: false, // TODO: Detect if URL belongs to client
+        })
+        .select()
+        .single();
+
+      if (error) {
+        logger.error('Failed to save SERP result', error);
+        continue;
+      }
+
+      if (data) {
+        results.push(data as DBSERPResult);
+      }
+    }
+
+    logger.info(`Tracked SERP for keyword: ${keyword}`, {
+      keywordId,
+      resultsCount: results.length,
+    });
+
+    return results;
+  } catch (error) {
+    logger.error(`Failed to track SERP for keyword: ${keyword}`, error as Error);
+    throw error;
+  }
+}
+
+/**
+ * Track SERP positions for all active keywords of a client
+ */
+export async function trackClientSERPPositions(clientId: string): Promise<void> {
+  const supabase = await createClient();
+
+  // Get all active keywords for client
+  const { data: keywords, error: keywordsError } = await supabase
+    .from('keywords')
+    .select('id, keyword')
+    .eq('client_id', clientId)
+    .eq('is_active', true);
+
+  if (keywordsError) {
+    logger.error('Failed to fetch keywords for SERP tracking', keywordsError);
+    throw keywordsError;
+  }
+
+  if (!keywords || keywords.length === 0) {
+    logger.info(`No active keywords found for client: ${clientId}`);
+    return;
+  }
+
+  // Track each keyword
+  for (const keyword of keywords) {
+    try {
+      await trackSERPPosition(keyword.id, keyword.keyword);
+      // Small delay between keywords to avoid rate limits
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (error) {
+      logger.error(`Failed to track keyword: ${keyword.keyword}`, error as Error);
+      // Continue with other keywords
+    }
+  }
+}
+
+/**
+ * Detect position changes and trigger alerts if needed
+ */
+export async function detectSERPChanges(
+  keywordId: string,
+  alertThreshold: number = 3
+): Promise<{
+  hasChange: boolean;
+  change: number;
+  currentPosition: number | null;
+  previousPosition: number | null;
+}> {
+  const supabase = await createClient();
+
+  // Get last two SERP checks
+  const { data: results, error } = await supabase
+    .from('serp_results')
+    .select('position, checked_at')
+    .eq('keyword_id', keywordId)
+    .order('checked_at', { ascending: false })
+    .limit(2);
+
+  if (error || !results || results.length < 2) {
+    return {
+      hasChange: false,
+      change: 0,
+      currentPosition: results?.[0]?.position || null,
+      previousPosition: null,
+    };
+  }
+
+  const currentPosition = results[0].position;
+  const previousPosition = results[1].position;
+
+  if (currentPosition === null || previousPosition === null) {
+    return {
+      hasChange: false,
+      change: 0,
+      currentPosition,
+      previousPosition,
+    };
+  }
+
+  const change = Math.abs(currentPosition - previousPosition);
+  const hasChange = change >= alertThreshold;
+
+  return {
+    hasChange,
+    change,
+    currentPosition,
+    previousPosition,
+  };
+}
+
