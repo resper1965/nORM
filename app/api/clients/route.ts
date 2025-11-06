@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { requireClientAccess } from '@/lib/auth/rbac';
 import { logger } from '@/lib/utils/logger';
-import { AppError } from '@/lib/errors/errors';
-import type { ClientsResponse, ErrorResponse } from '@/lib/types/api';
+import { AppError, ValidationError } from '@/lib/errors/errors';
+import type { ClientsResponse, ErrorResponse, ClientResponse } from '@/lib/types/api';
+import { z } from 'zod';
+
+const createClientSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  industry: z.string().optional().nullable(),
+  website: z.string().url().optional().nullable().or(z.literal('')),
+  keywords: z.array(z.string()).optional(),
+});
 
 /**
  * GET /api/clients
@@ -59,6 +67,105 @@ export async function GET(request: NextRequest) {
     return NextResponse.json<ClientsResponse>({ clients: clients || [] });
   } catch (error) {
     logger.error('Error in GET /api/clients', error as Error);
+    
+    if (error instanceof AppError) {
+      return NextResponse.json<ErrorResponse>(
+        { error: error.code || 'ERROR', message: error.message },
+        { status: error.statusCode }
+      );
+    }
+
+    return NextResponse.json<ErrorResponse>(
+      { error: 'Internal Server Error', message: 'An unexpected error occurred' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * POST /api/clients
+ * Create a new client
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = await createClient();
+    
+    // Get current user
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json<ErrorResponse>(
+        { error: 'Unauthorized', message: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = createClientSchema.safeParse(body);
+
+    if (!validation.success) {
+      throw new ValidationError('Invalid request data', validation.error.errors);
+    }
+
+    const { name, industry, website, keywords } = validation.data;
+
+    // Create client
+    const { data: client, error: clientError } = await supabase
+      .from('clients')
+      .insert({
+        name,
+        industry: industry || null,
+        website: website || null,
+        is_active: true,
+      })
+      .select()
+      .single();
+
+    if (clientError || !client) {
+      logger.error('Failed to create client', clientError);
+      throw new AppError('Failed to create client', 500);
+    }
+
+    // Add user as admin of the client
+    const { error: clientUserError } = await supabase
+      .from('client_users')
+      .insert({
+        client_id: client.id,
+        user_id: user.id,
+        role: 'admin',
+      });
+
+    if (clientUserError) {
+      logger.error('Failed to create client_user relationship', clientUserError);
+      // Continue anyway, client was created
+    }
+
+    // Add keywords if provided
+    if (keywords && keywords.length > 0) {
+      const keywordsToInsert = keywords.map((keyword) => ({
+        client_id: client.id,
+        keyword: keyword.trim(),
+        is_active: true,
+        alert_threshold: 5, // Default threshold
+      }));
+
+      const { error: keywordsError } = await supabase
+        .from('keywords')
+        .insert(keywordsToInsert);
+
+      if (keywordsError) {
+        logger.error('Failed to create keywords', keywordsError);
+        // Continue anyway, client was created
+      }
+    }
+
+    return NextResponse.json<ClientResponse>({ client }, { status: 201 });
+  } catch (error) {
+    logger.error('Error in POST /api/clients', error as Error);
     
     if (error instanceof AppError) {
       return NextResponse.json<ErrorResponse>(

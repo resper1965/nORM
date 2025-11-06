@@ -53,6 +53,10 @@ export interface ClientsResponse {
   clients: Client[];
 }
 
+export interface ClientResponse {
+  client: Client;
+}
+
 // WordPress Publish API
 export interface WordPressPublishRequest {
   content_id: string;
