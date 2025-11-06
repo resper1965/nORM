@@ -78,7 +78,7 @@ export async function publishToWordPress(
   await supabase
     .from('generated_content')
     .update({
-      wordpress_post_id: result.wordpressPostId,
+      wordpress_post_id: result.id,
       wordpress_site_id: wordpressSiteId,
       status: 'published',
       published_at: new Date().toISOString(),
@@ -87,10 +87,13 @@ export async function publishToWordPress(
 
   logger.info('Content published to WordPress', {
     contentId,
-    wordpressPostId: result.wordpressPostId,
+    wordpressPostId: result.id,
   });
 
-  return result;
+  return {
+    wordpressPostId: result.id,
+    wordpressUrl: result.url,
+  };
 }
 
 /**

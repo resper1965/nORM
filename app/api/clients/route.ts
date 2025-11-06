@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     const validation = createClientSchema.safeParse(body);
 
     if (!validation.success) {
-      throw new ValidationError('Invalid request data', validation.error.errors);
+      throw new ValidationError('Invalid request data', validation.error.issues);
     }
 
     const { name, industry, website, keywords } = validation.data;
@@ -126,7 +126,9 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (clientError || !client) {
-      logger.error('Failed to create client', clientError);
+      if (clientError) {
+        logger.error('Failed to create client', new Error(clientError.message));
+      }
       throw new AppError('Failed to create client', 500);
     }
 

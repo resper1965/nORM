@@ -68,14 +68,16 @@ export default async function DashboardPage() {
   const serp = serpRes?.ok ? await serpRes.json() : { results: [] };
 
   // Get reputation trend data
-  const trendData = reputation
-    ? [
-        { date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), score: reputation.score - (reputation.change || 0) },
-        { date: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), score: reputation.score - (reputation.change || 0) * 0.6 },
-        { date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), score: reputation.score - (reputation.change || 0) * 0.3 },
-        { date: new Date().toISOString(), score: reputation.score },
-      ]
-    : [];
+  const trendRes = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/reputation/trend?client_id=${clientId}&days=30`,
+    {
+      headers: {
+        'Cookie': (await import('next/headers')).cookies().toString(),
+      },
+    }
+  ).catch(() => null);
+
+  const trendData = trendRes?.ok ? (await trendRes.json()).data : [];
 
   return (
     <div className="space-y-6">

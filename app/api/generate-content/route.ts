@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const validation = generateContentSchema.safeParse(body);
 
     if (!validation.success) {
-      throw new ValidationError('Invalid request data', validation.error.errors);
+      throw new ValidationError('Invalid request data', validation.error.issues);
     }
 
     const { client_id, topic, article_count, trigger_mention_id } = validation.data;

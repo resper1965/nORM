@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const validation = publishSchema.safeParse(body);
 
     if (!validation.success) {
-      throw new ValidationError('Invalid request data', validation.error.errors);
+      throw new ValidationError('Invalid request data', validation.error.issues);
     }
 
     const { content_id, wordpress_site_id } = validation.data;

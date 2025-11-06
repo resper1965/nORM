@@ -39,7 +39,8 @@ export async function hasClientAccess(
     viewer: 1,
   };
 
-  return roleHierarchy[data.role] >= roleHierarchy[requiredRole];
+  const userRole = data.role as ClientRole;
+  return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
 }
 
 /**

@@ -44,7 +44,7 @@ export async function POST(
     const validation = createKeywordSchema.safeParse(body);
 
     if (!validation.success) {
-      throw new ValidationError('Invalid request data', validation.error.errors);
+      throw new ValidationError('Invalid request data', validation.error.issues);
     }
 
     const { keyword, alert_threshold } = validation.data;
@@ -62,7 +62,9 @@ export async function POST(
       .single();
 
     if (keywordError || !newKeyword) {
-      logger.error('Failed to create keyword', keywordError);
+      if (keywordError) {
+        logger.error('Failed to create keyword', new Error(keywordError.message));
+      }
       throw new AppError('Failed to create keyword', 500);
     }
 

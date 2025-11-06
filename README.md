@@ -1,158 +1,114 @@
 # nORM - Next Online Reputation Manager
 
-Sistema inteligente de gestão e monitoramento de reputação online baseado no template [Ness Theme](https://github.com/resper1965/ness-theme).
+Sistema de gerenciamento de reputação online com IA, monitoramento de SERP, redes sociais e geração automática de conteúdo.
 
-## 🎨 Branding "Ness"
+## 🚀 Tecnologias
 
-Este template usa o branding "Ness" como tema principal, mantendo compatibilidade com modo claro/escuro.
+- **Next.js 14** (App Router)
+- **TypeScript**
+- **Supabase** (PostgreSQL, Auth, Storage)
+- **Tailwind CSS** + **shadcn/ui**
+- **OpenAI GPT-4** (Geração de conteúdo)
+- **SerpAPI** (Rastreamento SERP)
+- **Recharts** (Gráficos)
+- **next-intl** (Internacionalização)
 
-## Stack Tecnológica
+## 📋 Pré-requisitos
 
-- **Next.js 14** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS** - Estilização utilitária
-- **shadcn/ui** - Componentes UI acessíveis e customizáveis
-- **next-intl** - Sistema multiidiomas nativo
-- **Supabase** - Backend como serviço integrado
-- **BMAD Method** - Framework de desenvolvimento ágil com IA
+- Node.js 18+
+- npm ou yarn
+- Conta Supabase
+- Chaves de API (OpenAI, SerpAPI, etc.)
 
-## 🚀 Instalação
+## 🛠️ Instalação
 
+1. Clone o repositório:
 ```bash
-# Clonar o repositório
-git clone <repo-url> ness-theme
-cd ness-theme
+git clone https://github.com/resper1965/nORM.git
+cd nORM
+```
 
-# Instalar dependências (setup do BMAD executa automaticamente)
+2. Instale as dependências:
+```bash
 npm install
 ```
 
-O script `postinstall` executa automaticamente o setup do BMAD Method e verifica atualizações.
-
-## 📦 BMAD Method
-
-O BMAD Method está incluído no repositório e será verificado automaticamente:
-
-- ✅ **Incluído no repositório**: O diretório `bmad/` faz parte do projeto
-- ✅ **Verificação automática**: Após `npm install`, verifica atualizações
-- ✅ **Atualização manual**: Execute `npm run bmad:update` quando necessário
-
-### Comandos BMAD
-
+3. Configure as variáveis de ambiente:
 ```bash
-# Verificar atualizações disponíveis
-npm run bmad:check
-
-# Atualizar BMAD para última versão
-npm run bmad:update
-
-# Setup manual do BMAD (se necessário)
-npm run setup
+cp .env.example .env.local
 ```
 
-## 🌍 Multiidiomas (i18n)
+Edite `.env.local` com suas chaves de API.
 
-O projeto suporta nativamente múltiplos idiomas:
-- 🇧🇷 Português (pt) - Padrão
-- 🇺🇸 Inglês (en)
-- 🇪🇸 Espanhol (es)
+4. Execute as migrations do Supabase:
+```bash
+# Execute os arquivos em supabase/migrations/ no Supabase SQL Editor
+```
 
-Ver [README-CONFIG.md](./README-CONFIG.md) para mais detalhes.
-
-## 🗄️ Supabase
-
-Supabase está pré-configurado para todas as funcionalidades.
-
-1. Crie um projeto no [Supabase](https://supabase.com)
-2. Copie `.env.example` para `.env.local`
-3. Preencha as credenciais
-
-Ver [SUPABASE-SETUP.md](./SUPABASE-SETUP.md) para instruções completas.
-
-## Desenvolvimento
-
-### Opção 1: Usando npm (local)
-
+5. Inicie o servidor de desenvolvimento:
 ```bash
 npm run dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
+Acesse [http://localhost:3000](http://localhost:3000)
 
-### Opção 2: Usando Docker (recomendado)
-
-Certifique-se de que o Docker Desktop está rodando, depois:
-
-```bash
-# Usar docker-compose para desenvolvimento
-docker-compose up
-
-# Ou rodar em background
-docker-compose up -d
-```
-
-O projeto estará disponível em [http://localhost:3000](http://localhost:3000).
-
-Para mais informações sobre Docker, consulte [README-DOCKER.md](./README-DOCKER.md).
-
-## Adicionar Componentes shadcn/ui
-
-```bash
-npx shadcn@latest add [component-name]
-```
-
-## Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
-├── app/[locale]/         # App Router do Next.js (multiidiomas)
-├── components/           # Componentes React
-│   ├── ui/              # Componentes shadcn/ui
-│   ├── dashboard/       # Componentes do dashboard
-│   └── lib/             # Componentes customizados
-├── lib/                 # Utilitários
-│   ├── supabase/        # Clientes Supabase
-│   └── branding/        # Sistema de branding
-├── i18n/                # Configuração e traduções
-├── bmad/                # BMAD Method framework
-├── scripts/             # Scripts de setup e manutenção
-└── docker-compose.yml   # Configuração Docker
+nORM/
+├── app/                    # Next.js App Router
+│   ├── [locale]/          # Rotas internacionalizadas
+│   │   ├── (auth)/        # Páginas de autenticação
+│   │   └── (dashboard)/   # Páginas do dashboard
+│   └── api/               # API Routes
+├── components/            # Componentes React
+│   ├── dashboard/         # Componentes do dashboard
+│   ├── social/            # Componentes de redes sociais
+│   └── ui/                # Componentes UI reutilizáveis
+├── lib/                   # Bibliotecas e utilitários
+│   ├── ai/                # Integração OpenAI
+│   ├── reputation/        # Lógica de reputação
+│   ├── scraping/          # Scrapers (SERP, Google News)
+│   ├── social/            # Integrações sociais
+│   └── supabase/          # Cliente Supabase
+├── supabase/
+│   └── migrations/        # Migrations SQL
+└── .specify/              # Documentação do projeto
 ```
 
-## Uso como Template
+## 🔧 Scripts
 
-Este projeto foi configurado para ser usado como base para novos projetos:
+- `npm run dev` - Inicia servidor de desenvolvimento
+- `npm run build` - Build para produção
+- `npm run start` - Inicia servidor de produção
+- `npm run lint` - Executa ESLint
+- `npm test` - Executa testes
 
-1. Clone este repositório
-2. Renomeie o diretório para o nome do novo projeto
-3. Atualize o `package.json` com o novo nome
-4. Execute `npm install` para configurar BMAD
-5. Configure Supabase (ver [SUPABASE-SETUP.md](./SUPABASE-SETUP.md))
-6. Comece a desenvolver!
+## 📚 Documentação
 
-## 📚 Documentação Adicional
+- [Plano Técnico](.specify/specs/001-reputation-dashboard-mvp/plan.md)
+- [Modelo de Dados](.specify/specs/001-reputation-dashboard-mvp/data-model.md)
+- [Quickstart](.specify/specs/001-reputation-dashboard-mvp/quickstart.md)
+- [Setup Supabase](SUPABASE-SETUP.md)
 
-- [README-CONFIG.md](./README-CONFIG.md) - Configurações detalhadas (i18n, Supabase, Branding)
-- [README-DOCKER.md](./README-DOCKER.md) - Setup e uso com Docker
-- [SUPABASE-SETUP.md](./SUPABASE-SETUP.md) - Guia completo de setup Supabase
-- [TEMPLATE.md](./TEMPLATE.md) - Guia de uso como template
+## 🚢 Deploy
 
-## Referências
+### Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [shadcn/ui Components](https://ui.shadcn.com/)
-- [bundui/ui Repository](https://github.com/bundui/ui) - Fork do shadcn/ui com referências adicionais
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [tweakcn](https://tweakcn.com/) - Editor visual de temas
-- [BMAD Method](https://github.com/bmad-method/bmad-method) - Framework de desenvolvimento ágil
+1. Conecte seu repositório à Vercel
+2. Configure as variáveis de ambiente
+3. Deploy automático a cada push
 
-## 🔄 Atualizações Automáticas
+### Variáveis de Ambiente Necessárias
 
-Após clonar o repositório:
-1. `npm install` executa automaticamente o setup do BMAD
-2. Verifica se há atualizações disponíveis
-3. Notifica se houver novas versões
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPENAI_API_KEY`
+- `SERPAPI_API_KEY`
+- `RESEND_API_KEY`
+- `NEXT_PUBLIC_APP_URL`
 
-Para atualizar manualmente:
-```bash
-npm run bmad:update
-```
+## 📝 Licença
+
+MIT

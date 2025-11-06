@@ -27,14 +27,32 @@ export interface GenerateContentResponse {
 }
 
 // Reputation API
-export interface ReputationResponse extends ReputationScore {
+export interface ReputationResponse {
+  score: number;
   trend: 'up' | 'down' | 'stable';
   change: number; // Change from previous period
+  breakdown: {
+    serp: number;
+    news: number;
+    social: number;
+    trend: number;
+    volume: number;
+  };
+  calculated_at?: Date | string;
+  period_start?: Date | string;
+  period_end?: Date | string;
 }
 
 // SERP API
 export interface SERPResponse {
-  results: SERPResult[];
+  results: Array<{
+    keyword: string;
+    position: number | null;
+    url: string;
+    title?: string;
+    snippet?: string;
+    checked_at: Date | string;
+  }>;
 }
 
 // Social Mentions API

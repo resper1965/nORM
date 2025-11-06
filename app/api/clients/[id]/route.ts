@@ -103,7 +103,7 @@ export async function PUT(
     const validation = updateClientSchema.safeParse(body);
 
     if (!validation.success) {
-      throw new ValidationError('Invalid request data', validation.error.errors);
+      throw new ValidationError('Invalid request data', validation.error.issues);
     }
 
     const updateData = validation.data;
