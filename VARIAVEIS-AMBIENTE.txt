@@ -1,0 +1,126 @@
+# 🔐 Variáveis de Ambiente - nORM (Next Online Reputation Manager)
+# 
+# INSTRUÇÕES:
+# 1. Copie este arquivo para .env.local (desenvolvimento) ou configure na Vercel (produção)
+# 2. Preencha os valores reais (NÃO commite este arquivo com valores reais!)
+# 3. Variáveis marcadas com [OBRIGATÓRIA] são necessárias para o funcionamento básico
+# 4. Variáveis marcadas com [OPCIONAL] são necessárias apenas para funcionalidades específicas
+
+# =============================================================================
+# SUPABASE - OBRIGATÓRIAS
+# =============================================================================
+# Obtenha essas chaves em: https://app.supabase.com/project/hyeifxvxifhrapfdvfry/settings/api
+# [OBRIGATÓRIA] URL do projeto Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://hyeifxvxifhrapfdvfry.supabase.co
+
+# [OBRIGATÓRIA] Chave pública/anônima do Supabase (pode ser exposta no cliente)
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anon_aqui
+# OU use esta variável alternativa (se disponível):
+# NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=sua_chave_publishable_aqui
+
+# [OPCIONAL] Chave de serviço do Supabase (NUNCA exponha publicamente!)
+# Necessária apenas para operações administrativas no servidor
+SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_aqui
+
+# =============================================================================
+# APLICAÇÃO
+# =============================================================================
+# [OPCIONAL] URL base da aplicação (padrão: http://localhost:3000)
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+# Para produção, use: https://seu-dominio.vercel.app
+
+# =============================================================================
+# OPENAI - Geração de Conteúdo e Análise de Sentimento
+# =============================================================================
+# [OPCIONAL] Necessária para:
+# - Geração de conteúdo com IA
+# - Análise de sentimento de menções
+# - Sugestões de melhorias de SEO
+# Obtenha em: https://platform.openai.com/api-keys
+OPENAI_API_KEY=sk-sua_chave_openai_aqui
+
+# =============================================================================
+# SERPAPI - Monitoramento de Posições no Google
+# =============================================================================
+# [OPCIONAL] Necessária para:
+# - Rastreamento de posições SERP
+# - Monitoramento de keywords
+# Obtenha em: https://serpapi.com/dashboard
+SERPAPI_KEY=sua_chave_serpapi_aqui
+
+# =============================================================================
+# RESEND - Envio de E-mails
+# =============================================================================
+# [OPCIONAL] Necessária para:
+# - Envio de alertas por e-mail
+# - Notificações de eventos importantes
+# Obtenha em: https://resend.com/api-keys
+RESEND_API_KEY=re_sua_chave_resend_aqui
+
+# =============================================================================
+# WORDPRESS - Publicação Automática
+# =============================================================================
+# [OPCIONAL] Configurações de sites WordPress para publicação automática
+# Essas configurações são armazenadas no banco de dados (tabela wordpress_sites)
+# Não são necessárias variáveis de ambiente, mas você precisará:
+# - URL do site WordPress
+# - Usuário com Application Password
+# - Configurar via interface da aplicação
+
+# =============================================================================
+# REDES SOCIAIS - Monitoramento
+# =============================================================================
+# [OPCIONAL] Configurações de APIs de redes sociais
+# Essas configurações são armazenadas no banco de dados (tabela social_accounts)
+# Você precisará configurar:
+# 
+# INSTAGRAM:
+# - Access Token do Instagram Graph API
+# - App ID e App Secret (via Meta Developers)
+# 
+# FACEBOOK:
+# - Access Token do Facebook Graph API
+# - App ID e App Secret (via Meta Developers)
+# 
+# LINKEDIN:
+# - Access Token do LinkedIn API v2
+# - Client ID e Client Secret (via LinkedIn Developers)
+# 
+# Configure via interface da aplicação após obter as credenciais das plataformas
+
+# =============================================================================
+# AMBIENTE
+# =============================================================================
+# [AUTOMÁTICO] Definido automaticamente pelo Next.js
+# NODE_ENV=development  # ou 'production' em produção
+
+# =============================================================================
+# NOTAS IMPORTANTES
+# =============================================================================
+# 
+# 1. SEGURANÇA:
+#    - NUNCA commite arquivos .env com valores reais
+#    - Use .env.local para desenvolvimento (já está no .gitignore)
+#    - Configure variáveis na Vercel para produção
+#    - SUPABASE_SERVICE_ROLE_KEY é especialmente sensível
+# 
+# 2. VERCEL:
+#    - Configure todas as variáveis no dashboard da Vercel
+#    - Acesse: https://vercel.com/nessbr-projects/n-orm/settings/environment-variables
+#    - Adicione variáveis para Production, Preview e Development
+# 
+# 3. DESENVOLVIMENTO LOCAL:
+#    - Copie este arquivo para .env.local
+#    - Preencha os valores reais
+#    - Reinicie o servidor de desenvolvimento após alterar variáveis
+# 
+# 4. TESTES:
+#    - Use valores de teste ou mocks para testes automatizados
+#    - Não use chaves de produção em ambiente de testes
+# 
+# =============================================================================
+# VALIDAÇÃO
+# =============================================================================
+# O projeto valida automaticamente as variáveis obrigatórias em desenvolvimento
+# Se faltar alguma variável obrigatória, você verá um erro ao iniciar o servidor
+

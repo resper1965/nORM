@@ -20,7 +20,7 @@ export function SERPPositionGrid({ results, isLoading }: SERPPositionGridProps) 
         <CardContent>
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse h-12 bg-gray-200 rounded"></div>
+              <div key={i} className="animate-pulse h-12 rounded bg-muted/30"></div>
             ))}
           </div>
         </CardContent>
@@ -28,11 +28,11 @@ export function SERPPositionGrid({ results, isLoading }: SERPPositionGridProps) 
     );
   }
 
-  const getPositionColor = (position: number | null) => {
-    if (position === null) return 'bg-gray-500';
-    if (position <= 3) return 'bg-green-500';
-    if (position <= 10) return 'bg-yellow-500';
-    return 'bg-red-500';
+  const getPositionClasses = (position: number | null) => {
+    if (position === null) return 'bg-muted/40 text-muted-foreground/80 border border-transparent';
+    if (position <= 3) return 'bg-primary/15 text-primary border border-primary/30';
+    if (position <= 10) return 'bg-muted/30 text-muted-foreground border border-muted-foreground/20';
+    return 'bg-destructive/15 text-destructive border border-destructive/30';
   };
 
   return (
@@ -42,7 +42,7 @@ export function SERPPositionGrid({ results, isLoading }: SERPPositionGridProps) 
       </CardHeader>
       <CardContent>
         {results.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-muted-foreground">
             <p>No SERP data available</p>
           </div>
         ) : (
@@ -50,17 +50,17 @@ export function SERPPositionGrid({ results, isLoading }: SERPPositionGridProps) 
             {results.map((result, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-3 border rounded-lg"
+                className="flex items-center justify-between p-3 border border-border/60 rounded-lg bg-card/40"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge className={getPositionColor(result.position)}>
+                    <Badge className={getPositionClasses(result.position)}>
                       {result.position || 'N/A'}
                     </Badge>
                     <span className="font-medium">{result.keyword}</span>
                   </div>
                   {result.title && (
-                    <div className="text-sm text-gray-600 truncate">
+                    <div className="text-sm text-muted-foreground truncate">
                       {result.title}
                     </div>
                   )}
@@ -69,7 +69,7 @@ export function SERPPositionGrid({ results, isLoading }: SERPPositionGridProps) 
                       href={result.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-blue-500 hover:underline flex items-center gap-1"
+                      className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
                     >
                       {result.url}
                       <ExternalLink className="w-3 h-3" />

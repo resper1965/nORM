@@ -10,14 +10,14 @@ interface SentimentBadgeProps {
 }
 
 export function SentimentBadge({ sentiment, score, confidence }: SentimentBadgeProps) {
-  const colors = {
-    positive: 'bg-green-100 text-green-800 border-green-300',
-    neutral: 'bg-gray-100 text-gray-800 border-gray-300',
-    negative: 'bg-red-100 text-red-800 border-red-300',
+  const styles: Record<Sentiment, string> = {
+    positive: 'bg-primary/15 text-primary border-primary/30',
+    neutral: 'bg-muted/40 text-muted-foreground border-border/40',
+    negative: 'bg-destructive/15 text-destructive border-destructive/30',
   };
 
   return (
-    <Badge className={colors[sentiment]} variant="outline">
+    <Badge className={styles[sentiment]} variant="outline">
       {sentiment}
       {score !== undefined && (
         <span className="ml-1">
@@ -25,7 +25,7 @@ export function SentimentBadge({ sentiment, score, confidence }: SentimentBadgeP
         </span>
       )}
       {confidence !== undefined && confidence < 0.9 && (
-        <span className="ml-1 text-xs opacity-75">⚠️</span>
+        <span className="ml-2 text-[10px] uppercase tracking-[0.1em] text-muted-foreground/70">low confidence</span>
       )}
     </Badge>
   );

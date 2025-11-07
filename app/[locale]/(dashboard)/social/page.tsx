@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { SocialFeed } from '@/components/social/social-feed';
 import { getUserClients } from '@/lib/auth/rbac';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default async function SocialPage() {
   const supabase = await createClient();
@@ -20,17 +22,14 @@ export default async function SocialPage() {
 
   if (userClientIds.length === 0) {
     return (
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-4">Social Media Monitoring</h1>
-        <p className="text-gray-600 mb-4">
+      <div className="container mx-auto py-8 text-foreground">
+        <h1 className="text-3xl font-semibold mb-4">Social Media Monitoring</h1>
+        <p className="text-muted-foreground mb-6">
           No clients found. Please add a client first.
         </p>
-        <a
-          href="/clients/new"
-          className="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Add Client
-        </a>
+        <Button asChild>
+          <Link href="/clients/new">Add Client</Link>
+        </Button>
       </div>
     );
   }
@@ -49,17 +48,17 @@ export default async function SocialPage() {
   const mentions = mentionsRes?.ok ? await mentionsRes.json() : { mentions: [] };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      <h1 className="text-3xl font-bold">Social Media Monitoring</h1>
+    <div className="container mx-auto py-8 space-y-6 text-foreground">
+      <h1 className="text-3xl font-semibold tracking-[0.01em]">Social Media Monitoring</h1>
       
       <div className="flex gap-4 mb-4">
-        <select className="px-4 py-2 border rounded">
+        <select className="px-4 py-2 rounded-md border border-border bg-transparent text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/60">
           <option>All Platforms</option>
           <option>Instagram</option>
           <option>LinkedIn</option>
           <option>Facebook</option>
         </select>
-        <select className="px-4 py-2 border rounded">
+        <select className="px-4 py-2 rounded-md border border-border bg-transparent text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/60">
           <option>All Sentiment</option>
           <option>Positive</option>
           <option>Neutral</option>

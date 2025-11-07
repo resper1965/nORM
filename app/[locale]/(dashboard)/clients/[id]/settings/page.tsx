@@ -51,13 +51,13 @@ export default async function ClientSettingsPage({
     .order('platform', { ascending: true });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 text-foreground">
       <div>
-        <Link href={`/clients/${clientId}`} className="text-blue-500 hover:underline mb-4 inline-block">
+        <Link href={`/clients/${clientId}`} className="text-primary hover:text-primary/80 transition-colors mb-4 inline-block">
           ← Back to Client
         </Link>
-        <h1 className="text-3xl font-bold">Client Settings</h1>
-        <p className="text-gray-600 mt-1">{client.name}</p>
+        <h1 className="text-3xl font-semibold tracking-[0.01em]">Client Settings</h1>
+        <p className="text-muted-foreground mt-1">{client.name}</p>
       </div>
 
       <ClientSettingsForm

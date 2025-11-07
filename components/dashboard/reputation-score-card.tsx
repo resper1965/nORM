@@ -18,7 +18,7 @@ export function ReputationScoreCard({ score, isLoading }: ReputationScoreCardPro
         </CardHeader>
         <CardContent>
           <div className="animate-pulse">
-            <div className="h-16 bg-gray-200 rounded"></div>
+        <div className="h-16 rounded bg-muted/30"></div>
           </div>
         </CardContent>
       </Card>
@@ -26,17 +26,17 @@ export function ReputationScoreCard({ score, isLoading }: ReputationScoreCardPro
   }
 
   const scoreColor =
-    score.score >= 76 ? 'text-green-500' :
-    score.score >= 51 ? 'text-yellow-500' :
-    'text-red-500';
+    score.score >= 76 ? 'text-primary' :
+    score.score >= 51 ? 'text-foreground/80' :
+    'text-destructive';
 
   const TrendIcon = score.trend === 'up' ? TrendingUp :
                     score.trend === 'down' ? TrendingDown :
                     Minus;
 
-  const trendColor = score.trend === 'up' ? 'text-green-500' :
-                     score.trend === 'down' ? 'text-red-500' :
-                     'text-gray-500';
+  const trendColor = score.trend === 'up' ? 'text-primary' :
+                     score.trend === 'down' ? 'text-destructive' :
+                     'text-muted-foreground';
 
   return (
     <Card>
@@ -49,7 +49,7 @@ export function ReputationScoreCard({ score, isLoading }: ReputationScoreCardPro
             <div className={`text-6xl font-bold ${scoreColor}`}>
               {Math.round(score.score)}
             </div>
-            <div className="text-sm text-gray-500 mt-2">out of 100</div>
+            <div className="text-sm text-muted-foreground mt-2">out of 100</div>
           </div>
           <div className="text-right">
             <div className={`flex items-center gap-2 ${trendColor}`}>
@@ -58,10 +58,10 @@ export function ReputationScoreCard({ score, isLoading }: ReputationScoreCardPro
                 {score.change > 0 ? '+' : ''}{score.change.toFixed(1)}
               </span>
             </div>
-            <div className="text-sm text-gray-500 mt-1">last 7 days</div>
+            <div className="text-sm text-muted-foreground mt-1">last 7 days</div>
           </div>
         </div>
-        <div className="mt-4 pt-4 border-t">
+        <div className="mt-4 pt-4 border-t border-border/60">
           <div className="text-sm font-medium mb-2">Score Breakdown</div>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">

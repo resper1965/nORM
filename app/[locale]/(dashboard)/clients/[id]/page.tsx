@@ -4,6 +4,7 @@ import { ReputationScoreCard } from '@/components/dashboard/reputation-score-car
 import { AlertsList } from '@/components/dashboard/alerts-list';
 import { SERPPositionGrid } from '@/components/dashboard/serp-position-grid';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default async function ClientDetailPage({
   params,
@@ -70,24 +71,21 @@ export default async function ClientDetailPage({
   const serp = serpRes?.ok ? await serpRes.json() : { results: [] };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto py-8 space-y-6 text-foreground">
       <div className="flex items-center justify-between">
         <div>
-          <Link href="/clients" className="text-blue-500 hover:underline mb-2 inline-block">
+          <Link href="/clients" className="text-primary hover:text-primary/80 transition-colors mb-2 inline-block">
             ← Back to Clients
           </Link>
-          <h1 className="text-3xl font-bold">{client.name}</h1>
+          <h1 className="text-3xl font-semibold tracking-[0.01em]">{client.name}</h1>
           {client.industry && (
-            <p className="text-gray-600 mt-1">{client.industry}</p>
+            <p className="text-muted-foreground mt-1">{client.industry}</p>
           )}
         </div>
         <div className="flex gap-2">
-          <Link
-            href={`/clients/${clientId}/settings`}
-            className="px-4 py-2 border rounded hover:bg-gray-50"
-          >
-            Settings
-          </Link>
+          <Button variant="outline" asChild>
+            <Link href={`/clients/${clientId}/settings`}>Settings</Link>
+          </Button>
         </div>
       </div>
 

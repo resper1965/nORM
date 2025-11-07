@@ -6,6 +6,7 @@ import { ReputationTrendChart } from '@/components/dashboard/reputation-trend-ch
 import { redirect } from 'next/navigation';
 import { getUserClients } from '@/lib/auth/rbac';
 import { calculateReputationScore, calculateTrend } from '@/lib/reputation/calculator';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,17 +32,17 @@ export default async function DashboardPage() {
   if (!clientUsers || clientUsers.length === 0) {
     // No clients yet, show onboarding
     return (
-      <div className="container mx-auto py-8">
-        <h1 className="text-2xl font-bold mb-4">Welcome to nORM</h1>
-        <p className="text-gray-600 mb-4">
+      <div className="container mx-auto py-8 text-foreground">
+        <h1 className="text-3xl font-semibold mb-4">Welcome to nORM</h1>
+        <p className="text-muted-foreground mb-6">
           Get started by adding your first client.
         </p>
-        <a
+        <Link
           href="/clients/new"
-          className="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="inline-block px-5 py-2.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/85 transition-colors"
         >
           Add Client
-        </a>
+        </Link>
       </div>
     );
   }
@@ -141,8 +142,8 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
+    <div className="space-y-6 text-foreground">
+      <h1 className="text-3xl font-semibold tracking-[0.01em]">Dashboard</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ReputationScoreCard score={reputation} isLoading={!reputation} />

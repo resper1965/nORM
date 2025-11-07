@@ -21,14 +21,14 @@ export default async function ContentPage() {
 
   if (userClientIds.length === 0) {
     return (
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-4">Generated Content</h1>
-        <p className="text-gray-600 mb-4">
+      <div className="container mx-auto py-8 text-foreground">
+        <h1 className="text-3xl font-semibold mb-4">Generated Content</h1>
+        <p className="text-muted-foreground mb-6">
           No clients found. Please add a client first.
         </p>
         <Link
           href="/clients/new"
-          className="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="inline-block px-5 py-2.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/85 transition-colors"
         >
           Add Client
         </Link>
@@ -57,27 +57,27 @@ export default async function ContentPage() {
   const articles = content || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-foreground">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Generated Content</h1>
+        <h1 className="text-3xl font-semibold tracking-[0.01em]">Generated Content</h1>
         <Link
           href="/content/generate"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-5 py-2.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/85 transition-colors"
         >
           Generate New Content
         </Link>
       </div>
 
       {articles.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg border">
-          <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No content generated yet</h3>
-          <p className="text-gray-600 mb-4">
+        <div className="text-center py-12 bg-card text-card-foreground rounded-xl border border-border">
+          <FileText className="w-16 h-16 mx-auto text-muted-foreground/70 mb-5" />
+          <h3 className="text-lg font-semibold mb-2">No content generated yet</h3>
+          <p className="text-muted-foreground mb-6">
             Start by generating your first article to improve your online reputation.
           </p>
           <Link
             href="/content/generate"
-            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="inline-block px-5 py-2.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/85 transition-colors"
           >
             Generate Content
           </Link>
@@ -87,36 +87,38 @@ export default async function ContentPage() {
           {articles.map((article: any) => (
             <div
               key={article.id}
-              className="bg-white rounded-lg border p-6 hover:shadow-lg transition-shadow"
+              className="bg-card text-card-foreground rounded-xl border border-border p-6 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_24px_48px_-30px_rgba(0,0,0,0.45)]"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-xl font-semibold">{article.title}</h3>
-                    <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800">
+                    <h3 className="text-xl font-semibold tracking-[0.01em]">{article.title}</h3>
+                    <span className="px-2.5 py-1 text-xs rounded-full bg-[hsl(var(--primary-soft))] text-primary">
                       {(article.clients as any)?.name}
                     </span>
                   </div>
-                  <p className="text-gray-600 line-clamp-2">{article.content_preview}</p>
+                  <p className="text-muted-foreground line-clamp-2 leading-relaxed">
+                    {article.content_preview}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-sm text-gray-500">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     <span>{new Date(article.created_at).toLocaleDateString('pt-BR')}</span>
                   </div>
                   {article.seo_score && (
-                    <span className="px-2 py-1 rounded bg-green-100 text-green-800">
+                    <span className="px-2.5 py-1 rounded-full bg-primary/15 text-primary">
                       SEO: {article.seo_score}/100
                     </span>
                   )}
                   {article.sentiment_score && (
                     <span className={`px-2 py-1 rounded ${
-                      article.sentiment_score > 0 ? 'bg-green-100 text-green-800' :
-                      article.sentiment_score < 0 ? 'bg-red-100 text-red-800' :
-                      'bg-gray-100 text-gray-800'
+                      article.sentiment_score > 0 ? 'bg-primary/15 text-primary' :
+                      article.sentiment_score < 0 ? 'bg-destructive/15 text-destructive' :
+                      'bg-muted/40 text-muted-foreground'
                     }`}>
                       Sentiment: {article.sentiment_score > 0 ? '+' : ''}{article.sentiment_score.toFixed(2)}
                     </span>
@@ -128,7 +130,7 @@ export default async function ContentPage() {
                       href={article.wordpress_url || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                      className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
                     >
                       <ExternalLink className="w-4 h-4" />
                       View on WordPress
@@ -136,7 +138,7 @@ export default async function ContentPage() {
                   )}
                   <Link
                     href={`/content/${article.id}`}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-primary hover:text-primary/80 transition-colors"
                   >
                     View Details
                   </Link>

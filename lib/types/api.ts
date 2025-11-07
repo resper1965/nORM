@@ -24,6 +24,11 @@ export interface GenerateContentRequest {
 export interface GenerateContentResponse {
   articles: GeneratedContent[];
   generation_time_ms: number;
+  quality_metrics?: {
+    averageSEOScore: number;
+    averageReadability: number;
+    averageWordCount: number;
+  };
 }
 
 // Reputation API

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Save } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import type { User } from '@supabase/supabase-js';
 
 interface UserSettingsFormProps {
@@ -60,24 +61,24 @@ export function UserSettingsForm({ user, profile }: UserSettingsFormProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg border p-6 space-y-6">
-      <h2 className="text-xl font-semibold">Profile Settings</h2>
+    <div className="bg-card text-card-foreground rounded-xl border border-border p-6 space-y-6">
+      <h2 className="text-xl font-semibold tracking-[0.01em]">Profile Settings</h2>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="bg-destructive/15 border border-destructive/40 text-destructive px-4 py-3 rounded-md">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+        <div className="bg-primary/15 border border-primary/30 text-primary px-4 py-3 rounded-md">
           Settings saved successfully!
         </div>
       )}
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-foreground/80 mb-2">
             Email
           </label>
           <input
@@ -85,12 +86,12 @@ export function UserSettingsForm({ user, profile }: UserSettingsFormProps) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full px-3 py-2 rounded-md border border-border bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/60"
           />
         </div>
 
         <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="fullName" className="block text-sm font-medium text-foreground/80 mb-2">
             Full Name
           </label>
           <input
@@ -98,18 +99,14 @@ export function UserSettingsForm({ user, profile }: UserSettingsFormProps) {
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full px-3 py-2 rounded-md border border-border bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/60"
           />
         </div>
 
-        <button
-          onClick={handleSave}
-          disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-        >
+        <Button onClick={handleSave} disabled={loading} className="flex items-center gap-2">
           <Save className="w-4 h-4" />
           Save Changes
-        </button>
+        </Button>
       </div>
     </div>
   );

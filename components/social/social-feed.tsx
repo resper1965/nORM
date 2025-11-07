@@ -13,7 +13,7 @@ export function SocialFeed({ posts, isLoading }: SocialFeedProps) {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="animate-pulse h-32 bg-gray-200 rounded"></div>
+          <div key={i} className="animate-pulse h-32 rounded bg-muted/30"></div>
         ))}
       </div>
     );
@@ -21,7 +21,7 @@ export function SocialFeed({ posts, isLoading }: SocialFeedProps) {
 
   if (posts.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
+      <div className="text-center py-12 text-muted-foreground">
         <p>No social mentions found</p>
       </div>
     );

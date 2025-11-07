@@ -29,13 +29,53 @@ export interface GeneratedArticle {
 
 /**
  * Generate content articles
+ * @deprecated Use ContentGeneratorAgent instead for better evaluation and quality metrics
  */
 export async function generateContent(
   options: ContentGenerationOptions
 ): Promise<GeneratedArticle[]> {
+  // Use the new agent-based approach if available
+  try {
+    const { ContentGeneratorAgent } = await import('./agents/content-generator-agent');
+    const { createAgentContext } = await import('./agents/orchestrator');
+    
+    const context = createAgentContext(
+      options.clientId,
+      options.clientName,
+      undefined,
+      { triggerMentionId: options.triggerMentionId }
+    );
+
+    const agent = new ContentGeneratorAgent(context);
+    const agentInput = {
+      topic: options.topic,
+      targetKeywords: options.targetKeywords,
+      articleCount: options.articleCount,
+      triggerMentionId: options.triggerMentionId,
+      triggerMentionUrl: options.triggerMentionUrl,
+      triggerMentionTitle: options.triggerMentionTitle,
+    };
+
+    const result = await agent.execute(agentInput);
+    
+    if (result.success && result.data) {
+      return result.data.articles;
+    }
+
+    // Fallback to old implementation if agent fails
+    logger.warn('Agent-based generation failed, falling back to legacy implementation', {
+      error: result.error,
+    });
+  } catch (error) {
+    logger.warn('Agent import failed, using legacy implementation', {
+      error,
+    });
+  }
+
+  // Legacy implementation (fallback)
   const articles: GeneratedArticle[] = [];
 
-  logger.info('Starting content generation', {
+  logger.info('Starting content generation (legacy)', {
     clientId: options.clientId,
     topic: options.topic,
     articleCount: options.articleCount,

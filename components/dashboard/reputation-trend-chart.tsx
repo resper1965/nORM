@@ -12,6 +12,10 @@ interface ReputationTrendChartProps {
 }
 
 export function ReputationTrendChart({ data, isLoading }: ReputationTrendChartProps) {
+  const chartColor = 'hsl(var(--primary))';
+  const gridColor = 'hsl(var(--border))';
+  const tickColor = 'hsl(var(--muted-foreground))';
+
   if (isLoading) {
     return (
       <Card>
@@ -19,7 +23,7 @@ export function ReputationTrendChart({ data, isLoading }: ReputationTrendChartPr
           <CardTitle>Reputation Trend</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="animate-pulse h-64 bg-gray-200 rounded"></div>
+        <div className="animate-pulse h-64 rounded bg-muted/30"></div>
         </CardContent>
       </Card>
     );
@@ -32,7 +36,7 @@ export function ReputationTrendChart({ data, isLoading }: ReputationTrendChartPr
           <CardTitle>Reputation Trend</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-muted-foreground">
             <p>No trend data available</p>
           </div>
         </CardContent>
@@ -48,23 +52,27 @@ export function ReputationTrendChart({ data, isLoading }: ReputationTrendChartPr
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid stroke={gridColor} strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="date"
               tickFormatter={(value) => new Date(value).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' })}
+              tick={{ fill: tickColor, fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
             />
-            <YAxis domain={[0, 100]} />
+            <YAxis domain={[0, 100]} tick={{ fill: tickColor, fontSize: 12 }} axisLine={false} tickLine={false} />
             <Tooltip
               labelFormatter={(value) => new Date(value).toLocaleDateString('pt-BR')}
               formatter={(value: number) => [value.toFixed(1), 'Score']}
+              contentStyle={{ backgroundColor: 'hsl(var(--popover))', color: 'hsl(var(--popover-foreground))', borderRadius: 12, borderColor: 'hsl(var(--border))' }}
             />
             <Line
               type="monotone"
               dataKey="score"
-              stroke="#3b82f6"
+              stroke={chartColor}
               strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
+              dot={{ r: 4, fill: chartColor }}
+              activeDot={{ r: 6, fill: chartColor }}
             />
           </LineChart>
         </ResponsiveContainer>

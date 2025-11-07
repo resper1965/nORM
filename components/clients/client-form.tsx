@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { generateDefaultKeywords } from '@/lib/clients/keyword-suggestions';
+import { Button } from '@/components/ui/button';
 
 interface ClientFormProps {
   clientId?: string;
@@ -64,15 +65,15 @@ export function ClientForm({ clientId, initialData }: ClientFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 text-foreground">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="bg-destructive/15 border border-destructive/40 text-destructive px-4 py-3 rounded-md">
           {error}
         </div>
       )}
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="name" className="block text-sm font-medium text-foreground/80">
           Client Name *
         </label>
         <input
@@ -81,13 +82,13 @@ export function ClientForm({ clientId, initialData }: ClientFormProps) {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full px-3 py-2 rounded-md border border-border bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/60"
           placeholder="Company Name"
         />
       </div>
 
       <div>
-        <label htmlFor="industry" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="industry" className="block text-sm font-medium text-foreground/80">
           Industry
         </label>
         <input
@@ -95,13 +96,13 @@ export function ClientForm({ clientId, initialData }: ClientFormProps) {
           type="text"
           value={industry}
           onChange={(e) => setIndustry(e.target.value)}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full px-3 py-2 rounded-md border border-border bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/60"
           placeholder="e.g., Technology, Healthcare, Legal"
         />
       </div>
 
       <div>
-        <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="website" className="block text-sm font-medium text-foreground/80">
           Website
         </label>
         <input
@@ -109,52 +110,40 @@ export function ClientForm({ clientId, initialData }: ClientFormProps) {
           type="url"
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full px-3 py-2 rounded-md border border-border bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/60"
           placeholder="https://example.com"
         />
       </div>
 
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label htmlFor="keywords" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="keywords" className="block text-sm font-medium text-foreground/80">
             Keywords to Monitor
           </label>
-          <button
-            type="button"
-            onClick={handleGenerateKeywords}
-            className="text-sm text-blue-600 hover:text-blue-500"
-          >
+          <Button type="button" variant="link" size="sm" onClick={handleGenerateKeywords} className="p-0">
             Generate Defaults
-          </button>
+          </Button>
         </div>
         <textarea
           id="keywords"
           value={keywords.join('\n')}
           onChange={(e) => setKeywords(e.target.value.split('\n').filter(Boolean))}
           rows={6}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="mt-1 block w-full px-3 py-2 rounded-md border border-border bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/60"
           placeholder="Enter keywords, one per line"
         />
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           {keywords.length} keyword{keywords.length !== 1 ? 's' : ''} configured
         </p>
       </div>
 
       <div className="flex gap-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-        >
+        <Button type="submit" disabled={loading} className="px-5">
           {loading ? 'Saving...' : clientId ? 'Update Client' : 'Create Client'}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={() => router.back()}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );
