@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createDraftPost, testWordPressConnection, type WordPressSiteConfig } from './client';
 import { logger } from '@/lib/utils/logger';
 import { NotFoundError, ExternalAPIError } from '@/lib/errors/errors';
+import { generateComprehensiveSchema, injectSchemaMarkup } from '@/lib/seo/schema-generator';
 import type { GeneratedContent } from '@/lib/types/domain';
 
 /**
@@ -65,10 +66,29 @@ export async function publishToWordPress(
     throw new ExternalAPIError('WordPress', connectionTest.message);
   }
 
+  // Get client info for schema
+  const { data: client } = await supabase
+    .from('clients')
+    .select('name, website_url')
+    .eq('id', content.client_id)
+    .single();
+
+  // Generate schema markup for SEO
+  const schemas = generateComprehensiveSchema(content, {
+    author: 'Equipe ' + (client?.name || 'Desconhecido'),
+    url: config.siteUrl, // Will be updated with actual URL after post creation
+    organizationName: client?.name || 'Empresa',
+    organizationLogo: undefined, // TODO: Get from client settings
+    imageUrl: undefined, // TODO: Get featured image if available
+  });
+
+  // Inject schema markup into content
+  const contentWithSchema = injectSchemaMarkup(content.content, schemas);
+
   // Create post
   const result = await createDraftPost(config, {
     title: content.title,
-    content: content.content,
+    content: contentWithSchema,
     excerpt: content.meta_description || '',
     categories: [], // Will use default category
     tags: content.target_keywords || [],

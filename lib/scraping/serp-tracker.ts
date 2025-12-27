@@ -6,6 +6,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { checkSERPPosition, checkSERPPositionsBatch } from './serp';
 import { logger } from '@/lib/utils/logger';
+import { isClientContentBatch } from '@/lib/seo/client-content-detector';
 import type { SERPResult as SERPResultType } from './serp';
 import type { SERPResult as DBSERPResult } from '@/lib/types/domain';
 
@@ -14,18 +15,38 @@ import type { SERPResult as DBSERPResult } from '@/lib/types/domain';
  */
 export async function trackSERPPosition(
   keywordId: string,
-  keyword: string
+  keyword: string,
+  clientId?: string
 ): Promise<DBSERPResult[]> {
   const supabase = await createClient();
 
   try {
+    // Get client ID if not provided
+    if (!clientId) {
+      const { data: keywordData } = await supabase
+        .from('keywords')
+        .select('client_id')
+        .eq('id', keywordId)
+        .single();
+
+      clientId = keywordData?.client_id;
+    }
+
     // Check current SERP position
     const serpResponse = await checkSERPPosition(keyword);
+
+    // Detect client content in batch for performance
+    const urls = serpResponse.results.map(r => r.url);
+    const clientContentMap = clientId
+      ? await isClientContentBatch(urls, clientId)
+      : new Map<string, boolean>();
 
     // Save results to database
     const results: DBSERPResult[] = [];
 
     for (const result of serpResponse.results) {
+      const isClient = clientContentMap.get(result.url) || false;
+
       const { data, error } = await supabase
         .from('serp_results')
         .insert({
@@ -36,7 +57,7 @@ export async function trackSERPPosition(
           snippet: result.snippet,
           domain: result.domain,
           checked_at: new Date().toISOString(),
-          is_client_content: false, // TODO: Detect if URL belongs to client
+          is_client_content: isClient,
         })
         .select()
         .single();
@@ -51,9 +72,11 @@ export async function trackSERPPosition(
       }
     }
 
+    const clientContentCount = results.filter(r => r.is_client_content).length;
     logger.info(`Tracked SERP for keyword: ${keyword}`, {
       keywordId,
       resultsCount: results.length,
+      clientContentCount,
     });
 
     return results;
