@@ -1,11 +1,12 @@
 /**
  * Sentiment Analysis
- * Analyzes text sentiment using OpenAI GPT-4
+ * Analyzes text sentiment using Google Gemini Flash (fast + accurate)
  */
 
-import { callOpenAI, getModel } from './openai';
+import { generateStructuredGemini, callGemini } from './gemini';
 import type { Sentiment } from '@/lib/types/domain';
 import { logger } from '@/lib/utils/logger';
+import { z } from 'zod';
 
 export interface SentimentAnalysis {
   sentiment: Sentiment;
@@ -14,71 +15,54 @@ export interface SentimentAnalysis {
   rationale: string;
 }
 
+// Zod schema for sentiment response
+const sentimentSchema = z.object({
+  sentiment: z.enum(['positive', 'neutral', 'negative']),
+  score: z.number().min(-1).max(1),
+  confidence: z.number().min(0).max(1),
+  rationale: z.string(),
+});
+
 /**
- * Analyze sentiment of text
+ * Analyze sentiment of text using Gemini Flash
  * @param text Text to analyze
  * @returns Sentiment analysis result
  */
 export async function analyzeSentiment(text: string): Promise<SentimentAnalysis> {
-  const prompt = `Analyze the sentiment of the following text in Portuguese (PT-BR). 
-Return a JSON object with:
-- sentiment: "positive", "neutral", or "negative"
-- score: number between -1.0 (very negative) and 1.0 (very positive)
-- confidence: number between 0.0 and 1.0 (how confident you are)
-- rationale: brief explanation in Portuguese
+  const prompt = `Analise o sentimento do seguinte texto em português brasileiro (PT-BR).
 
-Text to analyze:
+Retorne um objeto JSON com:
+- sentiment: "positive", "neutral", ou "negative"
+- score: número entre -1.0 (muito negativo) e 1.0 (muito positivo)
+- confidence: número entre 0.0 e 1.0 (nível de confiança na análise)
+- rationale: explicação breve em português (máx 100 caracteres)
+
+Texto para analisar:
 ${text}
 
-Return only valid JSON, no markdown formatting.`;
+Considere o contexto de reputação online e gestão de marca.`;
 
   try {
-    const response = await callOpenAI(async () => {
-      const openai = await import('./openai').then(m => m.openai);
-      if (!openai) throw new Error('OpenAI not configured');
-      
-      return openai.chat.completions.create({
-        model: getModel('sentiment'),
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a sentiment analysis expert. Always return valid JSON.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.3, // Lower temperature for more consistent results
-        response_format: { type: 'json_object' },
-      });
+    const result = await callGemini(async () => {
+      return await generateStructuredGemini(
+        prompt,
+        sentimentSchema,
+        {
+          model: 'flash', // Gemini Flash é mais rápido e barato para sentiment
+          temperature: 0.2, // Baixa temperatura para consistência
+        }
+      );
     });
 
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error('No response from OpenAI');
-    }
-
-    const result = JSON.parse(content) as {
-      sentiment: string;
-      score: number;
-      confidence: number;
-      rationale: string;
-    };
-
     // Validate and normalize
-    const sentiment = ['positive', 'neutral', 'negative'].includes(result.sentiment)
-      ? (result.sentiment as Sentiment)
-      : 'neutral';
-
     const score = Math.max(-1, Math.min(1, result.score));
     const confidence = Math.max(0, Math.min(1, result.confidence));
 
     return {
-      sentiment,
+      sentiment: result.sentiment,
       score: Math.round(score * 100) / 100,
       confidence: Math.round(confidence * 100) / 100,
-      rationale: result.rationale || 'No rationale provided',
+      rationale: result.rationale || 'Sem justificativa',
     };
   } catch (error) {
     logger.error('Sentiment analysis failed', error as Error);
@@ -87,7 +71,7 @@ Return only valid JSON, no markdown formatting.`;
       sentiment: 'neutral',
       score: 0,
       confidence: 0,
-      rationale: 'Error analyzing sentiment',
+      rationale: 'Erro ao analisar sentimento',
     };
   }
 }

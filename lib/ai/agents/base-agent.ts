@@ -1,9 +1,10 @@
 /**
  * Base AI Agent
  * Abstract base class for all AI agents in the nORM system
+ * Uses Google Gemini Pro for AI operations
  */
 
-import { callOpenAI, getModel } from '../openai';
+import { generateWithGemini, callGemini, GEMINI_MODELS } from '../gemini';
 import { logger } from '@/lib/utils/logger';
 import { ExternalAPIError } from '@/lib/errors/errors';
 
@@ -40,12 +41,12 @@ export abstract class BaseAgent<TInput = unknown, TOutput = unknown> {
   abstract execute(input: TInput): Promise<AgentResponse<TOutput>>;
 
   /**
-   * Call OpenAI with agent-specific configuration
+   * Call Gemini with agent-specific configuration
    */
   protected async callAI(
     messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
     options?: {
-      model?: string;
+      model?: 'pro' | 'flash';
       temperature?: number;
       maxTokens?: number;
       responseFormat?: 'text' | 'json_object';
@@ -54,40 +55,42 @@ export abstract class BaseAgent<TInput = unknown, TOutput = unknown> {
     const startTime = Date.now();
 
     try {
-      const response = await callOpenAI(async () => {
-        const openai = await import('../openai').then(m => m.openai);
-        if (!openai) throw new Error('OpenAI not configured');
+      // Combine messages into a single prompt for Gemini
+      // Gemini doesn't have separate system/user roles like OpenAI
+      const systemMessage = messages.find(m => m.role === 'system');
+      const userMessages = messages.filter(m => m.role === 'user' || m.role === 'assistant');
 
-        return openai.chat.completions.create({
-          model: options?.model || getModel('content'),
-          messages,
+      let prompt = '';
+      if (systemMessage) {
+        prompt += `${systemMessage.content}\n\n`;
+      }
+      prompt += userMessages.map(m => m.content).join('\n\n');
+
+      // Add JSON instruction if needed
+      if (options?.responseFormat === 'json_object') {
+        prompt += '\n\nRetorne sua resposta como um objeto JSON válido, sem formatação markdown.';
+      }
+
+      const content = await callGemini(async () => {
+        return await generateWithGemini(prompt, {
+          model: options?.model || 'pro',
           temperature: options?.temperature ?? 0.7,
-          max_tokens: options?.maxTokens,
-          response_format: options?.responseFormat === 'json_object' 
-            ? { type: 'json_object' }
-            : undefined,
+          maxTokens: options?.maxTokens,
         });
       });
 
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No response from OpenAI');
-      }
-
       const processingTime = Date.now() - startTime;
-      const tokensUsed = response.usage?.total_tokens || 0;
 
       logger.info(`Agent ${this.agentName} completed`, {
         clientId: this.context.clientId,
         processingTime,
-        tokensUsed,
-        model: response.model,
+        model: GEMINI_MODELS[options?.model || 'pro'],
       });
 
       return content;
     } catch (error) {
       logger.error(`Agent ${this.agentName} failed`, error as Error);
-      throw new ExternalAPIError('OpenAI', `Agent execution failed: ${error instanceof Error ? error.message : String(error)}`, error as Error);
+      throw new ExternalAPIError('Gemini', `Agent execution failed: ${error instanceof Error ? error.message : String(error)}`, error as Error);
     }
   }
 

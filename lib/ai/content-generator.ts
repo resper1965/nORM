@@ -1,11 +1,12 @@
 /**
  * AI Content Generator
- * Generate SEO-optimized articles using OpenAI GPT-4
+ * Generate SEO-optimized articles using Google Gemini Pro
  */
 
-import { callOpenAI, getModel } from './openai';
+import { generateStructuredGemini, callGemini } from './gemini';
 import { getContentGenerationPrompt, getCounterArticlePrompt } from './prompts';
 import { logger } from '@/lib/utils/logger';
+import { z } from 'zod';
 import type { GeneratedContent } from '@/lib/types/domain';
 
 export interface ContentGenerationOptions {
@@ -26,6 +27,15 @@ export interface GeneratedArticle {
   targetKeywords: string[];
   wordCount: number;
 }
+
+// Zod schema for article generation
+const articleSchema = z.object({
+  title: z.string(),
+  content: z.string(),
+  meta_description: z.string(),
+  target_keywords: z.array(z.string()),
+  word_count: z.number(),
+});
 
 /**
  * Generate content articles
@@ -100,39 +110,16 @@ export async function generateContent(
             i
           );
 
-      const response = await callOpenAI(async () => {
-        const openai = await import('./openai').then(m => m.openai);
-        if (!openai) throw new Error('OpenAI not configured');
-        
-        return openai.chat.completions.create({
-          model: getModel('content'),
-          messages: [
-            {
-              role: 'system',
-              content: 'Você é um redator SEO especializado em gestão de reputação online. Sempre retorne JSON válido, sem formatação markdown.',
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          temperature: 0.7, // Slightly creative for content generation
-          response_format: { type: 'json_object' },
-        });
+      const result = await callGemini(async () => {
+        return await generateStructuredGemini(
+          prompt,
+          articleSchema,
+          {
+            model: 'pro', // Gemini Pro para melhor qualidade de conteúdo
+            temperature: 0.7, // Criatividade moderada
+          }
+        );
       });
-
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No response from OpenAI');
-      }
-
-      const result = JSON.parse(content) as {
-        title: string;
-        content: string;
-        meta_description: string;
-        target_keywords: string[];
-        word_count: number;
-      };
 
       articles.push({
         title: result.title,
