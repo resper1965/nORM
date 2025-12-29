@@ -57,7 +57,7 @@ export interface InstagramProfile {
 /**
  * Make authenticated request to Meta Graph API
  */
-async function makeMetaRequest<T = any>(
+export async function makeMetaRequest<T = any>(
   endpoint: string,
   accessToken: string,
   params: Record<string, string> = {}

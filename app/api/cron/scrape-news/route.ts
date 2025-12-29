@@ -1,50 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { scrapeNewsForAllClients } from '@/lib/integrations/news-scraper';
 import { logger } from '@/lib/utils/logger';
-import { AppError } from '@/lib/errors/errors';
 import { verifyCronAuth, UnauthorizedError } from '@/lib/utils/auth-cron';
 
 /**
  * POST /api/cron/scrape-news
- * Trigger news scraping (cron job)
+ * Scrape news mentions for all active clients (cron job)
  * Protected by Vercel Cron secret or service role
+ *
+ * Searches Google News RSS feeds for client monitoring keywords
+ * and stores articles with sentiment analysis
+ *
+ * Recommended frequency: Every 6-12 hours
  */
 export async function POST(request: NextRequest) {
   try {
     // Verificar autenticação do cron job
     verifyCronAuth(request);
 
-    const supabase = await createClient();
+    logger.info('Starting news scraping cron job');
 
-    // Get all active clients
-    const { data: clients, error: clientsError } = await supabase
-      .from('clients')
-      .select('id, name')
-      .eq('is_active', true);
+    const stats = await scrapeNewsForAllClients();
 
-    if (clientsError) {
-      logger.error('Failed to fetch clients for news scraping', clientsError);
-      throw new AppError('Failed to fetch clients', 500);
-    }
-
-    if (!clients || clients.length === 0) {
-      return NextResponse.json({
-        status: 'completed',
-        clients_processed: 0,
-        message: 'No active clients found',
-      });
-    }
-
-    // TODO: Implement actual news scraping
-    // This will be implemented in Phase 11 (News Monitoring)
-    logger.info('News scraping triggered', {
-      clients_count: clients.length,
+    logger.info('News scraping completed', {
+      clientsProcessed: stats.clientsProcessed,
+      articlesAdded: stats.articlesAdded,
+      errors: stats.errors,
     });
 
     return NextResponse.json({
-      status: 'started',
-      clients_processed: clients.length,
-      message: 'News scraping started',
+      status: 'completed',
+      clients_processed: stats.clientsProcessed,
+      articles_added: stats.articlesAdded,
+      errors: stats.errors,
     });
   } catch (error) {
     if (error instanceof UnauthorizedError) {
