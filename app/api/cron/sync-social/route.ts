@@ -1,50 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { syncAllInstagramAccounts } from '@/lib/integrations/instagram-sync';
 import { logger } from '@/lib/utils/logger';
-import { AppError } from '@/lib/errors/errors';
 import { verifyCronAuth, UnauthorizedError } from '@/lib/utils/auth-cron';
 
 /**
  * POST /api/cron/sync-social
- * Trigger social media sync (cron job)
+ * Synchronize social media accounts (cron job)
  * Protected by Vercel Cron secret or service role
+ *
+ * Currently supports:
+ * - Instagram (via Meta Graph API)
+ *
+ * TODO: Add support for LinkedIn, Facebook pages, Twitter/X
+ *
+ * Recommended frequency: Every 1-2 hours
  */
 export async function POST(request: NextRequest) {
   try {
     // Verificar autenticação do cron job
     verifyCronAuth(request);
 
-    const supabase = await createClient();
+    logger.info('Starting social media sync cron job');
 
-    // Get all active social accounts
-    const { data: socialAccounts, error: accountsError } = await supabase
-      .from('social_accounts')
-      .select('id, platform, account_name, client_id')
-      .eq('is_active', true);
+    // Sync Instagram accounts
+    const instagramStats = await syncAllInstagramAccounts();
 
-    if (accountsError) {
-      logger.error('Failed to fetch social accounts for sync', accountsError);
-      throw new AppError('Failed to fetch social accounts', 500);
-    }
+    // TODO: Add LinkedIn sync
+    // const linkedInStats = await syncAllLinkedInAccounts();
 
-    if (!socialAccounts || socialAccounts.length === 0) {
-      return NextResponse.json({
-        status: 'completed',
-        accounts_synced: 0,
-        message: 'No active social accounts found',
-      });
-    }
+    // TODO: Add Facebook sync
+    // const facebookStats = await syncAllFacebookAccounts();
 
-    // TODO: Implement actual social media sync
-    // This will be implemented in User Story 3
-    logger.info('Social media sync triggered', {
-      accounts_count: socialAccounts.length,
-    });
+    const totalStats = {
+      instagram: instagramStats,
+      // linkedin: linkedInStats,
+      // facebook: facebookStats,
+    };
+
+    logger.info('Social media sync completed', totalStats);
 
     return NextResponse.json({
-      status: 'started',
-      accounts_synced: socialAccounts.length,
-      message: 'Social media sync started',
+      status: 'completed',
+      platforms: {
+        instagram: {
+          accounts: instagramStats.accountsProcessed,
+          posts_added: instagramStats.postsAdded,
+          posts_updated: instagramStats.postsUpdated,
+          errors: instagramStats.errors,
+        },
+      },
+      summary: {
+        total_accounts: instagramStats.accountsProcessed,
+        total_posts_added: instagramStats.postsAdded,
+        total_posts_updated: instagramStats.postsUpdated,
+        total_errors: instagramStats.errors,
+      },
     });
   } catch (error) {
     if (error instanceof UnauthorizedError) {
@@ -57,9 +67,8 @@ export async function POST(request: NextRequest) {
 
     logger.error('Error in POST /api/cron/sync-social', error as Error);
     return NextResponse.json(
-      { error: 'Internal Server Error', message: 'Failed to start social sync' },
+      { error: 'Internal Server Error', message: 'Failed to sync social media' },
       { status: 500 }
     );
   }
 }
-
