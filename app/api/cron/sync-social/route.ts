@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { syncAllInstagramAccounts } from '@/lib/integrations/instagram-sync';
+import { syncAllLinkedInAccounts } from '@/lib/integrations/linkedin-sync';
 import { logger } from '@/lib/utils/logger';
 import { verifyCronAuth, UnauthorizedError } from '@/lib/utils/auth-cron';
 
@@ -10,8 +11,9 @@ import { verifyCronAuth, UnauthorizedError } from '@/lib/utils/auth-cron';
  *
  * Currently supports:
  * - Instagram (via Meta Graph API)
+ * - LinkedIn (via LinkedIn API v2)
  *
- * TODO: Add support for LinkedIn, Facebook pages, Twitter/X
+ * TODO: Add support for Facebook pages, Twitter/X
  *
  * Recommended frequency: Every 1-2 hours
  */
@@ -25,15 +27,15 @@ export async function POST(request: NextRequest) {
     // Sync Instagram accounts
     const instagramStats = await syncAllInstagramAccounts();
 
-    // TODO: Add LinkedIn sync
-    // const linkedInStats = await syncAllLinkedInAccounts();
+    // Sync LinkedIn accounts
+    const linkedInStats = await syncAllLinkedInAccounts();
 
     // TODO: Add Facebook sync
     // const facebookStats = await syncAllFacebookAccounts();
 
     const totalStats = {
       instagram: instagramStats,
-      // linkedin: linkedInStats,
+      linkedin: linkedInStats,
       // facebook: facebookStats,
     };
 
@@ -48,12 +50,18 @@ export async function POST(request: NextRequest) {
           posts_updated: instagramStats.postsUpdated,
           errors: instagramStats.errors,
         },
+        linkedin: {
+          accounts: linkedInStats.accountsProcessed,
+          posts_added: linkedInStats.postsAdded,
+          posts_updated: linkedInStats.postsUpdated,
+          errors: linkedInStats.errors,
+        },
       },
       summary: {
-        total_accounts: instagramStats.accountsProcessed,
-        total_posts_added: instagramStats.postsAdded,
-        total_posts_updated: instagramStats.postsUpdated,
-        total_errors: instagramStats.errors,
+        total_accounts: instagramStats.accountsProcessed + linkedInStats.accountsProcessed,
+        total_posts_added: instagramStats.postsAdded + linkedInStats.postsAdded,
+        total_posts_updated: instagramStats.postsUpdated + linkedInStats.postsUpdated,
+        total_errors: instagramStats.errors + linkedInStats.errors,
       },
     });
   } catch (error) {
