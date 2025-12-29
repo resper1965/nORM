@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { calculateReputationScore } from '@/lib/reputation/calculator';
+import { generateAlertsForClient } from '@/lib/reputation/alert-generator';
 import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
 import { verifyCronAuth, UnauthorizedError } from '@/lib/utils/auth-cron';
@@ -42,6 +43,7 @@ export async function POST(request: NextRequest) {
     periodStart.setDate(periodStart.getDate() - 30);
 
     let processed = 0;
+    let alertsGenerated = 0;
     const errors: string[] = [];
 
     // Calculate score for each client
@@ -69,6 +71,19 @@ export async function POST(request: NextRequest) {
           errors.push(`Client ${client.name}: ${insertError.message}`);
         } else {
           processed++;
+
+          // Generate alerts for this client
+          try {
+            const alerts = await generateAlertsForClient({
+              clientId: client.id,
+              periodStart,
+              periodEnd,
+            });
+            alertsGenerated += alerts.length;
+          } catch (alertError) {
+            logger.error(`Failed to generate alerts for client ${client.id}`, alertError as Error);
+            // Don't fail the entire job if alert generation fails
+          }
         }
       } catch (error) {
         logger.error(`Failed to calculate reputation for client ${client.id}`, error as Error);
@@ -80,6 +95,7 @@ export async function POST(request: NextRequest) {
       status: 'completed',
       clients_processed: processed,
       total_clients: clients.length,
+      alerts_generated: alertsGenerated,
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {
