@@ -6,6 +6,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { checkSERPPosition, checkSERPPositionsBatch } from './serp';
 import { logger } from '@/lib/utils/logger';
+import { batchCheckClientContent } from '@/lib/utils/domain-matcher';
 import type { SERPResult as SERPResultType } from './serp';
 import type { SERPResult as DBSERPResult } from '@/lib/types/domain';
 
@@ -19,13 +20,32 @@ export async function trackSERPPosition(
   const supabase = await createClient();
 
   try {
+    // Get client_id from keyword
+    const { data: keywordData, error: keywordError } = await supabase
+      .from('keywords')
+      .select('client_id')
+      .eq('id', keywordId)
+      .single();
+
+    if (keywordError || !keywordData) {
+      throw new Error(`Failed to get client_id for keyword: ${keywordId}`);
+    }
+
+    const clientId = keywordData.client_id;
+
     // Check current SERP position
     const serpResponse = await checkSERPPosition(keyword);
+
+    // Batch check which URLs belong to client
+    const urls = serpResponse.results.map(r => r.url);
+    const clientContentMap = await batchCheckClientContent(urls, clientId);
 
     // Save results to database
     const results: DBSERPResult[] = [];
 
     for (const result of serpResponse.results) {
+      const isClientOwned = clientContentMap.get(result.url) || false;
+
       const { data, error } = await supabase
         .from('serp_results')
         .insert({
@@ -36,7 +56,7 @@ export async function trackSERPPosition(
           snippet: result.snippet,
           domain: result.domain,
           checked_at: new Date().toISOString(),
-          is_client_content: false, // TODO: Detect if URL belongs to client
+          is_client_content: isClientOwned,
         })
         .select()
         .single();
@@ -54,6 +74,7 @@ export async function trackSERPPosition(
     logger.info(`Tracked SERP for keyword: ${keyword}`, {
       keywordId,
       resultsCount: results.length,
+      clientContentCount: Array.from(clientContentMap.values()).filter(Boolean).length,
     });
 
     return results;
