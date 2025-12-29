@@ -4,6 +4,7 @@ import { trackClientSERPPositions, detectSERPChanges } from '@/lib/scraping/serp
 import { checkAlertConditions, getSeverityFromScoreDrop } from '@/lib/reputation/alert-generator';
 import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
+import { verifyCronAuth, UnauthorizedError } from '@/lib/utils/auth-cron';
 
 /**
  * POST /api/cron/check-serp
@@ -12,7 +13,8 @@ import { AppError } from '@/lib/errors/errors';
  */
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Verify cron secret or service role
+    // Verificar autenticação do cron job
+    verifyCronAuth(request);
 
     const supabase = await createClient();
 
@@ -93,6 +95,14 @@ export async function POST(request: NextRequest) {
       alerts_created: alertsCreated.length,
     });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      logger.warn('Unauthorized cron job attempt', { error: error.message });
+      return NextResponse.json(
+        { error: 'Unauthorized', message: error.message },
+        { status: 401 }
+      );
+    }
+
     logger.error('Error in POST /api/cron/check-serp', error as Error);
     return NextResponse.json(
       { error: 'Internal Server Error', message: 'Failed to check SERP positions' },

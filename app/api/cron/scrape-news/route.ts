@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
+import { verifyCronAuth, UnauthorizedError } from '@/lib/utils/auth-cron';
 
 /**
  * POST /api/cron/scrape-news
@@ -10,11 +11,8 @@ import { AppError } from '@/lib/errors/errors';
  */
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Verify cron secret or service role
-    // const authHeader = request.headers.get('authorization');
-    // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
+    // Verificar autenticação do cron job
+    verifyCronAuth(request);
 
     const supabase = await createClient();
 
@@ -49,6 +47,14 @@ export async function POST(request: NextRequest) {
       message: 'News scraping started',
     });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      logger.warn('Unauthorized cron job attempt', { error: error.message });
+      return NextResponse.json(
+        { error: 'Unauthorized', message: error.message },
+        { status: 401 }
+      );
+    }
+
     logger.error('Error in POST /api/cron/scrape-news', error as Error);
     return NextResponse.json(
       { error: 'Internal Server Error', message: 'Failed to start news scraping' },

@@ -45,7 +45,61 @@ class Logger {
       logMethod(prefix, message);
     }
 
-    // TODO: In production, send to logging service (e.g., Sentry, LogRocket)
+    // Em produção, envia logs para serviço externo se configurado
+    if (!this.isDevelopment) {
+      this.sendToExternalService(entry);
+    }
+  }
+
+  private sendToExternalService(entry: LogEntry) {
+    try {
+      // Sentry: capturar erros (se configurado)
+      if (entry.level === 'error' && typeof window !== 'undefined') {
+        // No cliente, Sentry pode estar disponível globalmente
+        if ((window as any).Sentry) {
+          if (entry.error) {
+            (window as any).Sentry.captureException(entry.error, {
+              extra: entry.metadata,
+              level: entry.level,
+            });
+          } else {
+            (window as any).Sentry.captureMessage(entry.message, {
+              extra: entry.metadata,
+              level: entry.level,
+            });
+          }
+        }
+      }
+
+      // Para server-side logging, poderia enviar para:
+      // - Sentry (server-side)
+      // - LogRocket
+      // - Datadog
+      // - CloudWatch
+      // - Custom endpoint
+
+      // Exemplo de envio para endpoint custom (desabilitado por padrão)
+      if (process.env.LOGGING_ENDPOINT && (entry.level === 'error' || entry.level === 'warn')) {
+        fetch(process.env.LOGGING_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...entry,
+            timestamp: entry.timestamp.toISOString(),
+            error: entry.error ? {
+              message: entry.error.message,
+              stack: entry.error.stack,
+              name: entry.error.name,
+            } : undefined,
+          }),
+        }).catch(() => {
+          // Falha silenciosa - não queremos quebrar app por erro de logging
+        });
+      }
+    } catch (error) {
+      // Falha silenciosa - logging não deve quebrar a aplicação
+      console.error('Logger: Falha ao enviar para serviço externo', error);
+    }
   }
 
   debug(message: string, metadata?: Record<string, unknown>) {
