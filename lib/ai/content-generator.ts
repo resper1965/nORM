@@ -257,3 +257,98 @@ export function calculateReadabilityScore(content: string): number {
   return Math.max(0, Math.min(100, Math.round(score)));
 }
 
+/**
+ * Generate comprehensive quality report for an article
+ */
+export interface QualityReport {
+  seoScore: number;
+  readabilityScore: number;
+  overallQuality: number;
+  recommendations: string[];
+  strengths: string[];
+  warnings: string[];
+}
+
+export function generateQualityReport(
+  content: string,
+  title: string,
+  metaDescription: string,
+  targetKeywords: string[]
+): QualityReport {
+  const seoScore = calculateSEOScore(content, title, metaDescription, targetKeywords);
+  const readabilityScore = calculateReadabilityScore(content);
+
+  const recommendations: string[] = [];
+  const strengths: string[] = [];
+  const warnings: string[] = [];
+
+  // Title analysis
+  const titleLength = title.length;
+  if (titleLength < 50) {
+    recommendations.push('Considere aumentar o título para 50-70 caracteres para melhor SEO');
+  } else if (titleLength > 70) {
+    recommendations.push('Título muito longo - considere reduzir para 50-70 caracteres');
+  } else {
+    strengths.push('Título otimizado para SEO (50-70 caracteres)');
+  }
+
+  // Meta description analysis
+  const metaLength = metaDescription.length;
+  if (metaLength < 120) {
+    recommendations.push('Meta descrição muito curta - ideal entre 150-160 caracteres');
+  } else if (metaLength > 170) {
+    warnings.push('Meta descrição pode ser truncada nos resultados de busca');
+  } else if (metaLength >= 150 && metaLength <= 160) {
+    strengths.push('Meta descrição otimizada (150-160 caracteres)');
+  }
+
+  // Word count analysis
+  const wordCount = content.split(/\s+/).length;
+  if (wordCount < 600) {
+    warnings.push('Conteúdo muito curto - artigos com 800+ palavras ranqueiam melhor');
+  } else if (wordCount >= 800 && wordCount <= 1500) {
+    strengths.push(`Extensão ideal para SEO (${wordCount} palavras)`);
+  } else if (wordCount > 2000) {
+    recommendations.push('Considere dividir em múltiplos artigos para melhor digestibilidade');
+  }
+
+  // Keyword analysis
+  if (targetKeywords.length === 0) {
+    warnings.push('Nenhuma palavra-chave alvo definida');
+  } else if (targetKeywords.length < 3) {
+    recommendations.push('Adicione mais 1-2 palavras-chave relacionadas');
+  } else {
+    strengths.push(`${targetKeywords.length} palavras-chave alvo definidas`);
+  }
+
+  // Readability analysis
+  if (readabilityScore >= 60) {
+    strengths.push('Boa legibilidade - fácil de ler para o público geral');
+  } else if (readabilityScore >= 40) {
+    recommendations.push('Simplifique algumas frases para melhorar a legibilidade');
+  } else {
+    warnings.push('Legibilidade baixa - texto pode ser difícil de compreender');
+  }
+
+  // Headings check
+  const hasH2 = /<h2[^>]*>/i.test(content);
+  const hasH3 = /<h3[^>]*>/i.test(content);
+  if (!hasH2 && !hasH3) {
+    warnings.push('Adicione subtítulos (H2/H3) para melhor estrutura');
+  } else {
+    strengths.push('Bem estruturado com subtítulos');
+  }
+
+  // Overall quality
+  const overallQuality = Math.round((seoScore * 0.6 + readabilityScore * 0.4));
+
+  return {
+    seoScore,
+    readabilityScore,
+    overallQuality,
+    recommendations,
+    strengths,
+    warnings,
+  };
+}
+
