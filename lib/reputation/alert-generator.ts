@@ -5,6 +5,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/utils/logger';
+import { sendImmediateAlert } from '@/lib/notifications/alert-notifications';
 import type { Alert, AlertType, AlertSeverity } from '@/lib/types/domain';
 
 export interface AlertCondition {
@@ -553,6 +554,19 @@ async function saveAlertsToDatabase(alerts: Alert[]): Promise<Alert[]> {
 
     if (inserted) {
       savedAlerts.push(inserted as Alert);
+
+      // Send critical alerts immediately
+      if (inserted.severity === 'critical') {
+        try {
+          await sendImmediateAlert(inserted as Alert);
+          logger.info('Critical alert sent immediately', { alertId: inserted.id });
+        } catch (emailError) {
+          logger.error('Failed to send immediate critical alert', emailError as Error, {
+            alertId: inserted.id,
+          });
+          // Don't fail the entire process if email fails
+        }
+      }
     }
   }
 
