@@ -6,6 +6,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { createDraftPost, testWordPressConnection, type WordPressSiteConfig } from './client';
 import { logger } from '@/lib/utils/logger';
+import { decrypt } from '@/lib/utils/crypto';
 import { NotFoundError, ExternalAPIError } from '@/lib/errors/errors';
 import type { GeneratedContent } from '@/lib/types/domain';
 
@@ -25,9 +26,8 @@ async function getWordPressConfig(siteId: string): Promise<WordPressSiteConfig> 
     throw new NotFoundError('WordPress site', siteId);
   }
 
-  // TODO: Decrypt password
-  // For now, assuming password is stored (should be encrypted in production)
-  const applicationPassword = site.application_password_encrypted;
+  // Decrypt password using AES-256-GCM
+  const applicationPassword = decrypt(site.application_password_encrypted);
 
   return {
     siteUrl: site.site_url,
