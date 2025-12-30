@@ -5,6 +5,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n/config';
 import { Providers } from '@/components/providers';
+import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import "./globals.css";
 
@@ -17,7 +18,19 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "nORM - Online Reputation Manager",
-  description: "Sistema de gerenciamento de reputação online com IA",
+  description: "Sistema de gerenciamento de reputação online com IA - Desenvolvido por Bekaa",
+  metadataBase: new URL("https://norm.bekaa.eu"),
+  creator: "Bekaa",
+  publisher: "Bekaa",
+  authors: [{ name: "Bekaa", url: "https://bekaa.eu" }],
+  keywords: [
+    "reputação online",
+    "gerenciamento de reputação",
+    "IA",
+    "monitoramento SERP",
+    "análise de sentimento",
+    "bekaa",
+  ],
 };
 
 export function generateStaticParams() {
@@ -45,6 +58,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <Providers>
             {children}
+            <Toaster />
           </Providers>
         </NextIntlClientProvider>
       </body>

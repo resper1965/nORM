@@ -1,9 +1,9 @@
 /**
  * Sentiment Analysis
- * Analyzes text sentiment using OpenAI GPT-4
+ * Analyzes text sentiment using AI Gateway (with caching & fallback)
  */
 
-import { callOpenAI, getModel } from './openai';
+import { callAIGateway } from './gateway';
 import type { Sentiment } from '@/lib/types/domain';
 import { logger } from '@/lib/utils/logger';
 
@@ -33,33 +33,28 @@ ${text}
 Return only valid JSON, no markdown formatting.`;
 
   try {
-    const response = await callOpenAI(async () => {
-      const openai = await import('./openai').then(m => m.openai);
-      if (!openai) throw new Error('OpenAI not configured');
-      
-      return openai.chat.completions.create({
-        model: getModel('sentiment'),
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a sentiment analysis expert. Always return valid JSON.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.3, // Lower temperature for more consistent results
-        response_format: { type: 'json_object' },
-      });
-    });
+    // Use AI Gateway with cache and fallback
+    const response = await callAIGateway(
+      [
+        {
+          role: 'system',
+          content: 'You are a sentiment analysis expert. Always return valid JSON.',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      {
+        model: 'gpt-3.5-turbo', // Sentiment analysis works well with GPT-3.5
+        temperature: 0.3,
+        maxTokens: 500,
+        useCache: true, // Cache sentiment results
+        enableFallback: true,
+      }
+    );
 
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error('No response from OpenAI');
-    }
-
-    const result = JSON.parse(content) as {
+    const result = JSON.parse(response.content) as {
       sentiment: string;
       score: number;
       confidence: number;
