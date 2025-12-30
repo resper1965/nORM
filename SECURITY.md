@@ -114,34 +114,76 @@ O nORM implementa as seguintes práticas de segurança:
 - ✅ Prepared statements (SQL injection prevention)
 - ✅ Secrets em variáveis de ambiente
 
-#### Headers de Segurança
+#### Security.txt (RFC 9116)
+- ✅ Arquivo `/.well-known/security.txt` implementado
+- ✅ Disponível também em `/security.txt`
+- ✅ Contatos para reportar vulnerabilidades
+- ✅ Política de segurança linkada
+- ✅ Data de expiração definida (2026-12-31)
+- ✅ Idiomas preferidos (pt-BR, en)
+
+Acesse: https://norm-reputation.vercel.app/.well-known/security.txt
+
+#### HSTS (HTTP Strict Transport Security)
+- ✅ **Max-Age**: 2 anos (63072000 segundos)
+- ✅ **includeSubDomains**: Aplica a todos os subdomínios
+- ✅ **preload**: Habilitado para inclusão na HSTS Preload List
+- ✅ Força HTTPS em todas as conexões
+- ✅ Previne downgrade attacks e cookie hijacking
+
+```
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+```
+
+**Para adicionar à HSTS Preload List**: https://hstspreload.org/
+
+#### CSP (Content Security Policy)
+- ✅ **default-src 'self'**: Apenas recursos do mesmo domínio
+- ✅ **script-src**: Scripts controlados (self + Vercel Analytics)
+- ✅ **style-src**: Estilos inline + Google Fonts
+- ✅ **connect-src**: APIs permitidas (Supabase, OpenAI, etc.)
+- ✅ **img-src**: Imagens de https + data URIs
+- ✅ **frame-ancestors 'none'**: Previne clickjacking
+- ✅ **upgrade-insecure-requests**: Force HTTPS
+- ✅ **block-all-mixed-content**: Bloqueia conteúdo misto
+
+```
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com data:;
+  img-src 'self' https: data: blob:;
+  connect-src 'self' https://*.supabase.co https://api.openai.com https://serpapi.com https://graph.facebook.com https://graph.instagram.com https://api.linkedin.com https://vercel.live wss://*.supabase.co;
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self';
+  upgrade-insecure-requests;
+  block-all-mixed-content
+```
+
+**Nota**: `'unsafe-inline'` e `'unsafe-eval'` são necessários para Next.js e algumas bibliotecas. Em produção, considere usar nonces ou hashes para inline scripts.
+
+#### Headers de Segurança Completos
 ```javascript
-// vercel.json
+// vercel.json - Headers configurados
 {
-  "headers": [
-    {
-      "key": "X-Frame-Options",
-      "value": "DENY"
-    },
-    {
-      "key": "X-Content-Type-Options",
-      "value": "nosniff"
-    },
-    {
-      "key": "X-XSS-Protection",
-      "value": "1; mode=block"
-    },
-    {
-      "key": "Referrer-Policy",
-      "value": "strict-origin-when-cross-origin"
-    },
-    {
-      "key": "Content-Security-Policy",
-      "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
-    }
-  ]
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "X-XSS-Protection": "1; mode=block",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), speaker=(self)",
+  "Content-Security-Policy": "[CSP policy acima]",
+  "X-DNS-Prefetch-Control": "on",
+  "X-Download-Options": "noopen",
+  "X-Permitted-Cross-Domain-Policies": "none"
 }
 ```
+
+**Teste os headers**:
+- https://securityheaders.com/
+- https://observatory.mozilla.org/
 
 #### Validação e Sanitização
 - ✅ Zod schemas para validação de dados
