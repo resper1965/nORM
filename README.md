@@ -312,6 +312,22 @@ chore: update dependencies
 - `RESEND_API_KEY`
 - `NEXT_PUBLIC_APP_URL`
 
+## ✨ Desenvolvido por
+
+<div align="center">
+
+**[Bekaa](https://bekaa.com.br)** - Soluções Inteligentes em Tecnologia
+
+Este projeto foi desenvolvido pela Bekaa, empresa especializada em desenvolvimento de software com foco em inovação, qualidade e experiência do usuário.
+
+🌐 [bekaa.com.br](https://bekaa.com.br)
+
+---
+
+*Powered by Bekaa ✨*
+
+</div>
+
 ## 📝 Licença
 
 MIT
