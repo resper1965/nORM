@@ -3,12 +3,12 @@
  * Optimizations for API calls, data fetching, and performance monitoring
  */
 
-import { logger } from './logger'
+import { logger } from "./logger";
 
 /**
  * Debounce function to limit API calls
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -47,6 +47,9 @@ export function throttle<T extends (...args: any[]) => any>(
 
 /**
  * Cache with TTL (Time To Live)
+ */
+/**
+ * @deprecated Use CacheService instead
  */
 export class TTLCache<K, V> {
   private cache = new Map<K, { value: V; expires: number }>();
@@ -100,16 +103,16 @@ export async function batchRequests<T, R>(
  * Performance metrics tracker
  */
 export interface PerformanceMetric {
-  operation: string
-  duration: number
-  timestamp: Date
-  metadata?: Record<string, any>
-  success: boolean
+  operation: string;
+  duration: number;
+  timestamp: Date;
+  metadata?: Record<string, any>;
+  success: boolean;
 }
 
 class PerformanceMonitor {
-  private metrics: PerformanceMetric[] = []
-  private readonly maxMetrics = 1000 // Keep last 1000 metrics
+  private metrics: PerformanceMetric[] = [];
+  private readonly maxMetrics = 1000; // Keep last 1000 metrics
 
   /**
    * Track operation performance
@@ -119,19 +122,19 @@ class PerformanceMonitor {
     fn: () => Promise<T>,
     metadata?: Record<string, any>
   ): Promise<T> {
-    const startTime = Date.now()
-    let success = true
-    let error: Error | undefined
+    const startTime = Date.now();
+    let success = true;
+    let error: Error | undefined;
 
     try {
-      const result = await fn()
-      return result
+      const result = await fn();
+      return result;
     } catch (err) {
-      success = false
-      error = err as Error
-      throw err
+      success = false;
+      error = err as Error;
+      throw err;
     } finally {
-      const duration = Date.now() - startTime
+      const duration = Date.now() - startTime;
 
       this.addMetric({
         operation,
@@ -139,25 +142,24 @@ class PerformanceMonitor {
         timestamp: new Date(),
         metadata,
         success,
-      })
+      });
 
       // Log slow operations (> 2s)
       if (duration > 2000) {
-        logger.warn('Slow operation detected', {
+        logger.warn("Slow operation detected", {
           operation,
           duration,
           metadata,
-        })
+        });
       }
 
       // Log failures
       if (!success) {
-        logger.error('Operation failed', {
+        logger.error("Operation failed", error, {
           operation,
           duration,
-          error,
           metadata,
-        })
+        });
       }
     }
   }
@@ -166,11 +168,11 @@ class PerformanceMonitor {
    * Add metric to tracking
    */
   private addMetric(metric: PerformanceMetric): void {
-    this.metrics.push(metric)
+    this.metrics.push(metric);
 
     // Keep only last maxMetrics
     if (this.metrics.length > this.maxMetrics) {
-      this.metrics.shift()
+      this.metrics.shift();
     }
   }
 
@@ -178,13 +180,15 @@ class PerformanceMonitor {
    * Get performance summary for an operation
    */
   getSummary(operation: string): {
-    count: number
-    avgDuration: number
-    p95Duration: number
-    p99Duration: number
-    successRate: number
+    count: number;
+    avgDuration: number;
+    p95Duration: number;
+    p99Duration: number;
+    successRate: number;
   } {
-    const operationMetrics = this.metrics.filter((m) => m.operation === operation)
+    const operationMetrics = this.metrics.filter(
+      (m) => m.operation === operation
+    );
 
     if (operationMetrics.length === 0) {
       return {
@@ -193,11 +197,13 @@ class PerformanceMonitor {
         p95Duration: 0,
         p99Duration: 0,
         successRate: 0,
-      }
+      };
     }
 
-    const durations = operationMetrics.map((m) => m.duration).sort((a, b) => a - b)
-    const successCount = operationMetrics.filter((m) => m.success).length
+    const durations = operationMetrics
+      .map((m) => m.duration)
+      .sort((a, b) => a - b);
+    const successCount = operationMetrics.filter((m) => m.success).length;
 
     return {
       count: operationMetrics.length,
@@ -205,28 +211,28 @@ class PerformanceMonitor {
       p95Duration: durations[Math.floor(durations.length * 0.95)],
       p99Duration: durations[Math.floor(durations.length * 0.99)],
       successRate: (successCount / operationMetrics.length) * 100,
-    }
+    };
   }
 
   /**
    * Get all tracked operations
    */
   getAllSummaries(): Record<string, ReturnType<typeof this.getSummary>> {
-    const operations = [...new Set(this.metrics.map((m) => m.operation))]
-    const summaries: Record<string, ReturnType<typeof this.getSummary>> = {}
+    const operations = [...new Set(this.metrics.map((m) => m.operation))];
+    const summaries: Record<string, ReturnType<typeof this.getSummary>> = {};
 
     operations.forEach((op) => {
-      summaries[op] = this.getSummary(op)
-    })
+      summaries[op] = this.getSummary(op);
+    });
 
-    return summaries
+    return summaries;
   }
 
   /**
    * Clear all metrics
    */
   clear(): void {
-    this.metrics = []
+    this.metrics = [];
   }
 
   /**
@@ -236,54 +242,54 @@ class PerformanceMonitor {
     return this.metrics
       .filter((m) => m.duration > threshold)
       .sort((a, b) => b.duration - a.duration)
-      .slice(0, 10)
+      .slice(0, 10);
   }
 }
 
 // Export singleton instance
-export const performanceMonitor = new PerformanceMonitor()
+export const performanceMonitor = new PerformanceMonitor();
 
 /**
  * Decorator to track function performance
  */
 export function trackPerformance(operation: string) {
   return function (
-    target: any,
+    target: object,
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
-    const originalMethod = descriptor.value
+    const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
       return performanceMonitor.track(
         operation || `${target.constructor.name}.${propertyKey}`,
         () => originalMethod.apply(this, args),
         { args: args.length }
-      )
-    }
+      );
+    };
 
-    return descriptor
-  }
+    return descriptor;
+  };
 }
 
 /**
  * Measure Web Vitals (client-side only)
  */
 export function measureWebVitals() {
-  if (typeof window === 'undefined') return
+  if (typeof window === "undefined") return;
 
   // LCP - Largest Contentful Paint
   const observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      logger.info('Web Vital - LCP', {
+      logger.info("Web Vital - LCP", {
         value: entry.startTime,
         target: (entry as any).element?.tagName,
-      })
+      });
     }
-  })
+  });
 
   try {
-    observer.observe({ entryTypes: ['largest-contentful-paint'] })
+    observer.observe({ entryTypes: ["largest-contentful-paint"] });
   } catch (e) {
     // Ignore if not supported
   }
@@ -291,16 +297,15 @@ export function measureWebVitals() {
   // CLS - Cumulative Layout Shift
   const clsObserver = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      logger.info('Web Vital - CLS', {
+      logger.info("Web Vital - CLS", {
         value: (entry as any).value,
-      })
+      });
     }
-  })
+  });
 
   try {
-    clsObserver.observe({ entryTypes: ['layout-shift'] })
+    clsObserver.observe({ entryTypes: ["layout-shift"] });
   } catch (e) {
     // Ignore if not supported
   }
 }
-

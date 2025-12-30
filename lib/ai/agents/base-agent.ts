@@ -1,6 +1,6 @@
 /**
  * Base AI Agent
- * Abstract base class for all AI agents in the nORM system
+ * Abstract base class for all AI agents in the n.ORM system
  */
 
 import { callOpenAI, getModel } from '../openai';

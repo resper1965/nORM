@@ -1,4 +1,4 @@
-# nORM Development Guidelines
+# n.ORM Development Guidelines
 
 Auto-generated from all feature plans. Last updated: 2025-11-06
 
@@ -37,7 +37,7 @@ Auto-generated from all feature plans. Last updated: 2025-11-06
 ## Project Structure
 
 ```text
-nORM/
+n.ORM/
 ├── .specify/
 │   ├── memory/
 │   ├── scripts/
@@ -67,7 +67,7 @@ To be determined during feature planning.
 ## Recent Changes
 
 - **2025-11-06**: Created tasks.md with 97 implementation tasks organized by user story
-- **2025-11-06**: Created technical implementation plan for nORM MVP (001-reputation-dashboard-mvp)
+- **2025-11-06**: Created technical implementation plan for n.ORM MVP (001-reputation-dashboard-mvp)
 - **2025-11-06**: Generated Phase 1 artifacts: data-model.md, API contracts, quickstart.md
 - **2025-11-06**: Established project constitution v1.0.0 with 10 core principles
 - **2025-11-06**: Configured Vercel deployment with comprehensive environment variables

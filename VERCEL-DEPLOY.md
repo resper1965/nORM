@@ -1,6 +1,6 @@
-# 🚀 Deploy no Vercel - nORM
+# 🚀 Deploy no Vercel - n.ORM
 
-Guia completo para deploy do nORM (Next Online Reputation Manager) no Vercel.
+Guia completo para deploy do n.ORM (Next Online Reputation Manager) no Vercel.
 
 ## 📋 Pré-requisitos
 

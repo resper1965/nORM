@@ -42,7 +42,7 @@ export async function searchGoogleNews(
     const response = await axios.get(rssUrl, {
       timeout: 30000,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; nORM/1.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; n.ORM/1.0)',
       },
     });
 

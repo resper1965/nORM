@@ -1,4 +1,4 @@
-# 📋 Requisitos Externos - nORM
+# 📋 Requisitos Externos - n.ORM
 
 Documento completo listando todas as variáveis de ambiente necessárias e serviços externos utilizados pelo projeto.
 

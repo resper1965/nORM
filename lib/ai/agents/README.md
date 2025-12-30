@@ -1,10 +1,10 @@
-# AI Agents - nORM
+# AI Agents - n.ORM
 
 Sistema de agentes de IA para geração de conteúdo e análise de reputação.
 
 ## 📋 Visão Geral
 
-O sistema de agentes de IA do nORM é composto por agentes especializados que trabalham de forma coordenada para:
+O sistema de agentes de IA do n.ORM é composto por agentes especializados que trabalham de forma coordenada para:
 
 1. **Gerar conteúdo** SEO-otimizado para gestão de reputação
 2. **Avaliar qualidade** do conteúdo gerado

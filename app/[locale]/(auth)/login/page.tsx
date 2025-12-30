@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Wordmark } from '@/components/branding/wordmark';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function LoginPage() {
       });
 
       if (signInError) {
+        console.error('[auth/login] Supabase signIn error:', signInError);
         setError(signInError.message);
         setLoading(false);
         return;
@@ -33,7 +35,8 @@ export default function LoginPage() {
       router.push('/dashboard');
       router.refresh();
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('[auth/login] Unexpected error:', err);
+      setError(err instanceof Error ? err.message : 'Unexpected authentication error');
       setLoading(false);
     }
   };
@@ -41,11 +44,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="max-w-md w-full space-y-8 p-8 bg-card text-card-foreground rounded-xl border border-border shadow-[0_32px_80px_-48px_rgba(0,0,0,0.6)]">
-        <div>
-          <h2 className="text-center text-3xl font-semibold tracking-[0.01em]">Sign in to nORM</h2>
-          <p className="mt-3 text-center text-sm text-muted-foreground">
-            Online Reputation Manager
-          </p>
+        <div className="text-center space-y-3">
+          <p className="text-sm text-muted-foreground uppercase tracking-[0.18em]">Sign in to</p>
+          <Wordmark variant="dark" size="lg" className="mx-auto" />
+          <p className="text-sm text-muted-foreground">Online Reputation Manager</p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           {error && (

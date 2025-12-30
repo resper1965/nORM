@@ -1,15 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import { useContentGeneration } from '@/lib/hooks/use-ai-stream'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { LoadingSpinner } from '@/components/ui/loading-spinner'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
+import { useState } from "react";
+import { useContentGeneration } from "@/lib/hooks/use-ai-stream";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 
 /**
  * Content Generator with Streaming
@@ -17,32 +29,34 @@ import { Badge } from '@/components/ui/badge'
  * Componente que gera conteúdo SEO em tempo real usando streaming
  */
 export function ContentGeneratorStream() {
-  const [topic, setTopic] = useState('')
-  const [keywords, setKeywords] = useState('')
-  const [tone, setTone] = useState<'professional' | 'casual' | 'technical'>('professional')
-  const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium')
+  const [topic, setTopic] = useState("");
+  const [keywords, setKeywords] = useState("");
+  const [tone, setTone] = useState<"professional" | "casual" | "technical">(
+    "professional"
+  );
+  const [length, setLength] = useState<"short" | "medium" | "long">("medium");
 
-  const { content, generate, isLoading, error } = useContentGeneration()
+  const { content, generate, isLoading, error } = useContentGeneration();
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
-      return
+      return;
     }
 
     const keywordsList = keywords
-      .split(',')
-      .map(k => k.trim())
-      .filter(k => k.length > 0)
+      .split(",")
+      .map((k) => k.trim())
+      .filter((k) => k.length > 0);
 
     await generate({
       topic,
       keywords: keywordsList,
       tone,
       length,
-    })
-  }
+    });
+  };
 
-  const wordCount = content.split(/\s+/).filter(w => w.length > 0).length
+  const wordCount = content.split(/\s+/).filter((w) => w.length > 0).length;
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -67,7 +81,9 @@ export function ContentGeneratorStream() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="keywords">Palavras-chave (separadas por vírgula)</Label>
+            <Label htmlFor="keywords">
+              Palavras-chave (separadas por vírgula)
+            </Label>
             <Input
               id="keywords"
               placeholder="SEO, otimização, Google"
@@ -82,7 +98,9 @@ export function ContentGeneratorStream() {
               <Label htmlFor="tone">Tom</Label>
               <Select
                 value={tone}
-                onValueChange={(value: any) => setTone(value)}
+                onValueChange={(value) =>
+                  setTone(value as "professional" | "casual" | "technical")
+                }
                 disabled={isLoading}
               >
                 <SelectTrigger>
@@ -100,7 +118,9 @@ export function ContentGeneratorStream() {
               <Label htmlFor="length">Tamanho</Label>
               <Select
                 value={length}
-                onValueChange={(value: any) => setLength(value)}
+                onValueChange={(value) =>
+                  setLength(value as "short" | "medium" | "long")
+                }
                 disabled={isLoading}
               >
                 <SelectTrigger>
@@ -126,7 +146,7 @@ export function ContentGeneratorStream() {
                 <span className="ml-2">Gerando...</span>
               </>
             ) : (
-              'Gerar Conteúdo'
+              "Gerar Conteúdo"
             )}
           </Button>
 
@@ -145,7 +165,7 @@ export function ContentGeneratorStream() {
             <CardTitle>Preview</CardTitle>
             {content && (
               <Badge variant="secondary">
-                {wordCount} {wordCount === 1 ? 'palavra' : 'palavras'}
+                {wordCount} {wordCount === 1 ? "palavra" : "palavras"}
               </Badge>
             )}
           </div>
@@ -171,7 +191,8 @@ export function ContentGeneratorStream() {
           ) : (
             !isLoading && (
               <div className="flex items-center justify-center h-64 text-muted-foreground">
-                Configure os parâmetros e clique em "Gerar Conteúdo" para começar
+                Configure os parâmetros e clique em "Gerar Conteúdo" para
+                começar
               </div>
             )
           )}
@@ -184,13 +205,11 @@ export function ContentGeneratorStream() {
               <Button variant="outline" size="sm">
                 Baixar
               </Button>
-              <Button size="sm">
-                Salvar Artigo
-              </Button>
+              <Button size="sm">Salvar Artigo</Button>
             </div>
           )}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

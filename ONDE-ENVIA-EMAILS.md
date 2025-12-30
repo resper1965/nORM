@@ -1,4 +1,4 @@
-# 📧 Onde o nORM envia e-mails?
+# 📧 Onde o n.ORM envia e-mails?
 
 Documento detalhando todos os locais onde o sistema envia e-mails e como funciona.
 
@@ -18,7 +18,7 @@ sendEmail(options: EmailOptions): Promise<void>
 - `to`: string | string[] - Destinatário(s)
 - `subject`: string - Assunto do e-mail
 - `html`: string - Conteúdo HTML do e-mail
-- `from`: string (opcional) - Remetente (padrão: 'nORM <noreply@norm.app>')
+- `from`: string (opcional) - Remetente (padrão: 'n.ORM <noreply@norm.app>')
 
 ### 2. Função `sendAlertEmail()` - E-mail de alerta
 ```typescript
@@ -99,7 +99,7 @@ O template HTML está em `sendAlertEmail()` e inclui:
 - Nome do cliente
 - Mensagem do alerta
 - Botões para ver Dashboard e Alertas
-- Footer com informações do nORM
+- Footer com informações do n.ORM
 - Estilo inline CSS
 
 **Emojis por severidade:**

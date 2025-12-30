@@ -1,14 +1,14 @@
-import { OpenAIStream, StreamingTextResponse } from 'ai'
-import { OpenAI } from 'openai'
-import { NextRequest } from 'next/server'
-import { callAIGateway } from '@/lib/ai/gateway'
-import { logger } from '@/lib/utils/logger'
+import { OpenAIStream, StreamingTextResponse } from "ai";
+import { OpenAI } from "openai";
+import { NextRequest } from "next/server";
+import { callAIGateway } from "@/lib/ai/gateway";
+import { logger } from "@/lib/utils/logger";
 
-export const runtime = 'edge'
+export const runtime = "edge";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
-})
+  apiKey: process.env.OPENAI_API_KEY || "",
+});
 
 /**
  * POST /api/ai/chat
@@ -24,10 +24,10 @@ const openai = new OpenAI({
  */
 export async function POST(req: NextRequest) {
   try {
-    const { messages, model = 'gpt-4', temperature = 0.7 } = await req.json()
+    const { messages, model = "gpt-4", temperature = 0.7 } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
-      return new Response('Messages are required', { status: 400 })
+      return new Response("Messages are required", { status: 400 });
     }
 
     // Create streaming response
@@ -36,28 +36,27 @@ export async function POST(req: NextRequest) {
       messages,
       temperature,
       stream: true,
-    })
+    });
 
     // Convert to Vercel AI SDK stream
-    const stream = OpenAIStream(response)
+    const stream = OpenAIStream(response as any);
 
     // Return streaming response
     return new StreamingTextResponse(stream, {
       headers: {
-        'X-Model-Used': model,
-        'X-Stream-Type': 'openai',
+        "X-Model-Used": model,
+        "X-Stream-Type": "openai",
       },
-    })
-
+    });
   } catch (error) {
-    logger.error('AI chat streaming error', { error })
+    logger.error("AI chat streaming error", error as Error);
 
     return new Response(
-      JSON.stringify({ error: 'Failed to generate response' }),
+      JSON.stringify({ error: "Failed to generate response" }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       }
-    )
+    );
   }
 }

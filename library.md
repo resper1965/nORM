@@ -1,4 +1,4 @@
-# Library IDs - nORM Project
+# Library IDs - n.ORM Project
 
 Este arquivo armazena os IDs das bibliotecas do Context7 para referência rápida.
 

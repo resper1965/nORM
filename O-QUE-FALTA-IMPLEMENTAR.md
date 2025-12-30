@@ -1,4 +1,4 @@
-# 🚧 O Que Falta Implementar - nORM
+# 🚧 O Que Falta Implementar - n.ORM
 
 Documento completo listando todas as funcionalidades que ainda precisam ser implementadas.
 

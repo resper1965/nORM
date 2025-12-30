@@ -31,7 +31,7 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
 
   try {
     const result = await resend.emails.send({
-      from: options.from || 'nORM <noreply@norm.app>',
+      from: options.from || 'n.ORM <noreply@norm.app>',
       to: Array.isArray(options.to) ? options.to : [options.to],
       subject: options.subject,
       html: options.html,
@@ -101,7 +101,7 @@ export async function sendAlertEmail(
             </div>
           </div>
           <div class="footer">
-            <p>nORM - Online Reputation Manager</p>
+            <p>n<span style="color:#00ADE8">.</span>ORM - Online Reputation Manager</p>
             <p>Este é um email automático. Por favor, não responda.</p>
           </div>
         </div>

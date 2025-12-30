@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import { getUserClients } from '@/lib/auth/rbac';
 import { calculateReputationScore, calculateTrend } from '@/lib/reputation/calculator';
 import Link from 'next/link';
+import { Wordmark } from '@/components/branding/wordmark';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,7 +34,10 @@ export default async function DashboardPage() {
     // No clients yet, show onboarding
     return (
       <div className="container mx-auto py-8 text-foreground">
-        <h1 className="text-3xl font-semibold mb-4">Welcome to nORM</h1>
+        <h1 className="text-3xl font-semibold mb-4 flex items-center gap-3">
+          <span>Welcome to</span>
+          <Wordmark variant="muted" size="md" />
+        </h1>
         <p className="text-muted-foreground mb-6">
           Get started by adding your first client.
         </p>

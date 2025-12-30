@@ -1,4 +1,4 @@
-# 🔐 Variáveis de Ambiente - nORM (Next Online Reputation Manager)
+# 🔐 Variáveis de Ambiente - n.ORM (Next Online Reputation Manager)
 # 
 # INSTRUÇÕES:
 # 1. Copie este arquivo para .env.local (desenvolvimento) ou configure na Vercel (produção)

@@ -1,4 +1,4 @@
-# nORM - Next Online Reputation Manager
+# n.ORM - Next Online Reputation Manager
 
 <div align="center">
 
@@ -109,7 +109,7 @@ Acesse [http://localhost:3000](http://localhost:3000)
 ## 📁 Estrutura do Projeto
 
 ```
-nORM/
+n.ORM/
 ├── app/                    # Next.js App Router
 │   ├── [locale]/          # Rotas internacionalizadas
 │   │   ├── (auth)/        # Páginas de autenticação

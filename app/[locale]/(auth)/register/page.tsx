@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Wordmark } from '@/components/branding/wordmark';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function RegisterPage() {
       });
 
       if (signUpError) {
+        console.error('[auth/register] Supabase signUp error:', signUpError);
         setError(signUpError.message);
         setLoading(false);
         return;
@@ -47,7 +49,8 @@ export default function RegisterPage() {
       // Redirect to login or dashboard
       router.push('/login?registered=true');
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('[auth/register] Unexpected error:', err);
+      setError(err instanceof Error ? err.message : 'Unexpected authentication error');
       setLoading(false);
     }
   };
@@ -55,11 +58,12 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="max-w-md w-full space-y-8 p-8 bg-card text-card-foreground rounded-xl border border-border shadow-[0_32px_80px_-48px_rgba(0,0,0,0.6)]">
-        <div>
-          <h2 className="text-center text-3xl font-semibold tracking-[0.01em]">Create an account</h2>
-          <p className="mt-3 text-center text-sm text-muted-foreground">
-            Sign up for nORM
-          </p>
+        <div className="text-center space-y-3">
+          <h2 className="text-3xl font-semibold tracking-[0.01em]">Create an account</h2>
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-sm text-muted-foreground uppercase tracking-[0.18em]">Join</p>
+            <Wordmark variant="dark" size="lg" />
+          </div>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleRegister}>
           {error && (

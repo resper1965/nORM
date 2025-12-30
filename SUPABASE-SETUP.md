@@ -1,10 +1,10 @@
-# 🗄️ Supabase Setup Guide - nORM
+# 🗄️ Supabase Setup Guide - n.ORM
 
-Complete guide for setting up Supabase database for the nORM project.
+Complete guide for setting up Supabase database for the n.ORM project.
 
 ## 📊 Project Information
 
-- **Project Name**: nORM
+- **Project Name**: n.ORM
 - **Project URL**: https://hyeifxvxifhrapfdvfry.supabase.co
 - **Project ID**: hyeifxvxifhrapfdvfry
 - **Region**: East US (default)
@@ -27,7 +27,7 @@ Go to: https://app.supabase.com/project/hyeifxvxifhrapfdvfry/settings/api
 
 ### Core Tables
 
-The nORM database consists of the following main tables:
+The n.ORM database consists of the following main tables:
 
 #### 1. Clients Management
 ```sql
@@ -413,5 +413,5 @@ npx tsx scripts/test-supabase.ts
 ---
 
 **Last updated**: 2025-11-06
-**Project**: nORM v1.0.0
+**Project**: n.ORM v1.0.0
 **Supabase Project ID**: hyeifxvxifhrapfdvfry

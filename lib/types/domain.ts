@@ -1,5 +1,5 @@
 /**
- * Domain models for nORM
+ * Domain models for n.ORM
  * Core business entities and their types
  */
 

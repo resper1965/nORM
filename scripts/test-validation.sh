@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Script de validação e testes do projeto nORM
+# Script de validação e testes do projeto n.ORM
 
 set -e
 
-echo "🧪 Validação do Projeto nORM"
+echo "🧪 Validação do Projeto n.ORM"
 echo "================================"
 echo ""
 

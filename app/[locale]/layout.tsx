@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-import { locales } from '@/i18n/config';
-import { Providers } from '@/components/providers';
-import { Toaster } from '@/components/ui/toaster';
-import { cn } from '@/lib/utils';
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { locales } from "@/i18n/config";
+import { Providers } from "@/components/providers";
+import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -18,7 +18,8 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "nORM - Online Reputation Manager",
-  description: "Sistema de gerenciamento de reputação online com IA - Desenvolvido por Bekaa",
+  description:
+    "Sistema de gerenciamento de reputação online com IA - Desenvolvido por Bekaa",
   metadataBase: new URL("https://norm.bekaa.eu"),
   creator: "Bekaa",
   publisher: "Bekaa",
@@ -45,7 +46,7 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  
+
   if (!locales.includes(locale as any)) {
     notFound();
   }
@@ -65,4 +66,3 @@ export default async function LocaleLayout({
     </html>
   );
 }
-
