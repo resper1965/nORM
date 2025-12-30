@@ -2,7 +2,8 @@
   "name": "norm-reputation-manager",
   "version": "1.0.0",
   "description": "Sistema inteligente de gerenciamento de reputação online com IA",
-  "author": "Bekaa <contato@bekaa.com.br> (https://bekaa.com.br)",
+  "author": "Bekaa <contato@bekaa.eu> (https://bekaa.eu)",
+  "homepage": "https://norm.bekaa.eu",
   "private": true,
   "scripts": {
     "dev": "next dev",

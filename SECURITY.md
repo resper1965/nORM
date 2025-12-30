@@ -120,9 +120,9 @@ O nORM implementa as seguintes práticas de segurança:
 - ✅ Contatos para reportar vulnerabilidades
 - ✅ Política de segurança linkada
 - ✅ Data de expiração definida (2026-12-31)
-- ✅ Idiomas preferidos (pt-BR, en)
+- ✅ Idiomas preferidos (pt-BR, en-US, es)
 
-Acesse: https://norm-reputation.vercel.app/.well-known/security.txt
+Acesse: https://norm.bekaa.eu/.well-known/security.txt
 
 #### HSTS (HTTP Strict Transport Security)
 - ✅ **Max-Age**: 2 anos (63072000 segundos)

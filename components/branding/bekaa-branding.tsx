@@ -19,7 +19,7 @@ export function BekaaBranding({ variant = 'footer', className = '' }: BekaaBrand
 
   return (
     <Link
-      href="https://bekaa.com.br"
+      href="https://bekaa.eu"
       target="_blank"
       rel="noopener noreferrer"
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}

@@ -12,7 +12,7 @@ Monitoramento SERP • Análise de Sentimento • Geração de Conteúdo • Ale
 [![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-[Demo](https://norm-reputation.vercel.app) • [Documentação](#-documentação) • [Deploy](#-deploy) • [Contribuir](CONTRIBUTING.md)
+[Demo](https://norm.bekaa.eu) • [Documentação](#-documentação) • [Deploy](#-deploy) • [Contribuir](CONTRIBUTING.md)
 
 <br/>
 
@@ -34,6 +34,7 @@ nORM é uma plataforma completa de gerenciamento de reputação online que combi
 - 📊 **Score de Reputação**: Cálculo de score 0-100 baseado em múltiplos fatores
 - 🚨 **Alertas Inteligentes**: Notificações em tempo real quando conteúdo negativo é detectado
 - 📰 **News Monitoring**: Rastreamento de menções em Google News Brasil
+- 🌍 **Multilíngue**: Interface em 3 idiomas (Português BR, Inglês US, Espanhol)
 - 🎯 **Foco no Brasil**: Otimizado para google.com.br e conteúdo PT-BR
 
 ## 🚀 Tecnologias
@@ -316,11 +317,11 @@ chore: update dependencies
 
 <div align="center">
 
-**[Bekaa](https://bekaa.com.br)** - Soluções Inteligentes em Tecnologia
+**[Bekaa](https://bekaa.eu)** - Soluções Inteligentes em Tecnologia
 
 Este projeto foi desenvolvido pela Bekaa, empresa especializada em desenvolvimento de software com foco em inovação, qualidade e experiência do usuário.
 
-🌐 [bekaa.com.br](https://bekaa.com.br)
+🌐 [bekaa.eu](https://bekaa.eu)
 
 ---
 

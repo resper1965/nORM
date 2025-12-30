@@ -19,9 +19,10 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "nORM - Online Reputation Manager",
   description: "Sistema de gerenciamento de reputação online com IA - Desenvolvido por Bekaa",
+  metadataBase: new URL("https://norm.bekaa.eu"),
   creator: "Bekaa",
   publisher: "Bekaa",
-  authors: [{ name: "Bekaa", url: "https://bekaa.com.br" }],
+  authors: [{ name: "Bekaa", url: "https://bekaa.eu" }],
   keywords: [
     "reputação online",
     "gerenciamento de reputação",
