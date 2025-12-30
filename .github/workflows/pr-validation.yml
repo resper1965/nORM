@@ -1,0 +1,206 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  pr-checks:
+    name: PR Checks
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR title
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $PR_TITLE"
+
+          # Check if title follows conventional commit format
+          if [[ "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\(.+\))?:\ .+ ]]; then
+            echo "✅ PR title follows conventional commit format"
+          else
+            echo "⚠️ PR title should follow format: type(scope): description"
+            echo "Examples:"
+            echo "  - feat(auth): add OAuth login"
+            echo "  - fix(api): resolve rate limiting issue"
+            echo "  - docs: update deployment guide"
+            exit 0  # Warning only, don't fail
+          fi
+
+      - name: Check PR size
+        run: |
+          FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+          LINES_CHANGED=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | awk '{print $4+$6}')
+
+          echo "📊 PR Size:"
+          echo "Files changed: $FILES_CHANGED"
+          echo "Lines changed: $LINES_CHANGED"
+
+          if [ $FILES_CHANGED -gt 50 ]; then
+            echo "⚠️ This PR changes more than 50 files. Consider splitting it."
+          fi
+
+          if [ $LINES_CHANGED -gt 1000 ]; then
+            echo "⚠️ This PR changes more than 1000 lines. Consider splitting it."
+          fi
+
+      - name: Check for merge conflicts
+        run: |
+          if git merge-base --is-ancestor origin/${{ github.base_ref }} HEAD; then
+            echo "✅ No merge conflicts detected"
+          else
+            echo "⚠️ This PR might have merge conflicts"
+            git diff --name-only --diff-filter=U || echo "No conflicts found by diff"
+          fi
+
+      - name: Check for TODO comments
+        run: |
+          echo "🔍 Checking for TODO comments..."
+          TODOS=$(git diff origin/${{ github.base_ref }}...HEAD | grep -i "^+.*TODO" | wc -l || echo "0")
+          if [ "$TODOS" -gt 0 ]; then
+            echo "⚠️ Found $TODOS new TODO comments"
+            git diff origin/${{ github.base_ref }}...HEAD | grep -i "^+.*TODO" || true
+          else
+            echo "✅ No new TODO comments"
+          fi
+
+      - name: Check for console.log
+        run: |
+          echo "🔍 Checking for console.log..."
+          LOGS=$(git diff origin/${{ github.base_ref }}...HEAD | grep -E "^+.*console\.(log|debug|info)" | wc -l || echo "0")
+          if [ "$LOGS" -gt 0 ]; then
+            echo "⚠️ Found $LOGS new console.log statements"
+            git diff origin/${{ github.base_ref }}...HEAD | grep -E "^+.*console\.(log|debug|info)" || true
+            echo "Consider using proper logging or removing debug statements"
+          else
+            echo "✅ No new console.log statements"
+          fi
+
+      - name: Check PR description
+        run: |
+          DESCRIPTION="${{ github.event.pull_request.body }}"
+          if [ -z "$DESCRIPTION" ]; then
+            echo "⚠️ PR has no description. Please add context about your changes."
+            exit 0  # Warning only
+          else
+            echo "✅ PR has description"
+          fi
+
+  label-pr:
+    name: Auto Label
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Auto label based on files
+        uses: actions/labeler@v5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Label based on size
+        run: |
+          FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+
+          if [ $FILES_CHANGED -lt 10 ]; then
+            echo "size:small"
+          elif [ $FILES_CHANGED -lt 30 ]; then
+            echo "size:medium"
+          else
+            echo "size:large"
+          fi
+
+  conflict-check:
+    name: Conflict Check
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for conflicts
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          if git merge-tree $(git merge-base HEAD origin/${{ github.base_ref }}) HEAD origin/${{ github.base_ref }} | grep -q '<<<<<'; then
+            echo "❌ Merge conflicts detected"
+            exit 1
+          else
+            echo "✅ No merge conflicts"
+          fi
+
+  pr-comment:
+    name: PR Summary Comment
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false && github.event.action == 'opened'
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate PR summary
+        id: summary
+        run: |
+          FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+          LINES_ADDED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | awk '{print $4}')
+          LINES_DELETED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | awk '{print $6}')
+          COMMITS=$(git log --oneline origin/${{ github.base_ref }}..HEAD | wc -l)
+
+          echo "files=$FILES_CHANGED" >> $GITHUB_OUTPUT
+          echo "added=$LINES_ADDED" >> $GITHUB_OUTPUT
+          echo "deleted=$LINES_DELETED" >> $GITHUB_OUTPUT
+          echo "commits=$COMMITS" >> $GITHUB_OUTPUT
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## 📊 PR Summary
+
+            **Changes:**
+            - 📁 Files changed: ${{ steps.summary.outputs.files }}
+            - ➕ Lines added: ${{ steps.summary.outputs.added }}
+            - ➖ Lines deleted: ${{ steps.summary.outputs.deleted }}
+            - 📝 Commits: ${{ steps.summary.outputs.commits }}
+
+            **Review Checklist:**
+            - [ ] Code follows project style guide
+            - [ ] Tests added/updated
+            - [ ] Documentation updated
+            - [ ] No breaking changes (or documented)
+            - [ ] Security considerations addressed
+
+            **Next Steps:**
+            1. CI checks must pass
+            2. Request reviews from team members
+            3. Address review feedback
+            4. Merge when approved
+
+            _This comment was auto-generated by GitHub Actions_`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

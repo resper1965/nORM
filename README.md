@@ -6,7 +6,13 @@
 
 Monitoramento SERP • Análise de Sentimento • Geração de Conteúdo • Alertas em Tempo Real
 
-[Demo](https://norm-reputation.vercel.app) • [Documentação](#-documentação) • [Deploy](#-deploy)
+[![CI](https://github.com/resper1965/nORM/actions/workflows/ci.yml/badge.svg)](https://github.com/resper1965/nORM/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5+-blue.svg)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+[Demo](https://norm-reputation.vercel.app) • [Documentação](#-documentação) • [Deploy](#-deploy) • [Contribuir](CONTRIBUTING.md)
 
 <br/>
 
@@ -224,12 +230,69 @@ npm run test:e2e:ui
 - `npm run test:coverage` - Executa testes com coverage
 - `npm run test:e2e` - Executa testes E2E
 
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Este projeto segue práticas de SDLC (Software Development Life Cycle) para garantir qualidade e consistência.
+
+### Como Contribuir
+
+1. **Fork** o repositório
+2. **Clone** seu fork
+3. **Crie uma branch** (`git checkout -b feature/amazing-feature`)
+4. **Faça suas mudanças** seguindo o [guia de estilo](CONTRIBUTING.md#style-guide)
+5. **Adicione testes** para suas mudanças
+6. **Commit** suas mudanças (`git commit -m 'feat: add amazing feature'`)
+7. **Push** para a branch (`git push origin feature/amazing-feature`)
+8. **Abra um Pull Request**
+
+### Recursos para Contribuidores
+
+- 📖 [**Guia de Contribuição**](CONTRIBUTING.md) - Processo completo de contribuição
+- 📋 [**Código de Conduta**](CODE_OF_CONDUCT.md) - Nossas expectativas de comportamento
+- 🔒 [**Política de Segurança**](SECURITY.md) - Como reportar vulnerabilidades
+- 📝 [**Changelog**](CHANGELOG.md) - Histórico de mudanças do projeto
+- 🐛 [**Reportar Bug**](.github/ISSUE_TEMPLATE/bug_report.md) - Template para bugs
+- ✨ [**Sugerir Feature**](.github/ISSUE_TEMPLATE/feature_request.md) - Template para features
+
+### Padrões de Commit
+
+Usamos [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat(scope): add new feature
+fix(scope): fix bug
+docs: update documentation
+style: format code
+refactor: refactor code
+test: add tests
+chore: update dependencies
+```
+
+### Processo de Review
+
+1. **CI Checks**: Lint, tests e build devem passar
+2. **Code Review**: Pelo menos 1 aprovação necessária
+3. **Documentation**: README e docs atualizados
+4. **Tests**: Cobertura mantida ou aumentada
+
 ## 📚 Documentação
 
-- [Plano Técnico](.specify/specs/001-reputation-dashboard-mvp/plan.md)
-- [Modelo de Dados](.specify/specs/001-reputation-dashboard-mvp/data-model.md)
-- [Quickstart](.specify/specs/001-reputation-dashboard-mvp/quickstart.md)
-- [Setup Supabase](SUPABASE-SETUP.md)
+### Documentação Técnica
+- [Plano Técnico](.specify/specs/001-reputation-dashboard-mvp/plan.md) - Arquitetura e decisões técnicas
+- [Modelo de Dados](.specify/specs/001-reputation-dashboard-mvp/data-model.md) - Schema do banco de dados
+- [Quickstart](.specify/specs/001-reputation-dashboard-mvp/quickstart.md) - Guia rápido de desenvolvimento
+- [AI Gateway](docs/AI-GATEWAY.md) - Documentação do AI Gateway e caching
+
+### Guias de Deploy
+- [Deploy Guide](DEPLOY-GUIDE.md) - Guia completo de deployment (600+ linhas)
+- [FREE Tier Setup](FREE-TIER-SETUP.md) - Deploy com $0/mês de infra (400+ linhas)
+- [Setup Supabase](SUPABASE-SETUP.md) - Configuração do Supabase
+
+### Governança e Processos
+- [Contributing Guide](CONTRIBUTING.md) - Como contribuir com o projeto
+- [Code of Conduct](CODE_OF_CONDUCT.md) - Código de conduta da comunidade
+- [Security Policy](SECURITY.md) - Política de segurança e vulnerabilidades
+- [Changelog](CHANGELOG.md) - Histórico de versões e mudanças
 
 ## 🚢 Deploy
 
