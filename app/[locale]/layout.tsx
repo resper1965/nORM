@@ -5,6 +5,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n/config';
 import { Providers } from '@/components/providers';
+import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import "./globals.css";
 
@@ -45,6 +46,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <Providers>
             {children}
+            <Toaster />
           </Providers>
         </NextIntlClientProvider>
       </body>
