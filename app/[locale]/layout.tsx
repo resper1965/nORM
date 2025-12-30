@@ -32,6 +32,11 @@ export const metadata: Metadata = {
     "análise de sentimento",
     "bekaa",
   ],
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export function generateStaticParams() {
