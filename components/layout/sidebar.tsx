@@ -22,6 +22,9 @@ const navigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -68,6 +71,11 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border space-y-3">
+        <div className="flex items-center justify-between px-4">
+          <LocaleSwitcher />
+          <ThemeToggle />
+        </div>
+
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-4 py-2.5 rounded-lg w-full text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
