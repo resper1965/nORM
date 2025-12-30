@@ -4,32 +4,6 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["gru1"],
-  "crons": [
-    {
-      "path": "/api/cron/calculate-reputation",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/sync-social",
-      "schedule": "0 */6 * * *"
-    },
-    {
-      "path": "/api/cron/check-serp",
-      "schedule": "0 */6 * * *"
-    },
-    {
-      "path": "/api/cron/scrape-news",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/send-alerts",
-      "schedule": "*/15 * * * *"
-    },
-    {
-      "path": "/api/cron/auto-generate-content",
-      "schedule": "0 10 * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",

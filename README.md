@@ -8,6 +8,12 @@ Monitoramento SERP • Análise de Sentimento • Geração de Conteúdo • Ale
 
 [Demo](https://norm-reputation.vercel.app) • [Documentação](#-documentação) • [Deploy](#-deploy)
 
+<br/>
+
+**🆓 100% Funciona com Planos Gratuitos! (Vercel FREE + Supabase FREE + GitHub Actions)**
+
+💰 **Custo de infra: $0/mês** | Apenas APIs externas (~$250-350/mês)
+
 </div>
 
 ---
@@ -35,11 +41,30 @@ nORM é uma plataforma completa de gerenciamento de reputação online que combi
 - **Recharts** (Gráficos)
 - **next-intl** (Internacionalização)
 
+## 💰 Custos
+
+### Infraestrutura: **$0/mês** (FREE tier)
+- ✅ **Vercel FREE**: Deployments ilimitados, 100GB bandwidth
+- ✅ **Supabase FREE**: 500MB DB, 2GB bandwidth, 50k MAU
+- ✅ **GitHub Actions FREE**: 2000 min/mês (privado), ilimitado (público)
+
+### APIs Externas: **~$250-350/mês**
+- OpenAI GPT-4: $200-300 (geração de conteúdo + sentiment)
+- SerpAPI: $50 (tracking Google)
+- Resend: $0 (até 3k emails grátis)
+- Meta/LinkedIn APIs: $0 (grátis)
+
+**Total estimado: $250-350/mês** (vs $340-440/mês com planos pagos)
+
+📚 **[Ver guia completo FREE tier →](FREE-TIER-SETUP.md)**
+
 ## 📋 Pré-requisitos
 
 - Node.js 18+
 - npm ou yarn
-- Conta Supabase
+- Conta Supabase (FREE)
+- Conta Vercel (FREE)
+- Conta GitHub (FREE)
 - Chaves de API (OpenAI, SerpAPI, etc.)
 
 ## 🛠️ Instalação
