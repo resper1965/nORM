@@ -1,18 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
-import { ReputationScoreCard } from '@/components/dashboard/reputation-score-card';
-import { AlertsList } from '@/components/dashboard/alerts-list';
-import { SERPPositionGrid } from '@/components/dashboard/serp-position-grid';
-import { ReputationTrendChart } from '@/components/dashboard/reputation-trend-chart';
 import { redirect } from 'next/navigation';
-import { getUserClients } from '@/lib/auth/rbac';
-import { calculateReputationScore, calculateTrend } from '@/lib/reputation/calculator';
-import Link from 'next/link';
-import { Wordmark } from '@/components/branding/wordmark';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
+  redirect('/dashboard');
   const supabase = await createClient();
 
   // Get current user
