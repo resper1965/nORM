@@ -1,26 +1,4 @@
-# Security Contact Information
-# This file follows RFC 9116 - https://www.rfc-editor.org/rfc/rfc9116.html
-
-Contact: https://github.com/resper1965/nORM/security/advisories/new
-Contact: https://github.com/resper1965/nORM/blob/main/SECURITY.md
-
+Contact: mailto:security@bekaa.eu
 Expires: 2026-12-31T23:59:59.000Z
-
-Preferred-Languages: pt-BR, en-US, es
-
-Canonical: https://norm.bekaa.eu/.well-known/security.txt
-
+Preferred-Languages: en, pt-BR
 Policy: https://github.com/resper1965/nORM/blob/main/SECURITY.md
-
-Acknowledgments: https://github.com/resper1965/nORM/blob/main/SECURITY.md#hall-of-fame
-
-# Reporting Security Issues
-#
-# Please do NOT create public GitHub issues for security vulnerabilities.
-#
-# Instead, report them privately using one of the contacts above.
-# We will respond within 48 hours and work with you on a coordinated
-# disclosure timeline.
-#
-# For more details, see our Security Policy:
-# https://github.com/resper1965/nORM/blob/main/SECURITY.md

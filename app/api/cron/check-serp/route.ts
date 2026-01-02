@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { trackClientSERPPositions, detectSERPChanges } from '@/lib/scraping/serp-tracker';
-import { checkAlertConditions, getSeverityFromScoreDrop } from '@/lib/reputation/alert-generator';
+import { getSeverityFromScoreDrop } from '@/lib/reputation/alert-generator';
 import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
 import { requireCronAuth } from '@/lib/auth/cron-auth';

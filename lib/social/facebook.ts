@@ -99,7 +99,7 @@ export async function getFacebookMentions(
               });
             }
           } catch (commentError) {
-            logger.warn(`Failed to fetch comments for post ${post.id}`, commentError as Error);
+            logger.warn(`Failed to fetch comments for post ${post.id}`, { error: String(commentError) });
           }
         }
       }

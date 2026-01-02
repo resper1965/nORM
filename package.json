@@ -18,6 +18,13 @@
     "setup": "bash scripts/setup-bmad.sh",
     "bmad:update": "bash scripts/update-bmad.sh",
     "bmad:check": "node scripts/check-bmad-updates.js",
+    "lint:security": "eslint . --ext .ts,.tsx,.js,.jsx --rule 'no-eval:error' --rule 'no-implied-eval:error' --rule 'no-new-func:error'",
+    "audit:deps": "npm audit --audit-level=high",
+    "scan:secrets": "echo 'Run gitleaks here' || true",
+    "sri:check": "node scripts/sri-check.js",
+    "dast:probe": "node scripts/dast-probe.js",
+    "lint:all": "npm run lint && npm run lint:security",
+    "validate": "npm run lint:all && npm run test && npm run audit:deps",
     "postinstall": "npm run setup"
   },
   "dependencies": {

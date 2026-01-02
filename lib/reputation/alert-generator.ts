@@ -31,7 +31,7 @@ export async function generateAndSaveAlerts(
   clientId: string,
   scoreComparison?: ScoreComparison
 ): Promise<Alert[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const alerts: Omit<Alert, "id" | "created_at">[] = [];
 
   try {

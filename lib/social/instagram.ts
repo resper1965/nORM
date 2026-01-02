@@ -97,7 +97,7 @@ export async function getInstagramMentions(
                 });
               }
             } catch (commentError) {
-              logger.warn(`Failed to fetch comments for media ${media.id}`, commentError as Error);
+              logger.warn(`Failed to fetch comments for media ${media.id}`, { error: String(commentError) });
             }
           }
         }
@@ -143,7 +143,7 @@ export async function getInstagramMentions(
           // This is a simplified implementation - actual hashtag search is more complex
           logger.info(`Hashtag search for ${hashtag}`, { hashtagId });
         } catch (hashtagError) {
-          logger.warn(`Hashtag search not available for ${hashtag}`, hashtagError as Error);
+          logger.warn(`Hashtag search not available for ${hashtag}`, { error: String(hashtagError) });
         }
       }
     } catch (error) {

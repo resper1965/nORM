@@ -51,11 +51,13 @@ nORM é uma plataforma completa de gerenciamento de reputação online que combi
 ## 💰 Custos
 
 ### Infraestrutura: **$0/mês** (FREE tier)
+
 - ✅ **Vercel FREE**: Deployments ilimitados, 100GB bandwidth
 - ✅ **Supabase FREE**: 500MB DB, 2GB bandwidth, 50k MAU
 - ✅ **GitHub Actions FREE**: 2000 min/mês (privado), ilimitado (público)
 
 ### APIs Externas: **~$250-350/mês**
+
 - OpenAI GPT-4: $200-300 (geração de conteúdo + sentiment)
 - SerpAPI: $50 (tracking Google)
 - Resend: $0 (até 3k emails grátis)
@@ -77,17 +79,20 @@ nORM é uma plataforma completa de gerenciamento de reputação online que combi
 ## 🛠️ Instalação
 
 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/resper1965/nORM.git
 cd nORM
 ```
 
 2. Instale as dependências:
+
 ```bash
 npm install
 ```
 
 3. Configure as variáveis de ambiente:
+
 ```bash
 cp .env.example .env.local
 ```
@@ -95,11 +100,13 @@ cp .env.example .env.local
 Edite `.env.local` com suas chaves de API.
 
 4. Execute as migrations do Supabase:
+
 ```bash
 # Execute os arquivos em supabase/migrations/ no Supabase SQL Editor
 ```
 
 5. Inicie o servidor de desenvolvimento:
+
 ```bash
 npm run dev
 ```
@@ -133,6 +140,7 @@ n.ORM/
 ## ✨ Features
 
 ### Core Features (MVP)
+
 - ✅ **Dashboard de Reputação**: Visualização unificada de score, alertas e tendências
 - ✅ **Monitoramento SERP**: Tracking de posições no Google para 5-10 keywords por cliente
 - ✅ **Análise de Sentimento**: Análise automática de sentimento usando GPT-4 (90%+ confiança)
@@ -146,6 +154,7 @@ n.ORM/
 - ✅ **Performance Monitoring**: Métricas de performance e Web Vitals
 
 ### Formula do Score de Reputação
+
 ```
 score = (
   serpPosition × 0.35 +      // 35% - Posição média no Google
@@ -159,6 +168,7 @@ score = (
 ## 🏗️ Arquitetura
 
 ### Stack Tecnológico
+
 ```
 Frontend:
 ├── Next.js 14 (App Router)
@@ -186,6 +196,7 @@ Deploy:
 ```
 
 ### Cron Jobs (Vercel)
+
 ```
 - /api/cron/calculate-reputation → Diariamente às 00:00
 - /api/cron/sync-social → A cada 6 horas
@@ -198,6 +209,7 @@ Deploy:
 ## 🧪 Testes
 
 ### Executar Testes
+
 ```bash
 # Unit tests
 npm run test
@@ -216,6 +228,7 @@ npm run test:e2e:ui
 ```
 
 ### Cobertura de Testes
+
 - ✅ Unit Tests: Reputation Calculator, Sentiment Analysis
 - ✅ Integration Tests: API endpoints, Authentication
 - ✅ E2E Tests: Dashboard, Client Management, Content Generation
@@ -279,17 +292,22 @@ chore: update dependencies
 ## 📚 Documentação
 
 ### Documentação Técnica
-- [Plano Técnico](.specify/specs/001-reputation-dashboard-mvp/plan.md) - Arquitetura e decisões técnicas
-- [Modelo de Dados](.specify/specs/001-reputation-dashboard-mvp/data-model.md) - Schema do banco de dados
-- [Quickstart](.specify/specs/001-reputation-dashboard-mvp/quickstart.md) - Guia rápido de desenvolvimento
-- [AI Gateway](docs/AI-GATEWAY.md) - Documentação do AI Gateway e caching
 
-### Guias de Deploy
-- [Deploy Guide](DEPLOY-GUIDE.md) - Guia completo de deployment (600+ linhas)
-- [FREE Tier Setup](FREE-TIER-SETUP.md) - Deploy com $0/mês de infra (400+ linhas)
-- [Setup Supabase](SUPABASE-SETUP.md) - Configuração do Supabase
+### 📚 Documentation
+
+- [Deployment Guide](docs/setup/DEPLOY-GUIDE.md)
+- [Supabase Setup](docs/setup/SUPABASE-SETUP.md)
+- [Vercel Deployment](docs/setup/VERCEL-DEPLOY.md)
+- [Docker Guide](docs/setup/README-DOCKER.md)
+- [External Requirements](docs/analysis/REQUISITOS-EXTERNOS.md)
+- [AI Gateway](docs/AI-GATEWAY.md) - Documentação do AI Gateway e caching
+- [Technical Plan](docs/specs/001-reputation-dashboard-mvp/plan.md) - Arquitetura e decisões técnicas
+- [Data Model](docs/specs/001-reputation-dashboard-mvp/data-model.md) - Schema do banco de dados
+- [Quickstart](docs/specs/001-reputation-dashboard-mvp/quickstart.md) - Guia rápido de desenvolvimento
+- [FREE Tier Setup](docs/setup/FREE-TIER-SETUP.md) - Deploy com $0/mês de infra (400+ linhas)
 
 ### Governança e Processos
+
 - [Contributing Guide](CONTRIBUTING.md) - Como contribuir com o projeto
 - [Code of Conduct](CODE_OF_CONDUCT.md) - Código de conduta da comunidade
 - [Security Policy](SECURITY.md) - Política de segurança e vulnerabilidades
@@ -325,7 +343,7 @@ Este projeto foi desenvolvido pela Bekaa, empresa especializada em desenvolvimen
 
 ---
 
-*Powered by Bekaa ✨*
+_Powered by Bekaa ✨_
 
 </div>
 

@@ -113,7 +113,7 @@ export async function getLinkedInMentions(
               });
             }
           } catch (commentError) {
-            logger.warn(`Failed to fetch comments for post ${postId}`, commentError as Error);
+            logger.warn(`Failed to fetch comments for post ${postId}`, { error: String(commentError) });
           }
         }
       }
