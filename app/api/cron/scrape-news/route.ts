@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
 import { searchGoogleNews, deduplicateArticles } from '@/lib/scraping/google-news';
+import { requireCronAuth } from '@/lib/auth/cron-auth';
 import { analyzeSentiment } from '@/lib/ai/sentiment';
 
 /**
@@ -11,12 +12,10 @@ import { analyzeSentiment } from '@/lib/ai/sentiment';
  * Protected by Vercel Cron secret or service role
  */
 export async function POST(request: NextRequest) {
-  try {
-    // TODO: Verify cron secret or service role
-    // const authHeader = request.headers.get('authorization');
-    // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     // }
+    // Verify cron authentication
+    const authError = requireCronAuth(request);
+    if (authError) return authError;
 
     const supabase = await createClient();
 
