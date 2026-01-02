@@ -9,6 +9,8 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  // Force regeneration of client reference manifests
+  output: 'standalone',
 };
 
 module.exports = withNextIntl(nextConfig);
