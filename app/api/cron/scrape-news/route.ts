@@ -12,7 +12,7 @@ import { analyzeSentiment } from '@/lib/ai/sentiment';
  * Protected by Vercel Cron secret or service role
  */
 export async function POST(request: NextRequest) {
-    // }
+  try {
     // Verify cron authentication
     const authError = requireCronAuth(request);
     if (authError) return authError;
