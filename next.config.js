@@ -9,8 +9,10 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
-  // Force regeneration of client reference manifests
-  output: 'standalone',
+  // Disable static optimization for dashboard to avoid manifest issues
+  generateBuildId: async () => {
+    return `build-${Date.now()}`;
+  },
 };
 
 module.exports = withNextIntl(nextConfig);

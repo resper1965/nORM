@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Wordmark } from '@/components/branding/wordmark';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
