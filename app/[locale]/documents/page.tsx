@@ -40,36 +40,14 @@ const documents = [
   },
 ];
 
-const people = [
-  {
-    id: 1,
-    name: "Olivia Martin",
-    email: "m@example.com",
-    initials: "OM",
-    access: "Can view",
-  },
-  {
-    id: 2,
-    name: "Isabella Nguyen",
-    email: "b@example.com",
-    initials: "IN",
-    access: "Can edit",
-  },
-  {
-    id: 3,
-    name: "Sofia Davis",
-    email: "p@example.com",
-    initials: "SD",
-    access: "Can view",
-  },
-  {
-    id: 4,
-    name: "Ethan Thompson",
-    email: "e@example.com",
-    initials: "ET",
-    access: "Can edit",
-  },
-];
+// People with access will be loaded from database
+const people: Array<{
+  id: number;
+  name: string;
+  email: string;
+  initials: string;
+  access: string;
+}> = [];
 
 export default function DocumentsPage() {
   return (
@@ -166,25 +144,31 @@ export default function DocumentsPage() {
                 <div>
                   <p className="text-sm font-medium mb-3">People with access</p>
                   <div className="space-y-3">
-                    {people.map((person) => (
-                      <div
-                        key={person.id}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarFallback>{person.initials}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-medium">{person.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {person.email}
-                            </p>
-                          </div>
-                        </div>
-                        <Badge variant="outline">{person.access}</Badge>
+                    {people.length === 0 ? (
+                      <div className="text-center py-4 text-muted-foreground text-sm">
+                        <p>Nenhuma pessoa com acesso.</p>
                       </div>
-                    ))}
+                    ) : (
+                      people.map((person) => (
+                        <div
+                          key={person.id}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarFallback>{person.initials}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-sm font-medium">{person.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {person.email}
+                              </p>
+                            </div>
+                          </div>
+                          <Badge variant="outline">{person.access}</Badge>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>

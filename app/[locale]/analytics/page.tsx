@@ -13,44 +13,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const payments = [
-  {
-    id: 1,
-    status: "success",
-    email: "ken99@example.com",
-    amount: "$316.00",
-  },
-  {
-    id: 2,
-    status: "success",
-    email: "Abe45@example.com",
-    amount: "$242.00",
-  },
-  {
-    id: 3,
-    status: "processing",
-    email: "Monserrat44@example.com",
-    amount: "$837.00",
-  },
-  {
-    id: 4,
-    status: "failed",
-    email: "carmella@example.com",
-    amount: "$721.00",
-  },
-  {
-    id: 5,
-    status: "pending",
-    email: "jason78@example.com",
-    amount: "$450.00",
-  },
-  {
-    id: 6,
-    status: "success",
-    email: "sarah23@example.com",
-    amount: "$1,280.00",
-  },
-];
+// Analytics data will be loaded from database
+const payments: Array<{
+  id: number;
+  status: string;
+  email: string;
+  amount: string;
+}> = [];
 
 const getStatusBadge = (status: string) => {
   const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -67,9 +36,9 @@ export default function AnalyticsPage() {
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
           <p className="text-muted-foreground">
-            Manage your payments.
+            Análise de dados e métricas de reputação.
           </p>
         </div>
 
@@ -81,45 +50,54 @@ export default function AnalyticsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead className="text-right"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {payments.map((payment) => (
-                  <TableRow key={payment.id}>
-                    <TableCell>
-                      <Badge variant={getStatusBadge(payment.status)}>
-                        {payment.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">{payment.email}</TableCell>
-                    <TableCell>{payment.amount}</TableCell>
-                    <TableCell className="text-right">
-                      <button className="text-muted-foreground hover:text-foreground">
-                        Open menu
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <div className="mt-4 text-sm text-muted-foreground">
-              0 of 6 row(s) selected.
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <Button variant="outline" size="sm">
-                Previous
-              </Button>
-              <Button variant="outline" size="sm">
-                Next
-              </Button>
-            </div>
+            {payments.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>Nenhum dado de analytics disponível.</p>
+                <p className="text-sm mt-2">Esta funcionalidade será implementada em breve.</p>
+              </div>
+            ) : (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead className="text-right"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {payments.map((payment) => (
+                      <TableRow key={payment.id}>
+                        <TableCell>
+                          <Badge variant={getStatusBadge(payment.status)}>
+                            {payment.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-medium">{payment.email}</TableCell>
+                        <TableCell>{payment.amount}</TableCell>
+                        <TableCell className="text-right">
+                          <button className="text-muted-foreground hover:text-foreground">
+                            Open menu
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="mt-4 text-sm text-muted-foreground">
+                  0 of {payments.length} row(s) selected.
+                </div>
+                <div className="flex items-center justify-between mt-4">
+                  <Button variant="outline" size="sm">
+                    Previous
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    Next
+                  </Button>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -6,35 +6,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 
-const messages = [
-  {
-    id: 1,
-    from: "Sofia Davis",
-    email: "m@example.com",
-    subject: "New message",
-    preview: "Hi, how can I help you today?",
-    time: "10:30 AM",
-    unread: true,
-  },
-  {
-    id: 2,
-    from: "Isabella Nguyen",
-    email: "b@example.com",
-    subject: "Meeting Request",
-    preview: "Can we schedule a meeting for next week?",
-    time: "9:15 AM",
-    unread: false,
-  },
-  {
-    id: 3,
-    from: "Ethan Thompson",
-    email: "e@example.com",
-    subject: "Project Update",
-    preview: "Here's the latest update on the project...",
-    time: "Yesterday",
-    unread: false,
-  },
-];
+// Messages will be loaded from database
+const messages: Array<{
+  id: number;
+  from: string;
+  email: string;
+  subject: string;
+  preview: string;
+  time: string;
+  unread: boolean;
+}> = [];
 
 export default function MailPage() {
   return (
@@ -51,16 +32,22 @@ export default function MailPage() {
           <Card className="col-span-4">
             <CardHeader>
               <CardTitle>Inbox</CardTitle>
-              <CardDescription>
-                {messages.length} mensagens não lidas
-              </CardDescription>
+            <CardDescription>
+              {messages.length === 0 ? "Nenhuma mensagem" : `${messages.length} mensagens não lidas`}
+            </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <Input placeholder="Buscar mensagens..." className="mb-4" />
                 <ScrollArea className="h-[600px]">
                   <div className="space-y-2">
-                    {messages.map((message) => (
+                    {messages.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p>Nenhuma mensagem encontrada.</p>
+                        <p className="text-sm mt-2">Esta funcionalidade será implementada em breve.</p>
+                      </div>
+                    ) : (
+                      messages.map((message) => (
                       <div
                         key={message.id}
                         className={`flex items-start gap-4 p-4 rounded-lg border hover:bg-accent cursor-pointer ${
@@ -88,7 +75,8 @@ export default function MailPage() {
                           </Badge>
                         )}
                       </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </ScrollArea>
               </div>
@@ -101,58 +89,8 @@ export default function MailPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Avatar>
-                    <AvatarFallback>S</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium">Sofia Davis</p>
-                      <span className="text-xs text-muted-foreground">m@example.com</span>
-                    </div>
-                    <div className="rounded-lg bg-muted p-3">
-                      <p className="text-sm">Hi, how can I help you today?</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Avatar>
-                    <AvatarFallback>Y</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium">You</p>
-                    </div>
-                    <div className="rounded-lg bg-primary text-primary-foreground p-3">
-                      <p className="text-sm">Hey, I'm having trouble with my account.</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Avatar>
-                    <AvatarFallback>S</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium">Sofia Davis</p>
-                    </div>
-                    <div className="rounded-lg bg-muted p-3">
-                      <p className="text-sm">What seems to be the problem?</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Avatar>
-                    <AvatarFallback>Y</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium">You</p>
-                    </div>
-                    <div className="rounded-lg bg-primary text-primary-foreground p-3">
-                      <p className="text-sm">I can't log in.</p>
-                    </div>
-                  </div>
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Selecione uma mensagem para ver a conversa.</p>
                 </div>
                 <div className="flex gap-2 pt-4">
                   <Input placeholder="Digite sua mensagem..." className="flex-1" />

@@ -6,29 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UserPlus } from "lucide-react";
 
-const teamMembers = [
-  {
-    id: 1,
-    name: "Sofia Davis",
-    email: "m@example.com",
-    role: "Owner",
-    initials: "SD",
-  },
-  {
-    id: 2,
-    name: "Jackson Lee",
-    email: "p@example.com",
-    role: "Developer",
-    initials: "JL",
-  },
-  {
-    id: 3,
-    name: "Isabella Nguyen",
-    email: "i@example.com",
-    role: "Billing",
-    initials: "IN",
-  },
-];
+// Team members will be loaded from database
+const teamMembers: Array<{
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  initials: string;
+}> = [];
 
 export default function TeamPage() {
   return (
@@ -58,23 +43,30 @@ export default function TeamPage() {
             </div>
 
             <div className="space-y-4">
-              {teamMembers.map((member) => (
-                <div
-                  key={member.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center gap-4">
-                    <Avatar>
-                      <AvatarFallback>{member.initials}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{member.name}</p>
-                      <p className="text-sm text-muted-foreground">{member.email}</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">{member.role}</Badge>
+              {teamMembers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Nenhum membro da equipe encontrado.</p>
+                  <p className="text-sm mt-2">Esta funcionalidade será implementada em breve.</p>
                 </div>
-              ))}
+              ) : (
+                teamMembers.map((member) => (
+                  <div
+                    key={member.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
+                    <div className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarFallback>{member.initials}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">{member.name}</p>
+                        <p className="text-sm text-muted-foreground">{member.email}</p>
+                      </div>
+                    </div>
+                    <Badge variant="secondary">{member.role}</Badge>
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
