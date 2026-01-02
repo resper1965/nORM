@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createDraftPost, testWordPressConnection, type WordPressSiteConfig } from './client';
 import { logger } from '@/lib/utils/logger';
 import { NotFoundError, ExternalAPIError } from '@/lib/errors/errors';
+import { decrypt } from '@/lib/utils/encryption';
 import type { GeneratedContent } from '@/lib/types/domain';
 
 /**
@@ -25,9 +26,14 @@ async function getWordPressConfig(siteId: string): Promise<WordPressSiteConfig> 
     throw new NotFoundError('WordPress site', siteId);
   }
 
-  // TODO: Decrypt password
-  // For now, assuming password is stored (should be encrypted in production)
-  const applicationPassword = site.application_password_encrypted;
+  // Decrypt password
+  let applicationPassword: string;
+  try {
+    applicationPassword = decrypt(site.application_password_encrypted);
+  } catch (decryptError) {
+    logger.error(`Failed to decrypt WordPress password for site ${siteId}`, decryptError as Error);
+    throw new ExternalAPIError('WordPress', 'Failed to decrypt password');
+  }
 
   return {
     siteUrl: site.site_url,

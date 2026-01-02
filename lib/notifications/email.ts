@@ -116,3 +116,51 @@ export async function sendAlertEmail(
   });
 }
 
+/**
+ * Get email recipients for alerts (admins and editors of a client)
+ */
+export async function getAlertRecipients(
+  clientId: string,
+  supabase: any
+): Promise<string[]> {
+  try {
+    // Get client users with admin or editor role
+    const { data: clientUsers, error } = await supabase
+      .from('client_users')
+      .select('user_id, role')
+      .eq('client_id', clientId)
+      .in('role', ['admin', 'editor']);
+
+    if (error) {
+      logger.error('Error fetching alert recipients', error);
+      return [];
+    }
+
+    if (!clientUsers || clientUsers.length === 0) {
+      return [];
+    }
+
+    // Get user emails from auth.users
+    const userIds = clientUsers.map((cu: any) => cu.user_id);
+    const { data: users, error: usersError } = await supabase
+      .from('auth.users')
+      .select('id, email')
+      .in('id', userIds);
+
+    if (usersError) {
+      // Fallback: try to get emails via auth admin API or direct query
+      logger.warn('Could not fetch user emails directly, trying alternative method');
+      
+      // Alternative: use Supabase admin client or RPC function
+      // For now, return empty array if we can't get emails
+      return [];
+    }
+
+    return (users || [])
+      .map((u: any) => u.email)
+      .filter((email: string | null): email is string => !!email && email.includes('@'));
+  } catch (error) {
+    logger.error('Error getting alert recipients', error as Error);
+    return [];
+  }
+}

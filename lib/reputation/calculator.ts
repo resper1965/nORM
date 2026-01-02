@@ -38,22 +38,38 @@ export async function calculateReputationScore(
     const { clientId, periodStart, periodEnd } = params;
 
     // 1. SERP Score (35%)
-    // Fetch top 20 rankings associated with client content
-    const { data: serpResults, error: serpError } = await supabase
-      .from("serp_results")
-      .select("position")
-      .eq("keyword.client_id", clientId) // assuming join or direct link
-      // .eq('is_client_content', true) // Only count client's owned content ranking high?
-      // Actually usually we want to know if *positive* content is high.
-      // For now, let's assume we track specific URLs.
-      // If table lacks 'is_client_content', we might default to all results for client keywords?
-      // Let's stick to domain.ts definition: SERPResult has is_client_content.
-      .not("position", "is", null)
-      .lte("position", 20)
-      .order("position", { ascending: true });
+    // First, get all keyword IDs for this client
+    const { data: clientKeywords, error: keywordsError } = await supabase
+      .from("keywords")
+      .select("id")
+      .eq("client_id", clientId)
+      .eq("is_active", true);
 
-    if (serpError)
-      logger.error("Error fetching SERP results", serpError as Error);
+    if (keywordsError) {
+      logger.error("Error fetching client keywords", keywordsError as Error);
+    }
+
+    // Then fetch SERP results for those keywords
+    const keywordIds = clientKeywords?.map((k) => k.id) || [];
+    let serpResults: { position: number }[] = [];
+
+    if (keywordIds.length > 0) {
+      const { data, error: serpError } = await supabase
+        .from("serp_results")
+        .select("position")
+        .in("keyword_id", keywordIds)
+        .not("position", "is", null)
+        .lte("position", 20)
+        .gte("checked_at", periodStart.toISOString())
+        .lte("checked_at", periodEnd.toISOString())
+        .order("position", { ascending: true });
+
+      if (serpError) {
+        logger.error("Error fetching SERP results", serpError as Error);
+      } else {
+        serpResults = data || [];
+      }
+    }
 
     let serpScore = 0;
     if (serpResults && serpResults.length > 0) {
@@ -90,40 +106,153 @@ export async function calculateReputationScore(
     }
 
     // 3. Social Sentiment (20%)
-    const { data: socialPosts, error: socialError } = await supabase
-      .from("social_posts")
-      .select("sentiment_score")
-      .eq("social_account.client_id", clientId) // Join might require specific syntax or separate query if no relation
-      // Assuming 'social_posts' has 'client_id' or we access via join.
-      // Direct client_id is safer if schema allows. Let's assume schema has client_id or we filter later.
-      // If direct filter not possible, we need to fetch accounts first.
-      // Let's assume view or denormalized client_id on posts for performance.
-      // Or: .eq('social_accounts.client_id', clientId) with inner join
-      .gte("published_at", periodStart.toISOString())
-      .lte("published_at", periodEnd.toISOString());
+    // First, get all social account IDs for this client
+    const { data: clientSocialAccounts, error: accountsError } = await supabase
+      .from("social_accounts")
+      .select("id")
+      .eq("client_id", clientId)
+      .eq("is_active", true);
 
-    // NOTE: Supabase join requires: .select('*, social_accounts!inner(*)')
-    // Since we don't strictly know schema, let's keep it simple or safe.
-    // Ideally we query social_accounts then posts.
+    if (accountsError) {
+      logger.error("Error fetching social accounts", accountsError as Error);
+    }
+
+    // Then fetch social posts for those accounts
+    const accountIds = clientSocialAccounts?.map((a) => a.id) || [];
+    let socialPosts: { sentiment_score: number | null }[] = [];
+
+    if (accountIds.length > 0) {
+      const { data, error: socialError } = await supabase
+        .from("social_posts")
+        .select("sentiment_score")
+        .in("social_account_id", accountIds)
+        .gte("published_at", periodStart.toISOString())
+        .lte("published_at", periodEnd.toISOString());
+
+      if (socialError) {
+        logger.error("Error fetching social posts", socialError as Error);
+      } else {
+        socialPosts = data || [];
+      }
+    }
 
     let socialScore = 5;
-    // ... Implementation detail: if complex join needed, maybe skip for now or fetch accounts first.
-    // Let's use a safe assumption: 'social_posts' might not have direct client_id.
-    // For MVp, let's assume empty if complex.
+    if (socialPosts && socialPosts.length > 0) {
+      const validSentiments = socialPosts.filter(
+        (p) => p.sentiment_score !== null && p.sentiment_score !== undefined
+      );
+      if (validSentiments.length > 0) {
+        const avgSentiment =
+          validSentiments.reduce(
+            (acc, curr) => acc + (curr.sentiment_score || 0),
+            0
+          ) / validSentiments.length;
+        // Map -1..1 to 0..10
+        socialScore = (avgSentiment + 1) * 5;
+      }
+    }
 
     // 4. Trend (15%) - Compare avg sentiment of this period vs previous
-    const previousStart = new Date(periodStart);
-    previousStart.setDate(
-      previousStart.getDate() - (periodEnd.getDate() - periodStart.getDate())
-    );
+    const periodDuration = periodEnd.getTime() - periodStart.getTime();
+    const previousEnd = new Date(periodStart);
+    const previousStart = new Date(previousEnd.getTime() - periodDuration);
 
-    // Simplification: Trend is just Sentiment improvement?
-    // Map improvement to 0-10. Stable = 5. +0.5 change = 7.5 ?
-    const trendScore = 5; // Placeholder for complex partial calculations
+    // Calculate current period average sentiment (news + social combined)
+    const currentNewsSentiment =
+      newsMentions && newsMentions.length > 0
+        ? newsMentions.reduce(
+            (acc, curr) => acc + (curr.sentiment_score || 0),
+            0
+          ) / newsMentions.length
+        : 0;
+
+    const currentSocialSentiment =
+      socialPosts && socialPosts.length > 0
+        ? socialPosts
+            .filter((p) => p.sentiment_score !== null && p.sentiment_score !== undefined)
+            .reduce((acc, curr) => acc + (curr.sentiment_score || 0), 0) /
+          socialPosts.filter((p) => p.sentiment_score !== null && p.sentiment_score !== undefined).length
+        : 0;
+
+    const currentAvgSentiment =
+      newsMentions && socialPosts && (newsMentions.length > 0 || socialPosts.length > 0)
+        ? (currentNewsSentiment * (newsMentions.length || 0) +
+            currentSocialSentiment * (socialPosts.length || 0)) /
+          ((newsMentions.length || 0) + (socialPosts.length || 0))
+        : 0;
+
+    // Calculate previous period average sentiment
+    const { data: previousNewsMentions } = await supabase
+      .from("news_mentions")
+      .select("sentiment_score")
+      .eq("client_id", clientId)
+      .gte("published_at", previousStart.toISOString())
+      .lt("published_at", previousEnd.toISOString());
+
+    // Fetch previous period social posts using the same account IDs
+    let previousSocialPosts: { sentiment_score: number | null }[] = [];
+    if (accountIds.length > 0) {
+      const { data } = await supabase
+        .from("social_posts")
+        .select("sentiment_score")
+        .in("social_account_id", accountIds)
+        .gte("published_at", previousStart.toISOString())
+        .lt("published_at", previousEnd.toISOString());
+      previousSocialPosts = data || [];
+    }
+
+    const previousNewsSentiment =
+      previousNewsMentions && previousNewsMentions.length > 0
+        ? previousNewsMentions.reduce(
+            (acc, curr) => acc + (curr.sentiment_score || 0),
+            0
+          ) / previousNewsMentions.length
+        : 0;
+
+    const previousSocialSentiment =
+      previousSocialPosts && previousSocialPosts.length > 0
+        ? previousSocialPosts
+            .filter((p) => p.sentiment_score !== null && p.sentiment_score !== undefined)
+            .reduce((acc, curr) => acc + (curr.sentiment_score || 0), 0) /
+          previousSocialPosts.filter((p) => p.sentiment_score !== null && p.sentiment_score !== undefined).length
+        : 0;
+
+    const previousAvgSentiment =
+      previousNewsMentions && previousSocialPosts &&
+      (previousNewsMentions.length > 0 || previousSocialPosts.length > 0)
+        ? (previousNewsSentiment * (previousNewsMentions.length || 0) +
+            previousSocialSentiment * (previousSocialPosts.length || 0)) /
+          ((previousNewsMentions.length || 0) + (previousSocialPosts.length || 0))
+        : 0;
+
+    // Calculate trend: improvement from previous to current
+    // Map improvement to 0-10. Stable = 5. +0.2 change = 7, -0.2 change = 3
+    const sentimentChange = currentAvgSentiment - previousAvgSentiment;
+    let trendScore = 5; // Neutral
+    if (Math.abs(sentimentChange) > 0.01) {
+      // Scale: -1 to +1 change maps to 0 to 10
+      // +0.2 change = +2 points = 7/10
+      // -0.2 change = -2 points = 3/10
+      trendScore = Math.max(0, Math.min(10, 5 + sentimentChange * 10));
+    }
 
     // 5. Volume (5%) - Positive Ratio
-    // Calculate from News + Social
-    let volumeScore = 5;
+    // Calculate ratio of positive mentions to total mentions
+    const totalMentions = (newsMentions?.length || 0) + (socialPosts?.length || 0);
+    let volumeScore = 5; // Neutral if no data
+
+    if (totalMentions > 0) {
+      const positiveNews =
+        newsMentions?.filter((m) => (m.sentiment_score || 0) > 0.1).length || 0;
+      const positiveSocial =
+        socialPosts?.filter(
+          (p) => p.sentiment_score !== null && p.sentiment_score !== undefined && (p.sentiment_score || 0) > 0.1
+        ).length || 0;
+      const positiveCount = positiveNews + positiveSocial;
+      const positiveRatio = positiveCount / totalMentions;
+      // Map 0-1 ratio to 0-10 score
+      volumeScore = positiveRatio * 10;
+    }
 
     // Final Calculation
     const finalScore =

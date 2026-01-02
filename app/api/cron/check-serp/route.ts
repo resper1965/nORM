@@ -4,6 +4,7 @@ import { trackClientSERPPositions, detectSERPChanges } from '@/lib/scraping/serp
 import { checkAlertConditions, getSeverityFromScoreDrop } from '@/lib/reputation/alert-generator';
 import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
+import { requireCronAuth } from '@/lib/auth/cron-auth';
 
 /**
  * POST /api/cron/check-serp
@@ -12,7 +13,9 @@ import { AppError } from '@/lib/errors/errors';
  */
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Verify cron secret or service role
+    // Verify cron authentication
+    const authError = requireCronAuth(request);
+    if (authError) return authError;
 
     const supabase = await createClient();
 

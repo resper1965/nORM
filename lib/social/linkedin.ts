@@ -48,21 +48,83 @@ export async function getLinkedInMentions(
     const client = createLinkedInClient(accessToken);
     const mentions: LinkedInMention[] = [];
 
-    // TODO: Implement actual LinkedIn API calls
-    // LinkedIn API v2 requires:
-    // 1. Company Page admin access
-    // 2. OAuth 2.0 authentication
-    // 3. Proper scopes (r_organization_social, w_organization_social)
-    // 4. API access approval from LinkedIn
-
     logger.info('Fetching LinkedIn mentions', { companyId });
 
-    // Placeholder implementation
-    // In production, this would:
-    // 1. Monitor company page posts
-    // 2. Track comments on posts
-    // 3. Monitor mentions in other posts
-    // 4. Track engagement metrics
+    try {
+      // Get company page posts (shares)
+      const sharesResponse = await client.get(`/organizationAcls`, {
+        params: {
+          q: 'roleAssignee',
+          role: 'ADMINISTRATOR',
+          projection: '(elements*(organization~(id,name)))',
+        },
+      });
+
+      // Get posts from the company page
+      const postsResponse = await client.get(`/ugcPosts`, {
+        params: {
+          q: 'authors',
+          authors: `List(${companyId})`,
+          count: 25,
+        },
+      });
+
+      const posts = postsResponse.data?.elements || [];
+
+      for (const post of posts) {
+        const content = post.specificContent?.['com.linkedin.ugc.ShareContent']?.text?.text || '';
+        const postId = post.id?.split(':').pop() || post.id || '';
+
+        mentions.push({
+          id: postId,
+          text: content,
+          authorName: post.author || 'Company',
+          authorId: companyId,
+          timestamp: new Date(post.created?.time || Date.now()),
+          type: 'post',
+          url: `https://www.linkedin.com/feed/update/${postId}`,
+          engagement: {
+            likes: post.numLikes || 0,
+            comments: post.numComments || 0,
+            shares: post.numShares || 0,
+          },
+        });
+
+        // Get comments for this post
+        if (post.numComments > 0) {
+          try {
+            const commentsResponse = await client.get(`/socialActions/${postId}/comments`, {
+              params: {
+                count: 50,
+              },
+            });
+
+            const comments = commentsResponse.data?.elements || [];
+
+            for (const comment of comments) {
+              mentions.push({
+                id: comment.id || '',
+                text: comment.message?.text || '',
+                authorName: comment.actor?.name?.text || 'Unknown',
+                authorId: comment.actor?.id || '',
+                timestamp: new Date(comment.created?.time || Date.now()),
+                type: 'comment',
+                url: `https://www.linkedin.com/feed/update/${postId}`,
+              });
+            }
+          } catch (commentError) {
+            logger.warn(`Failed to fetch comments for post ${postId}`, commentError as Error);
+          }
+        }
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || error.message;
+        logger.error(`LinkedIn API error: ${errorMessage}`, error);
+        throw new ExternalAPIError('LinkedIn', errorMessage, error);
+      }
+      throw error;
+    }
 
     return mentions;
   } catch (error) {

@@ -70,6 +70,30 @@ export async function POST(request: NextRequest) {
 
     const targetKeywords = keywords?.map(k => k.keyword) || [];
 
+    // If trigger_mention_id is provided, fetch mention data for counter-article generation
+    let triggerMentionTitle: string | undefined;
+    let triggerMentionUrl: string | undefined;
+    
+    if (trigger_mention_id) {
+      const { data: mention, error: mentionError } = await supabase
+        .from('news_mentions')
+        .select('title, url')
+        .eq('id', trigger_mention_id)
+        .eq('client_id', client_id)
+        .single();
+
+      if (mentionError || !mention) {
+        logger.warn('Trigger mention not found or access denied', {
+          mentionId: trigger_mention_id,
+          error: mentionError,
+        });
+        // Continue without trigger mention data
+      } else {
+        triggerMentionTitle = mention.title;
+        triggerMentionUrl = mention.url;
+      }
+    }
+
     // Use AI agents for content generation with evaluation
     const { orchestrateContentGenerationWithEvaluation, createAgentContext } = await import('@/lib/ai/agents/orchestrator');
     const { ContentGeneratorAgent } = await import('@/lib/ai/agents/content-generator-agent');
@@ -87,6 +111,8 @@ export async function POST(request: NextRequest) {
       targetKeywords: targetKeywords.length > 0 ? targetKeywords : [topic],
       articleCount: article_count,
       triggerMentionId: trigger_mention_id || undefined,
+      triggerMentionTitle,
+      triggerMentionUrl,
     });
 
     if (!agentResult.success || !agentResult.data) {

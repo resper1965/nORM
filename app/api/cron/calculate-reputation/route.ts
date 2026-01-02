@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { calculateReputationScore } from '@/lib/reputation/calculator';
-import { logger } from '@/lib/utils/logger';
-import { AppError } from '@/lib/errors/errors';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { calculateReputationScore } from "@/lib/reputation/calculator";
+import { logger } from "@/lib/utils/logger";
+import { AppError } from "@/lib/errors/errors";
+import { requireCronAuth } from "@/lib/auth/cron-auth";
 
 /**
  * POST /api/cron/calculate-reputation
@@ -11,26 +12,31 @@ import { AppError } from '@/lib/errors/errors';
  */
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Verify cron secret or service role
+    // Verify cron authentication
+    const authError = requireCronAuth(request);
+    if (authError) return authError;
 
     const supabase = await createClient();
 
     // Get all active clients
     const { data: clients, error: clientsError } = await supabase
-      .from('clients')
-      .select('id, name')
-      .eq('is_active', true);
+      .from("clients")
+      .select("id, name")
+      .eq("is_active", true);
 
     if (clientsError) {
-      logger.error('Failed to fetch clients for reputation calculation', clientsError);
-      throw new AppError('Failed to fetch clients', 500);
+      logger.error(
+        "Failed to fetch clients for reputation calculation",
+        clientsError
+      );
+      throw new AppError("Failed to fetch clients", 500);
     }
 
     if (!clients || clients.length === 0) {
       return NextResponse.json({
-        status: 'completed',
+        status: "completed",
         clients_processed: 0,
-        message: 'No active clients found',
+        message: "No active clients found",
       });
     }
 
@@ -45,6 +51,15 @@ export async function POST(request: NextRequest) {
     // Calculate score for each client
     for (const client of clients) {
       try {
+        // Fetch previous score for trend comparison and alerting
+        const { data: previousScoreData } = await supabase
+          .from("reputation_scores")
+          .select("score")
+          .eq("client_id", client.id)
+          .order("calculated_at", { ascending: false })
+          .limit(1)
+          .single();
+
         const { score, breakdown } = await calculateReputationScore({
           clientId: client.id,
           periodStart,
@@ -53,39 +68,70 @@ export async function POST(request: NextRequest) {
 
         // Save to database
         const { error: insertError } = await supabase
-          .from('reputation_scores')
+          .from("reputation_scores")
           .insert({
             client_id: client.id,
             score,
             score_breakdown: breakdown,
-            period_start: periodStart.toISOString().split('T')[0],
-            period_end: periodEnd.toISOString().split('T')[0],
+            period_start: periodStart.toISOString().split("T")[0],
+            period_end: periodEnd.toISOString().split("T")[0],
           });
 
         if (insertError) {
-          logger.error(`Failed to save reputation score for client ${client.id}`, insertError);
+          logger.error(
+            `Failed to save reputation score for client ${client.id}`,
+            insertError
+          );
           errors.push(`Client ${client.name}: ${insertError.message}`);
         } else {
           processed++;
+
+          // Generate alerts
+          await import("@/lib/reputation/alert-generator")
+            .then((m) =>
+              m.generateAndSaveAlerts(
+                client.id,
+                previousScoreData
+                  ? {
+                      current: score,
+                      previous: previousScoreData.score,
+                    }
+                  : undefined
+              )
+            )
+            .catch((err) => {
+              logger.error(
+                `Failed to generate alerts for client ${client.id}`,
+                err
+              );
+            });
         }
       } catch (error) {
-        logger.error(`Failed to calculate reputation for client ${client.id}`, error as Error);
+        logger.error(
+          `Failed to calculate reputation for client ${client.id}`,
+          error as Error
+        );
         errors.push(`Client ${client.name}: ${(error as Error).message}`);
       }
     }
 
     return NextResponse.json({
-      status: 'completed',
+      status: "completed",
       clients_processed: processed,
       total_clients: clients.length,
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {
-    logger.error('Error in POST /api/cron/calculate-reputation', error as Error);
+    logger.error(
+      "Error in POST /api/cron/calculate-reputation",
+      error as Error
+    );
     return NextResponse.json(
-      { error: 'Internal Server Error', message: 'Failed to calculate reputation scores' },
+      {
+        error: "Internal Server Error",
+        message: "Failed to calculate reputation scores",
+      },
       { status: 500 }
     );
   }
 }
-
