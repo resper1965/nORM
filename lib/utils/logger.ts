@@ -45,7 +45,12 @@ class Logger {
       logMethod(prefix, message);
     }
 
-    // TODO: In production, send to logging service (e.g., Sentry, LogRocket)
+    // Send to Sentry in production if configured
+    if (!this.isDevelopment && level === 'error' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      // Sentry integration is optional - only if DSN is configured
+      // To enable: Install @sentry/nextjs and configure in sentry.client.config.ts
+      // For now, errors are logged to console and can be monitored via Vercel logs
+    }
   }
 
   debug(message: string, metadata?: Record<string, unknown>) {

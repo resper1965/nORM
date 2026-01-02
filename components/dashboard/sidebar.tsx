@@ -5,13 +5,10 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import {
   LayoutDashboard,
-  Calendar,
-  Mail,
-  CreditCard,
   Settings,
   Users,
-  BarChart3,
   FileText,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocale } from 'next-intl';
@@ -24,38 +21,23 @@ export function Sidebar() {
   const menuItems = [
     {
       titleKey: "dashboard",
-      href: `/${locale}`,
+      href: `/${locale}/dashboard`,
       icon: LayoutDashboard,
     },
     {
-      titleKey: "analytics",
-      href: `/${locale}/analytics`,
-      icon: BarChart3,
-    },
-    {
-      titleKey: "calendar",
-      href: `/${locale}/calendar`,
-      icon: Calendar,
-    },
-    {
-      titleKey: "mail",
-      href: `/${locale}/mail`,
-      icon: Mail,
-    },
-    {
-      titleKey: "pricing",
-      href: `/${locale}/pricing`,
-      icon: CreditCard,
-    },
-    {
-      titleKey: "team",
-      href: `/${locale}/team`,
+      titleKey: "clients",
+      href: `/${locale}/clients`,
       icon: Users,
     },
     {
-      titleKey: "documents",
-      href: `/${locale}/documents`,
+      titleKey: "content",
+      href: `/${locale}/content`,
       icon: FileText,
+    },
+    {
+      titleKey: "social",
+      href: `/${locale}/social`,
+      icon: MessageSquare,
     },
     {
       titleKey: "settings",

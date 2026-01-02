@@ -14,12 +14,9 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
-    "analytics": "Analytics",
-    "calendar": "Calendário",
-    "mail": "E-mail",
-    "pricing": "Preços",
-    "team": "Equipe",
-    "documents": "Documentos",
+    "clients": "Clientes",
+    "content": "Conteúdo",
+    "social": "Redes Sociais",
     "settings": "Configurações"
   },
   "dashboard": {

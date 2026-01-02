@@ -19,6 +19,29 @@ export async function trackSERPPosition(
   const supabase = await createClient();
 
   try {
+    // Get client website to detect client content
+    const { data: keywordData } = await supabase
+      .from('keywords')
+      .select('client_id, clients!inner(website)')
+      .eq('id', keywordId)
+      .single();
+
+    // Handle both array and object responses from Supabase
+    const clientsData = keywordData?.clients;
+    const clientWebsite = Array.isArray(clientsData) 
+      ? clientsData[0]?.website 
+      : (clientsData as any)?.website;
+    let clientDomain: string | null = null;
+    
+    if (clientWebsite) {
+      try {
+        const url = new URL(clientWebsite.startsWith('http') ? clientWebsite : `https://${clientWebsite}`);
+        clientDomain = url.hostname.replace('www.', '');
+      } catch {
+        // Invalid URL, ignore
+      }
+    }
+
     // Check current SERP position
     const serpResponse = await checkSERPPosition(keyword);
 
@@ -26,6 +49,18 @@ export async function trackSERPPosition(
     const results: DBSERPResult[] = [];
 
     for (const result of serpResponse.results) {
+      // Detect if URL belongs to client
+      let isClientContent = false;
+      if (clientDomain && result.url) {
+        try {
+          const resultUrl = new URL(result.url);
+          const resultDomain = resultUrl.hostname.replace('www.', '');
+          isClientContent = resultDomain === clientDomain || resultDomain.endsWith(`.${clientDomain}`);
+        } catch {
+          // Invalid URL, keep as false
+        }
+      }
+
       const { data, error } = await supabase
         .from('serp_results')
         .insert({
@@ -36,7 +71,7 @@ export async function trackSERPPosition(
           snippet: result.snippet,
           domain: result.domain,
           checked_at: new Date().toISOString(),
-          is_client_content: false, // TODO: Detect if URL belongs to client
+          is_client_content: isClientContent,
         })
         .select()
         .single();
