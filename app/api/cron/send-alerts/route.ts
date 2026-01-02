@@ -12,11 +12,9 @@ export async function POST(request: NextRequest) {
     const authError = requireCronAuth(request);
     if (authError) return authError;
 
-  const supabase = createAdminClient();
-  let processed = 0;
-  let errors: string[] = [];
-
-  try {
+    const supabase = createAdminClient();
+    let processed = 0;
+    let errors: string[] = [];
     // 1. Fetch pending high/critical alerts
     const { data: alerts, error: alertsError } = await supabase
       .from("alerts")

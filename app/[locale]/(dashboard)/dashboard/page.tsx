@@ -83,48 +83,15 @@ export default async function DashboardPage() {
                 +{metrics.mentionsVolume.trend}%
               </span>
             </div>
-            <div className="h-10 mt-2 w-full">
-              {/* Sparkline SVG */}
-              <svg
-                className="w-full h-full overflow-visible"
-                preserveAspectRatio="none"
-                viewBox="0 0 100 25"
-              >
-                <defs>
-                  <linearGradient
-                    id="sparkline-gradient"
-                    x1="0"
-                    x2="0"
-                    y1="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="0%"
-                      stopColor="#0da2e7"
-                      stopOpacity="0.5"
-                    ></stop>
-                    <stop
-                      offset="100%"
-                      stopColor="#0da2e7"
-                      stopOpacity="0"
-                    ></stop>
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M0 25 L0 15 L10 18 L20 10 L30 14 L40 5 L50 12 L60 8 L70 15 L80 10 L90 5 L100 2"
-                  fill="url(#sparkline-gradient)"
-                  stroke="none"
-                ></path>
-                <path
-                  d="M0 15 L10 18 L20 10 L30 14 L40 5 L50 12 L60 8 L70 15 L80 10 L90 5 L100 2"
-                  fill="none"
-                  stroke="#0da2e7"
-                  strokeLinecap="round"
-                  strokeWidth="2"
-                  vectorEffect="non-scaling-stroke"
-                ></path>
-              </svg>
-            </div>
+            {metrics.mentionsVolume.value > 0 ? (
+              <div className="h-10 mt-2 w-full flex items-center justify-center text-xs text-slate-500">
+                <span>Chart data will appear as mentions are collected</span>
+              </div>
+            ) : (
+              <div className="h-10 mt-2 w-full flex items-center justify-center text-xs text-slate-500">
+                <span>No data yet</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -177,76 +144,10 @@ export default async function DashboardPage() {
               </button>
             </div>
           </div>
-          <div className="flex-1 min-h-[300px] w-full relative">
-            <div className="absolute inset-0 flex flex-col justify-between text-xs text-slate-500 pointer-events-none">
-              <div className="border-b border-white/5 w-full h-0"></div>
-              <div className="border-b border-white/5 w-full h-0"></div>
-              <div className="border-b border-white/5 w-full h-0"></div>
-              <div className="border-b border-white/5 w-full h-0"></div>
-              <div className="border-b border-white/5 w-full h-0"></div>
-            </div>
-            <svg
-              className="absolute inset-0 w-full h-full"
-              preserveAspectRatio="none"
-              viewBox="0 0 100 50"
-            >
-              <defs>
-                <linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1">
-                  <stop
-                    offset="0%"
-                    stopColor="#0da2e7"
-                    stopOpacity="0.4"
-                  ></stop>
-                  <stop
-                    offset="100%"
-                    stopColor="#0da2e7"
-                    stopOpacity="0"
-                  ></stop>
-                </linearGradient>
-              </defs>
-              <path
-                d="M0 35 Q10 32 20 25 T40 20 T60 15 T80 25 T100 10 V50 H0 Z"
-                fill="url(#chartFill)"
-              ></path>
-              <path
-                d="M0 35 Q10 32 20 25 T40 20 T60 15 T80 25 T100 10"
-                fill="none"
-                stroke="#0da2e7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="0.8"
-                vectorEffect="non-scaling-stroke"
-              >
-                {/* Removed Animation for SSR compatibility/hydration match */}
-              </path>
-              <circle
-                className="animate-pulse"
-                cx="20"
-                cy="25"
-                fill="#fff"
-                r="1"
-              ></circle>
-              <circle
-                className="animate-pulse"
-                cx="60"
-                cy="15"
-                fill="#fff"
-                r="1"
-              ></circle>
-              <circle
-                className="animate-pulse"
-                cx="100"
-                cy="10"
-                fill="#fff"
-                r="1"
-              ></circle>
-            </svg>
-            <div className="absolute bottom-0 w-full flex justify-between text-[10px] text-slate-500 translate-y-full pt-2 font-mono">
-              <span>Oct 01</span>
-              <span>Oct 08</span>
-              <span>Oct 15</span>
-              <span>Oct 22</span>
-              <span>Oct 29</span>
+          <div className="flex-1 min-h-[300px] w-full flex items-center justify-center">
+            <div className="text-center text-slate-500">
+              <p className="text-sm">Sentiment trend chart will appear as data is collected</p>
+              <p className="text-xs mt-2 text-slate-600">Data from news mentions and social posts</p>
             </div>
           </div>
         </div>

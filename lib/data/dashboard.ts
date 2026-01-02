@@ -75,26 +75,93 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     .order("created_at", { ascending: false })
     .limit(10);
 
-  const formattedAlerts: AlertItem[] = (alertsData || []).map((alert) => ({
-    id: alert.id,
-    title: alert.title,
-    message: alert.message,
-    severity: alert.severity as any,
-    source: alert.alert_type === "social_negative" ? "Social Media" : "System",
-    timeAgo: getTimeAgo(new Date(alert.created_at)),
-    sentiment: -0.8, // Mock for now or extract from relation?
-  }));
+  // Calculate real trends
+  // Get scores from 7 days ago for comparison
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  
+  const { data: previousScoreData } = await supabase
+    .from("reputation_scores")
+    .select("score")
+    .lte("calculated_at", sevenDaysAgo.toISOString())
+    .order("calculated_at", { ascending: false })
+    .limit(50);
+
+  const previousScores = previousScoreData?.map((s) => Number(s.score)) || [];
+  const previousAvgScore = previousScores.length
+    ? Math.round(previousScores.reduce((a, b) => a + b, 0) / previousScores.length)
+    : 0;
+
+  // Calculate trend
+  const trend = previousAvgScore > 0 && avgScore > 0
+    ? ((avgScore - previousAvgScore) / previousAvgScore) * 100
+    : 0;
+  const trendDirection: "up" | "down" | "neutral" = 
+    trend > 0.1 ? "up" : trend < -0.1 ? "down" : "neutral";
+
+  // Get mentions from previous period for trend
+  const { count: previousNewsCount } = await supabase
+    .from("news_mentions")
+    .select("*", { count: "exact", head: true })
+    .lte("scraped_at", sevenDaysAgo.toISOString());
+
+  const { count: previousSocialCount } = await supabase
+    .from("social_posts")
+    .select("*", { count: "exact", head: true })
+    .lte("scraped_at", sevenDaysAgo.toISOString());
+
+  const previousTotalMentions = (previousNewsCount || 0) + (previousSocialCount || 0);
+  const mentionsTrend = previousTotalMentions > 0 && totalMentions > 0
+    ? ((totalMentions - previousTotalMentions) / previousTotalMentions) * 100
+    : 0;
+
+  // Fetch sentiment from related mentions/posts
+  const formattedAlerts: AlertItem[] = await Promise.all(
+    (alertsData || []).map(async (alert) => {
+      let sentiment: number | undefined = undefined;
+
+      // Try to get sentiment from related mention
+      if (alert.related_mention_id) {
+        const { data: mention } = await supabase
+          .from("news_mentions")
+          .select("sentiment_score")
+          .eq("id", alert.related_mention_id)
+          .single();
+        sentiment = mention?.sentiment_score ? Number(mention.sentiment_score) : undefined;
+      }
+
+      // Try to get sentiment from related social post
+      if (!sentiment && alert.related_social_post_id) {
+        const { data: post } = await supabase
+          .from("social_posts")
+          .select("sentiment_score")
+          .eq("id", alert.related_social_post_id)
+          .single();
+        sentiment = post?.sentiment_score ? Number(post.sentiment_score) : undefined;
+      }
+
+      return {
+        id: alert.id,
+        title: alert.title,
+        message: alert.message,
+        severity: alert.severity as any,
+        source: alert.alert_type === "social_negative" ? "Social Media" : "System",
+        timeAgo: getTimeAgo(new Date(alert.created_at)),
+        sentiment,
+      };
+    })
+  );
 
   return {
     globalScore: {
-      value: avgScore || 85, // Fallback for empty DB to look good
-      trend: 2.5,
-      trendDirection: "up",
+      value: avgScore || 0, // Show 0 when no data, not fake 85
+      trend: Math.abs(trend),
+      trendDirection,
     },
     criticalAlerts: criticalCount || 0,
     mentionsVolume: {
       value: totalMentions || 0,
-      trend: 12,
+      trend: Math.abs(mentionsTrend),
     },
     aiContentGenerated: {
       value: contentCount || 0,
