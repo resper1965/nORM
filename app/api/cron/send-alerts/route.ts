@@ -4,16 +4,13 @@ import { sendAlertEmail } from "@/lib/notifications/email";
 import { logger } from "@/lib/utils/logger";
 import { env } from "@/lib/config/env";
 
+import { requireCronAuth } from "@/lib/auth/cron-auth";
+
 export async function POST(request: NextRequest) {
-  // Simple protection: Check for Authorization header or Cron Secret
-  const authHeader = request.headers.get("authorization");
-  if (
-    authHeader !== `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` &&
-    request.headers.get("x-vercel-cron") !== "true" &&
-    process.env.NODE_ENV !== "development"
-  ) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    // Verify cron authentication
+    const authError = requireCronAuth(request);
+    if (authError) return authError;
 
   const supabase = createAdminClient();
   let processed = 0;

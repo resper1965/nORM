@@ -12,14 +12,12 @@ on:
     - cron: '0 8 * * *'
     # Send alerts - Every 15 minutes
     - cron: '*/15 * * * *'
-    # Auto-generate content - Daily at 10am UTC
-    - cron: '0 10 * * *'
   
   # Allow manual trigger
   workflow_dispatch:
     inputs:
       job:
-        description: 'Job to run (all, reputation, social, serp, news, alerts, content)'
+        description: 'Job to run (all, reputation, social, serp, news, alerts)'
         required: false
         default: 'all'
 
@@ -94,16 +92,4 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json"
 
-  auto-generate-content:
-    name: Auto Generate Content
-    runs-on: ubuntu-latest
-    if: |
-      github.event.schedule == '0 10 * * *' || 
-      github.event.inputs.job == 'all' || 
-      github.event.inputs.job == 'content'
-    steps:
-      - name: Call API endpoint
-        run: |
-          curl -X POST ${{ secrets.APP_URL }}/api/cron/auto-generate-content \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            -H "Content-Type: application/json"
+  # Auto-generate-content removed - content generation is triggered manually via UI
