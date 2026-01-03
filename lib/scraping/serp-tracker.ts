@@ -49,12 +49,9 @@ export async function trackSERPPosition(
 
     // Batch check which URLs belong to client
     // Filter out any undefined/null URLs and ensure type safety
-    const validUrls = serpResponse.results
+    const urls = serpResponse.results
       .map(result => result.url)
-      .filter((url): url is string => {
-        return typeof url === 'string' && url.length > 0;
-      });
-    const urls: string[] = validUrls;
+      .filter((url): url is string => typeof url === 'string' && url.length > 0) as string[];
     const clientContentMap = await batchCheckClientContent(urls, clientId);
 
     // Save results to database
