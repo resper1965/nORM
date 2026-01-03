@@ -7,6 +7,15 @@ e este projeto adere a [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### 🔄 Changed (2025-01-02)
+- **Merge de branches**: Integradas branches `claude/check-app-status-2Wsqk`, `claude/review-repository-ffN9n` e `cursor/implement-application-with-spec-kit-d98e`
+- **Correções de build**: Resolvidos conflitos de merge e erros de tipo TypeScript
+- **Dependências**: Adicionada `@ai-sdk/google` para suporte Gemini
+- **Refatoração**: Removido arquivo duplicado `lib/utils/crypto.ts`, mantendo apenas `lib/utils/encryption.ts`
+- **Imports**: Corrigidos imports em múltiplos arquivos (wordpress, cron jobs, integrations)
+- **Tipos**: Corrigidos tipos de model AI (`gpt-4` → `pro` para compatibilidade com Gemini)
+- **Layout**: Removida referência a `montserrat` não definido
+
 ### Em Desenvolvimento
 - Sistema de notificações em tempo real
 - Dashboard analytics avançado
