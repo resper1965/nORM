@@ -85,7 +85,7 @@ export async function generateStructuredGemini<T>(
 
   try {
     const { object } = await generateObject({
-      model: google(GEMINI_MODELS[model]),
+      model: google(GEMINI_MODELS[model]) as any,
       prompt,
       schema,
       temperature,
@@ -115,7 +115,7 @@ export async function streamWithGemini(
 
   try {
     const result = await streamText({
-      model: google(GEMINI_MODELS[model]),
+      model: google(GEMINI_MODELS[model]) as any,
       prompt,
       temperature,
     });
