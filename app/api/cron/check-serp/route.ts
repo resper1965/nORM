@@ -5,6 +5,7 @@ import { getSeverityFromScoreDrop } from '@/lib/reputation/alert-generator';
 import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
 import { requireCronAuth } from '@/lib/auth/cron-auth';
+import { UnauthorizedError } from '@/lib/utils/auth-cron';
 
 /**
  * POST /api/cron/check-serp
