@@ -3,6 +3,7 @@
  * Garante que todas as variáveis necessárias estão presentes e válidas
  */
 
+import { z } from 'zod';
 import { logger } from '@/lib/utils/logger';
 
 const requiredEnvVars = {
