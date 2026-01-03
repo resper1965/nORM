@@ -84,7 +84,7 @@ export async function generateArticleAction(
     });
 
     if (error) {
-      console.error("DB Save Error:", error);
+      logger.error("DB Save Error", error as Error);
       // We still return the content to the user even if save failed, but warn
     }
 
@@ -102,7 +102,7 @@ export async function generateArticleAction(
     };
 
   } catch (error) {
-    console.error("Generation Error:", error);
+    logger.error("Generation Error", error as Error);
     return { success: false, message: "Error generating content. Please try again." };
   }
 }

@@ -62,13 +62,13 @@ export async function createClient(
     });
 
     if (error) {
-      console.error("Supabase Error:", error);
+      logger.error("Supabase Error", error as Error);
       return {
         message: "Database Error: Failed to Create Client.",
       };
     }
   } catch (error) {
-    console.error("Create Client Error:", error);
+    logger.error("Create Client Error", error as Error);
     return {
       message: "Failed to Create Client.",
     };
