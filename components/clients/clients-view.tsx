@@ -48,7 +48,27 @@ export function ClientsView({ initialData }: ClientsViewProps) {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="h-10 px-4 rounded-lg bg-slate-800 border border-white/10 text-slate-300 text-sm font-medium hover:bg-slate-700 transition-colors flex items-center gap-2">
+            <button
+              onClick={async () => {
+                try {
+                  const response = await fetch('/api/export/clients');
+                  if (!response.ok) throw new Error('Export failed');
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `clients-${new Date().toISOString().split('T')[0]}.csv`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  window.URL.revokeObjectURL(url);
+                } catch (error) {
+                  console.error('Export failed:', error);
+                  alert('Failed to export clients. Please try again.');
+                }
+              }}
+              className="h-10 px-4 rounded-lg bg-slate-800 border border-white/10 text-slate-300 text-sm font-medium hover:bg-slate-700 transition-colors flex items-center gap-2"
+            >
               <span className="material-symbols-outlined text-[20px]">
                 file_download
               </span>
