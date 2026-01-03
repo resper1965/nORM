@@ -1,52 +1,84 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
+# Dependencies
+node_modules/
 /.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+.pnp.js
 
-# testing
+# Testing
 /coverage
+/test-results
+/playwright-report
+/.playwright
 
-# next.js
+# Next.js
 /.next/
 /out/
-
-# production
 /build
+/dist
 
-# misc
-.DS_Store
-*.pem
+# Production
+*.log
+*.pid
+*.seed
+*.pid.lock
 
-# debug
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# Local env files
 .env
-.env.local
 .env*.local
-.env.development
-.env.production
+.env.development.local
+.env.test.local
+.env.production.local
 
-# vercel
+# Vercel
 .vercel
+.vercel/*
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
-# BMAD version file (gerado automaticamente)
-bmad/.bmad-version
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
-# BMAD git (mantém apenas o código, não o .git interno)
-# Descomente se não quiser que o .git do bmad seja commitado
-# bmad/.git
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+.cache/
+
+# Build outputs
+*.map
+*.min.js
+*.min.css
+
+# Misc
+*.log
+*.pid
+*.seed
+*.pid.lock
