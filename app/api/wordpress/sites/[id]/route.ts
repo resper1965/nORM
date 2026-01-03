@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { encrypt } from '@/lib/utils/crypto';
+import { encrypt } from '@/lib/utils/encryption';
 import { testWordPressConnection, type WordPressSiteConfig } from '@/lib/wordpress/client';
 import { logger } from '@/lib/utils/logger';
 import { AppError, ValidationError } from '@/lib/errors/errors';
