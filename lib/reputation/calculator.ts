@@ -37,6 +37,16 @@ export async function calculateReputationScore(
     const supabase = await createClient();
     const { clientId, periodStart, periodEnd } = params;
 
+    // Check cache first (cache for 1 hour)
+    const { cacheService } = await import('@/lib/services/cache');
+    const cacheKey = `reputation:score:${clientId}:${periodStart.toISOString()}:${periodEnd.toISOString()}`;
+    const cached = await cacheService.get<{ score: number; breakdown: ScoreBreakdown }>(cacheKey);
+    
+    if (cached) {
+      logger.debug('Returning cached reputation score', { clientId, cacheKey });
+      return cached;
+    }
+
     // 1. SERP Score (35%)
     // First, get all keyword IDs for this client
     const { data: clientKeywords, error: keywordsError } = await supabase
@@ -277,10 +287,16 @@ export async function calculateReputationScore(
       volume: Math.round(volumeScore * 100) / 100,
     };
 
-    return {
+    const result = {
       score: Math.round(finalScore * 100) / 100,
       breakdown,
     };
+
+    // Cache the result (1 hour TTL)
+    const { cacheService } = await import('@/lib/services/cache');
+    await cacheService.set(cacheKey, result, 3600000); // 1 hour in milliseconds
+
+    return result;
   } catch (error) {
     logger.error("Failed to calculate reputation score", error as Error);
     // Return fallback

@@ -3,7 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, XCircle, Info } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import type { Alert } from '@/lib/types/domain';
+import { useAlertNotifications } from '@/hooks/use-push-notifications';
 
 interface AlertsListProps {
   alerts: Alert[];
@@ -11,6 +13,14 @@ interface AlertsListProps {
 }
 
 export function AlertsList({ alerts, isLoading }: AlertsListProps) {
+  const previousCountRef = useRef(alerts.length);
+  
+  // Send push notifications for new alerts
+  useAlertNotifications(alerts, previousCountRef.current);
+  
+  useEffect(() => {
+    previousCountRef.current = alerts.length;
+  }, [alerts.length]);
   if (isLoading) {
     return (
       <Card>

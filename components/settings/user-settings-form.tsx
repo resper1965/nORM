@@ -108,6 +108,21 @@ export function UserSettingsForm({ user, profile }: UserSettingsFormProps) {
           Save Changes
         </Button>
       </div>
+
+      <div className="border-t border-border pt-6">
+        <h2 className="text-xl font-semibold tracking-[0.01em] mb-4">Notifications</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground/80 mb-2">
+              Push Notifications
+            </label>
+            <p className="text-sm text-muted-foreground mb-3">
+              Receive browser notifications for important alerts and updates
+            </p>
+            <PushNotificationButton />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
