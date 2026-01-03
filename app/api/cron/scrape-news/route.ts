@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { scrapeNewsForAllClients } from '@/lib/integrations/news-scraper';
 import { logger } from '@/lib/utils/logger';
 import { AppError } from '@/lib/errors/errors';
 import { searchGoogleNews, deduplicateArticles } from '@/lib/scraping/google-news';
@@ -8,8 +8,13 @@ import { analyzeSentiment } from '@/lib/ai/sentiment';
 
 /**
  * POST /api/cron/scrape-news
- * Trigger news scraping (cron job)
+ * Scrape news mentions for all active clients (cron job)
  * Protected by Vercel Cron secret or service role
+ *
+ * Searches Google News RSS feeds for client monitoring keywords
+ * and stores articles with sentiment analysis
+ *
+ * Recommended frequency: Every 6-12 hours
  */
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +22,7 @@ export async function POST(request: NextRequest) {
     const authError = requireCronAuth(request);
     if (authError) return authError;
 
-    const supabase = await createClient();
+    logger.info('Starting news scraping cron job');
 
     // Get all active clients
     const { data: clients, error: clientsError } = await supabase
@@ -181,6 +186,14 @@ export async function POST(request: NextRequest) {
       message: `News scraping completed. Found ${totalMentionsFound} new mentions.`,
     });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      logger.warn('Unauthorized cron job attempt', { error: error.message });
+      return NextResponse.json(
+        { error: 'Unauthorized', message: error.message },
+        { status: 401 }
+      );
+    }
+
     logger.error('Error in POST /api/cron/scrape-news', error as Error);
     return NextResponse.json(
       { error: 'Internal Server Error', message: 'Failed to start news scraping' },

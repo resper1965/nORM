@@ -6,6 +6,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { createDraftPost, testWordPressConnection, type WordPressSiteConfig } from './client';
 import { logger } from '@/lib/utils/logger';
+import { decrypt } from '@/lib/utils/crypto';
 import { NotFoundError, ExternalAPIError } from '@/lib/errors/errors';
 import { decrypt } from '@/lib/utils/encryption';
 import type { GeneratedContent } from '@/lib/types/domain';

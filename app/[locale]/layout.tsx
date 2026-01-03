@@ -9,12 +9,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
+// Temporarily disabled Google Fonts due to network issues in build
+// const montserrat = Montserrat({
+//   subsets: ["latin"],
+//   variable: "--font-sans",
+//   weight: ["400", "500", "600", "700"],
+//   display: "swap",
+// });
 
 export const metadata: Metadata = {
   title: "nORM - Online Reputation Manager",

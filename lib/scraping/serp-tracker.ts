@@ -6,6 +6,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { checkSERPPosition, checkSERPPositionsBatch } from './serp';
 import { logger } from '@/lib/utils/logger';
+import { batchCheckClientContent } from '@/lib/utils/domain-matcher';
 import type { SERPResult as SERPResultType } from './serp';
 import type { SERPResult as DBSERPResult } from '@/lib/types/domain';
 
@@ -44,6 +45,10 @@ export async function trackSERPPosition(
 
     // Check current SERP position
     const serpResponse = await checkSERPPosition(keyword);
+
+    // Batch check which URLs belong to client
+    const urls = serpResponse.results.map(r => r.url);
+    const clientContentMap = await batchCheckClientContent(urls, clientId);
 
     // Save results to database
     const results: DBSERPResult[] = [];
@@ -89,6 +94,7 @@ export async function trackSERPPosition(
     logger.info(`Tracked SERP for keyword: ${keyword}`, {
       keywordId,
       resultsCount: results.length,
+      clientContentCount: Array.from(clientContentMap.values()).filter(Boolean).length,
     });
 
     return results;

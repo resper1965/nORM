@@ -23,6 +23,12 @@ interface ScoreComparison {
   previous: number;
 }
 
+interface GenerateAlertsParams {
+  clientId: string;
+  periodStart: Date;
+  periodEnd: Date;
+}
+
 /**
  * Check if alert conditions are met and generate alerts
  * This is the core function called by cron jobs or event triggers

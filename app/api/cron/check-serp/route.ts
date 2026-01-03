@@ -96,6 +96,14 @@ export async function POST(request: NextRequest) {
       alerts_created: alertsCreated.length,
     });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      logger.warn('Unauthorized cron job attempt', { error: error.message });
+      return NextResponse.json(
+        { error: 'Unauthorized', message: error.message },
+        { status: 401 }
+      );
+    }
+
     logger.error('Error in POST /api/cron/check-serp', error as Error);
     return NextResponse.json(
       { error: 'Internal Server Error', message: 'Failed to check SERP positions' },

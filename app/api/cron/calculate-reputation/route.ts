@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
     periodStart.setDate(periodStart.getDate() - 30);
 
     let processed = 0;
+    let alertsGenerated = 0;
     const errors: string[] = [];
 
     // Calculate score for each client
@@ -119,6 +120,7 @@ export async function POST(request: NextRequest) {
       status: "completed",
       clients_processed: processed,
       total_clients: clients.length,
+      alerts_generated: alertsGenerated,
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {

@@ -11,8 +11,17 @@ import { analyzeSentiment } from "@/lib/ai/sentiment";
 
 /**
  * POST /api/cron/sync-social
- * Trigger social media sync (cron job)
+ * Synchronize social media accounts (cron job)
  * Protected by Vercel Cron secret or service role
+ *
+ * Currently supports:
+ * - Instagram (via Meta Graph API)
+ * - LinkedIn (via LinkedIn API v2)
+ * - Facebook Pages (via Meta Graph API)
+ *
+ * TODO: Add support for Twitter/X
+ *
+ * Recommended frequency: Every 1-2 hours
  */
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +29,7 @@ export async function POST(request: NextRequest) {
     const authError = requireCronAuth(request);
     if (authError) return authError;
 
-    const supabase = await createClient();
+    logger.info('Starting social media sync cron job');
 
     // Get all active social accounts
     const { data: socialAccounts, error: accountsError } = await supabase

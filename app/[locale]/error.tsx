@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
+import { logger } from '@/lib/utils/logger';
 
 export default function Error({
   error,
@@ -13,11 +14,9 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error para serviço de monitoramento (futuro)
-    console.error('Application error:', {
-      message: error.message,
+    // Log error para serviço de monitoramento
+    logger.error('Application page error', error, {
       digest: error.digest,
-      stack: error.stack,
     });
   }, [error]);
 
