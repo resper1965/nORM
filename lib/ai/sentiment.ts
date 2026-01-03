@@ -76,7 +76,7 @@ Considere o contexto de reputação online e gestão de marca.`;
     const confidence = Math.max(0, Math.min(1, result.confidence));
 
     return {
-      sentiment: result.sentiment,
+      sentiment: result.sentiment as Sentiment,
       score: Math.round(score * 100) / 100,
       confidence: Math.round(confidence * 100) / 100,
       rationale: result.rationale || 'Sem justificativa',
