@@ -6,6 +6,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/utils/logger';
 import { analyzeSentiment } from '@/lib/ai/sentiment';
+import { NotFoundError, ExternalAPIError } from '@/lib/errors/errors';
 
 export interface ScrapeStats {
   clientsProcessed: number;
