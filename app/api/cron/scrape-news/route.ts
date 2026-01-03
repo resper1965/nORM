@@ -5,6 +5,8 @@ import { AppError } from '@/lib/errors/errors';
 import { searchGoogleNews, deduplicateArticles } from '@/lib/scraping/google-news';
 import { requireCronAuth } from '@/lib/auth/cron-auth';
 import { analyzeSentiment } from '@/lib/ai/sentiment';
+import { createClient } from '@/lib/supabase/server';
+import { UnauthorizedError } from '@/lib/utils/auth-cron';
 
 /**
  * POST /api/cron/scrape-news
@@ -23,6 +25,8 @@ export async function POST(request: NextRequest) {
     if (authError) return authError;
 
     logger.info('Starting news scraping cron job');
+
+    const supabase = await createClient();
 
     // Get all active clients
     const { data: clients, error: clientsError } = await supabase
