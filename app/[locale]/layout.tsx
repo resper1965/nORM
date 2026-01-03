@@ -75,7 +75,7 @@ export default async function LocaleLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={cn("font-sans", montserrat.variable)}>
+      <body className={cn("font-sans")}>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             {children}
