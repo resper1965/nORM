@@ -2,34 +2,30 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| Version | Supported |
+| ------- | --------- |
+| 1.0.x   | Yes       |
+| < 1.0   | No        |
 
-## Reporting a Vulnerability
+## Reporting Vulnerabilities
 
-Use this section to tell people how to report a vulnerability.
+Não reporte vulnerabilidades através de issues públicas.
 
-- Please do not report security vulnerabilities through public GitHub issues.
-- Please email **security@bekaa.eu** (or your designated contact).
-- We will acknowledge your report within 48 hours.
+Email: **security@bekaa.eu**
 
-## SLA for Vulnerability Remediation
+Resposta em até 48 horas.
 
-Reflecting our commit to security, we aim to patch vulnerabilities within these timeframes:
+## SLA
 
-- **Critical**: 7 days
-- **High**: 14 days
-- **Medium**: 30 days
-- **Low**: 90 days
+- Critical: 7 dias
+- High: 14 dias
+- Medium: 30 dias
+- Low: 90 dias
 
 ## Security Measures
 
-This project employs:
-
-- **SAST**: Linter security rules.
-- **SCA**: Dependency auditing (`npm audit`).
-- **Secrets Scanning**: Automated checks for credentials.
-- **SRI**: Validation of external resources.
-- **Headers**: HSTS, CSP, and X-Frame-Options enforced.
+- SAST: Linter security rules
+- SCA: Dependency auditing (`npm audit`)
+- Secrets Scanning: Automated checks
+- SRI: Validation of external resources
+- Headers: HSTS, CSP, X-Frame-Options
