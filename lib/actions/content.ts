@@ -3,6 +3,7 @@
 import { generateContent, calculateSEOScore, calculateReadabilityScore } from "@/lib/ai/content-generator";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logger } from "@/lib/utils/logger";
 
 export type GenerationState = {
   success: boolean;

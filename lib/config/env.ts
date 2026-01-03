@@ -3,6 +3,8 @@
  * Garante que todas as variáveis necessárias estão presentes antes da inicialização
  */
 
+import { logger } from '@/lib/utils/logger';
+
 const requiredEnvVars = {
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,

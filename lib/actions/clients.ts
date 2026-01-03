@@ -3,6 +3,7 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { logger } from "@/lib/utils/logger";
 
 const ClientSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
