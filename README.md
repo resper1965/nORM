@@ -103,6 +103,7 @@ npm run test:e2e      # E2E tests
 
 ## Documentação
 
+- [Manual do Usuário](docs/MANUAL-DO-USUARIO.md) - Guia completo para usuários
 - [Setup](docs/setup/SUPABASE-SETUP.md)
 - [Deploy](docs/setup/VERCEL-DEPLOY.md)
 - [API](docs/api/API-DOCUMENTATION.md)
