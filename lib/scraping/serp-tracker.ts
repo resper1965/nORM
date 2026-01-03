@@ -50,7 +50,7 @@ export async function trackSERPPosition(
     // Batch check which URLs belong to client
     const urls = serpResponse.results
       .map(r => r.url)
-      .filter((url): url is string => Boolean(url));
+      .filter((url): url is string => Boolean(url)) as string[];
     const clientContentMap = await batchCheckClientContent(urls, clientId);
 
     // Save results to database
