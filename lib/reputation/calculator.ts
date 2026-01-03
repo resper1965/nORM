@@ -38,9 +38,9 @@ export async function calculateReputationScore(
     const { clientId, periodStart, periodEnd } = params;
 
     // Check cache first (cache for 1 hour)
-    const { cacheService } = await import('@/lib/services/cache');
+    const cacheModule = await import('@/lib/services/cache');
     const cacheKey = `reputation:score:${clientId}:${periodStart.toISOString()}:${periodEnd.toISOString()}`;
-    const cached = await cacheService.get<{ score: number; breakdown: ScoreBreakdown }>(cacheKey);
+    const cached = await cacheModule.cacheService.get<{ score: number; breakdown: ScoreBreakdown }>(cacheKey);
     
     if (cached) {
       logger.debug('Returning cached reputation score', { clientId, cacheKey });
@@ -293,8 +293,7 @@ export async function calculateReputationScore(
     };
 
     // Cache the result (1 hour TTL)
-    const { cacheService } = await import('@/lib/services/cache');
-    await cacheService.set(cacheKey, result, 3600000); // 1 hour in milliseconds
+    await cacheModule.cacheService.set(cacheKey, result, 3600000); // 1 hour in milliseconds
 
     return result;
   } catch (error) {
