@@ -54,7 +54,7 @@ export async function generateWithGemini(
 
   try {
     const { text } = await generateText({
-      model: google(GEMINI_MODELS[model]),
+      model: google(GEMINI_MODELS[model]) as any,
       prompt,
       temperature,
       maxTokens,
