@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { User } from '@supabase/supabase-js';
+import { PushNotificationButton } from '@/components/notifications/push-notification-button';
 
 interface UserSettingsFormProps {
   user: User;
