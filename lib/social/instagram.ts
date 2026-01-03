@@ -172,14 +172,15 @@ export async function screenshotInstagramStory(
   storyId: string,
   accessToken: string
 ): Promise<string> {
-  // TODO: Implement story screenshot
+  // Story screenshot feature (future enhancement)
   // This would require:
-  // 1. Fetch story media URL
-  // 2. Download image/video
-  // 3. Store in Supabase Storage
-  // 4. Return storage URL
-
-  logger.info('Screenshotting Instagram story', { storyId });
-  return ''; // Placeholder
+  // 1. Fetch story media URL from Instagram Graph API
+  // 2. Download image/video using axios
+  // 3. Store in Supabase Storage (requires storage bucket configuration)
+  // 4. Return public URL for display
+  // Note: Instagram Stories API has limitations - stories expire after 24h
+  // Consider using webhook subscriptions for real-time story capture
+  logger.info('Story screenshot requested but not yet implemented', { storyId });
+  throw new Error('Story screenshot not yet implemented. Feature planned for future release.');
 }
 

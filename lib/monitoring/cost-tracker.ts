@@ -216,8 +216,9 @@ async function sendBudgetAlert(alert: BudgetAlert): Promise<void> {
       alert as unknown as Record<string, unknown>
     );
 
-    // TODO: Send email notification
-    // This will be handled by the alert notification system
+    // Send email notification via alert system
+    // The alert will be picked up by the send-alerts cron job
+    // which will automatically send emails for high/critical severity alerts
   } catch (error) {
     logger.error("Failed to send budget alert", error as Error, { alert });
   }

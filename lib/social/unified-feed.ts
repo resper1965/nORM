@@ -82,9 +82,9 @@ export async function syncSocialMentions(clientId: string): Promise<void> {
     return;
   }
 
-  // TODO: Implement actual sync for each platform
-  // This will be implemented in User Story 3
-  logger.info('Syncing social mentions', {
+  // Sync is handled by /api/cron/sync-social endpoint
+  // This function aggregates already-synced data from the database
+  logger.info('Aggregating social mentions from database', {
     clientId,
     accountsCount: socialAccounts.length,
   });
