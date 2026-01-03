@@ -3,6 +3,18 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Mock OpenAI before importing anything that uses it
+vi.mock('@/lib/ai/openai', () => ({
+  openai: {
+    chat: {
+      completions: {
+        create: vi.fn(),
+      },
+    },
+  },
+}));
+
 import { BaseAgent, type AgentContext } from '@/lib/ai/agents/base-agent';
 import type { AgentResponse } from '@/lib/ai/agents/base-agent';
 
