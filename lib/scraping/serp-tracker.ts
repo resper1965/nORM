@@ -48,7 +48,7 @@ export async function trackSERPPosition(
     const serpResponse = await checkSERPPosition(keyword);
 
     // Batch check which URLs belong to client
-    const urls = serpResponse.results.map(r => r.url);
+    const urls = serpResponse.results.map(r => r.url).filter((url): url is string => !!url);
     const clientContentMap = await batchCheckClientContent(urls, clientId);
 
     // Save results to database
