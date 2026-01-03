@@ -1,0 +1,400 @@
+openapi: 3.0.3
+info:
+  title: n.ORM API
+  description: API para gerenciamento de reputação online com IA
+  version: 1.0.0
+  contact:
+    name: n.ORM Support
+    email: contato@bekaa.eu
+
+servers:
+  - url: https://norm-*.vercel.app/api
+    description: Produção
+  - url: http://localhost:3000/api
+    description: Desenvolvimento
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags:
+        - System
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /clients:
+    get:
+      summary: Lista clientes
+      tags:
+        - Clientes
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clients:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Client'
+
+  /clients/{id}:
+    get:
+      summary: Obtém cliente por ID
+      tags:
+        - Clientes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '404':
+          description: Cliente não encontrado
+
+    put:
+      summary: Atualiza cliente
+      tags:
+        - Clientes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientUpdate'
+      responses:
+        '200':
+          description: Cliente atualizado
+
+  /clients/{id}/reputation:
+    get:
+      summary: Obtém score de reputação
+      tags:
+        - Reputação
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Score de reputação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReputationScore'
+
+  /generate-content:
+    post:
+      summary: Gera conteúdo com IA
+      tags:
+        - Conteúdo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentGenerationRequest'
+      responses:
+        '200':
+          description: Conteúdo gerado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentGenerationResponse'
+
+  /alerts:
+    get:
+      summary: Lista alertas
+      tags:
+        - Alertas
+      parameters:
+        - name: clientId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [critical, high, medium, low]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, resolved, dismissed]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Lista de alertas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Alert'
+                  total:
+                    type: integer
+
+  /social/mentions:
+    get:
+      summary: Lista menções em redes sociais
+      tags:
+        - Redes Sociais
+      parameters:
+        - name: clientId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [instagram, linkedin, facebook]
+        - name: sentiment
+          in: query
+          schema:
+            type: string
+            enum: [positive, neutral, negative]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Lista de menções
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SocialPost'
+                  total:
+                    type: integer
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        industry:
+          type: string
+        website:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    ClientUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        website:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+
+    ReputationScore:
+      type: object
+      properties:
+        score:
+          type: number
+          minimum: 0
+          maximum: 100
+        breakdown:
+          type: object
+          properties:
+            serp:
+              type: number
+            news:
+              type: number
+            social:
+              type: number
+            trend:
+              type: number
+            volume:
+              type: number
+        calculated_at:
+          type: string
+          format: date-time
+
+    ContentGenerationRequest:
+      type: object
+      required:
+        - clientId
+        - topic
+        - targetKeywords
+      properties:
+        clientId:
+          type: string
+          format: uuid
+        topic:
+          type: string
+        targetKeywords:
+          type: array
+          items:
+            type: string
+        articleCount:
+          type: integer
+          default: 3
+          minimum: 1
+          maximum: 5
+        triggerMentionId:
+          type: string
+          format: uuid
+
+    ContentGenerationResponse:
+      type: object
+      properties:
+        articles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              content:
+                type: string
+              metaDescription:
+                type: string
+              seoScore:
+                type: number
+              readabilityScore:
+                type: number
+              wordCount:
+                type: integer
+
+    Alert:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        client_id:
+          type: string
+          format: uuid
+        alert_type:
+          type: string
+          enum: [score_drop, negative_mention, serp_change, critical]
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        title:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [active, resolved, dismissed]
+        created_at:
+          type: string
+          format: date-time
+
+    SocialPost:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        platform:
+          type: string
+          enum: [instagram, linkedin, facebook]
+        content:
+          type: string
+        sentiment:
+          type: string
+          enum: [positive, neutral, negative]
+        sentiment_score:
+          type: number
+          minimum: -1
+          maximum: 1
+        published_at:
+          type: string
+          format: date-time
+        engagement:
+          type: object
+          properties:
+            likes:
+              type: integer
+            comments:
+              type: integer
+            shares:
+              type: integer
