@@ -97,7 +97,7 @@ Critérios de avaliação:
           },
         ],
         {
-          model: 'gpt-4',
+          model: 'pro',
           temperature: 0.3, // Lower temperature for more consistent evaluation
           responseFormat: 'json_object',
         }
