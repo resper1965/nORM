@@ -151,8 +151,9 @@ LINKEDIN_CLIENT_SECRET=seu-client-secret
 
 **Monitoring & Analytics**:
 ```bash
-# Sentry (error tracking)
-NEXT_PUBLIC_SENTRY_DSN=https://...
+# Logging (usando Vercel Logs nativo - sem configuração necessária)
+# Todos os logs são automaticamente coletados pelo Vercel
+# Acesse: Vercel Dashboard → Deployments → Logs
 
 # PostHog (analytics)
 NEXT_PUBLIC_POSTHOG_KEY=phc_...

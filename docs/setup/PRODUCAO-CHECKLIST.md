@@ -218,7 +218,8 @@ Antes de considerar "em produção", verifique:
 2. **Verificar execução dos cron jobs**
 3. **Testar todas as funcionalidades**
 4. **Configurar domínio personalizado** (opcional)
-5. **Configurar monitoramento** (Sentry, etc.) (opcional)
+5. **Verificar logs no Vercel** (nativo, automático)
+   - Acesse: Vercel Dashboard → Deployments → Logs
 
 ---
 

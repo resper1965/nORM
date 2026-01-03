@@ -78,8 +78,8 @@ SCRAPINGBEE_API_KEY=your-scrapingbee-key
 UPSTASH_REDIS_REST_URL=your-redis-url
 UPSTASH_REDIS_REST_TOKEN=your-redis-token
 
-# Monitoring
-NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
+# Monitoring (usando Vercel Logs nativo - sem configuração necessária)
+# Acesse: Vercel Dashboard → Deployments → Logs
 ```
 
 ### 3. Configurar Domínio Personalizado (Opcional)
@@ -237,7 +237,7 @@ npm install @vercel/speed-insights
 ### Custom Monitoring
 
 O projeto está preparado para:
-- **Sentry** (error tracking)
+- **Vercel Logs** (error tracking nativo - automático)
 - **PostHog** (product analytics)
 
 Configure as variáveis de ambiente para ativar.

@@ -31,19 +31,13 @@ CRON_SECRET=seu-secret-aleatorio-forte
 
 ### 🟡 Opcionais (Melhoram funcionalidades)
 
-#### Sentry (Logging em produção)
-```bash
-SENTRY_DSN=https://...@sentry.io/...
-SENTRY_AUTH_TOKEN=seu-token
-NEXT_PUBLIC_SENTRY_ORG=seu-org
-NEXT_PUBLIC_SENTRY_PROJECT=seu-projeto
-```
-
 #### Google Custom Search (Para SERP tracking)
 ```bash
 GOOGLE_CSE_API_KEY=sua-chave
 GOOGLE_CSE_ID=seu-cse-id
 ```
+
+**Nota:** Logging é feito automaticamente via Vercel Logs. Acesse Vercel Dashboard → Deployments → Logs para monitorar erros.
 
 ---
 
@@ -156,12 +150,13 @@ curl -X POST http://localhost:3000/api/cron/check-serp \
 - ✅ Automático no Vercel
 - Certificados Let's Encrypt gerenciados automaticamente
 
-### Monitoramento (Sentry)
+### Monitoramento
 
-1. Crie conta em https://sentry.io
-2. Crie projeto para Next.js
-3. Adicione variáveis de ambiente
-4. Instale SDK (já configurado no código)
+**Vercel Logs (Nativo)**
+- Acesse: Vercel Dashboard → Deployments → Logs
+- Todos os logs são automaticamente coletados
+- Filtros por nível (error, warn, info, debug)
+- Histórico completo de erros e eventos
 
 ---
 

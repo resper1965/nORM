@@ -290,10 +290,9 @@ Antes de considerar "em produção", verifique:
    - Adicionar seu domínio
    - Configurar DNS
 
-4. **Configurar monitoramento** (opcional)
-   - Sentry para erros
-   - Vercel Analytics
-   - Uptime monitoring
+4. **Configurar monitoramento** (nativo Vercel)
+   - Vercel Logs (automático) - Acesse Dashboard → Deployments → Logs
+   - Vercel Analytics (opcional) - Para métricas de performance
 
 ---
 

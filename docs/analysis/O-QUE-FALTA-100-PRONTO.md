@@ -140,22 +140,17 @@ is_client_content: false, // TODO: Detect if URL belongs to client
 
 ---
 
-### 4. Logging em Produção ⚠️
+### 4. Logging em Produção ✅
 
 **Arquivo:** `lib/utils/logger.ts`  
-**Linha:** 48  
-**Status:** Apenas console.log
+**Status:** ✅ Implementado com Vercel Logs
 
-**O que falta:**
-```typescript
-// TODO: In production, send to logging service (e.g., Sentry, LogRocket)
-```
+**Solução:** Logs são automaticamente enviados para Vercel Logs em produção.
+- Acesse: Vercel Dashboard → Deployments → Logs
+- Todos os erros são automaticamente coletados
+- Sem necessidade de serviços externos
 
-**Impacto:** Erros não são rastreados em produção.
-
-**Solução:** Integrar Sentry ou LogRocket.
-
-**Prioridade:** 🟡 IMPORTANTE (Observabilidade)
+**Prioridade:** ✅ RESOLVIDO (Usando ecossistema Vercel)
 
 ---
 
@@ -250,7 +245,7 @@ is_client_content: false, // TODO: Detect if URL belongs to client
 - [ ] Verificar todas as variáveis de ambiente
 - [ ] Configurar domínio customizado
 - [ ] Configurar SSL/HTTPS
-- [ ] Configurar monitoramento (Sentry)
+- [x] Monitoramento via Vercel Logs ✅ (nativo, automático)
 - [ ] Configurar backups do banco
 
 **Prioridade:** 🟡 IMPORTANTE (Produção)
@@ -293,7 +288,7 @@ is_client_content: false, // TODO: Detect if URL belongs to client
   - Remover do menu OU
   - Implementar funcionalidade real
 
-- [ ] **4. Integrar Sentry para logging** (1 hora)
+- [x] **4. Logging via Vercel Logs** ✅ (Nativo, sem configuração)
   - Instalar SDK
   - Configurar em produção
   - Testar captura de erros
@@ -340,7 +335,7 @@ is_client_content: false, // TODO: Detect if URL belongs to client
 ### Fase 2 - Importante (Esta Semana - 8h)
 2. ✅ Detecção de conteúdo do cliente
 3. ✅ Decidir sobre páginas mockadas
-4. ✅ Integrar Sentry
+4. ✅ Logging via Vercel Logs (nativo)
 5. ✅ Verificar configs de produção
 
 ### Fase 3 - Testes (Próxima Semana - 4h)

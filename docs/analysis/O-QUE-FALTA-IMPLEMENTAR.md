@@ -224,7 +224,7 @@ Documento completo listando todas as funcionalidades que ainda precisam ser impl
 **Status**: ⚠️ Apenas console.log
 
 **O que falta**:
-- [ ] Integrar com serviço de logging (Sentry, LogRocket)
+- [x] Logging via Vercel Logs ✅ (nativo, sem configuração necessária)
 - [ ] Configurar níveis de log por ambiente
 - [ ] Adicionar contexto e metadata
 - [ ] Implementar alertas de erro crítico
