@@ -79,6 +79,7 @@ describe('Sentiment Analysis', () => {
     })
 
     it('should default to neutral for invalid sentiments', () => {
+      const validSentiments = ['positive', 'neutral', 'negative']
       const invalidSentiments = ['unknown', 'mixed', '', 'invalid']
 
       invalidSentiments.forEach((sentiment) => {
