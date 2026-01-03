@@ -31,6 +31,8 @@ export async function POST(request: NextRequest) {
 
     logger.info('Starting social media sync cron job');
 
+    const supabase = await createClient();
+
     // Get all active social accounts
     const { data: socialAccounts, error: accountsError } = await supabase
       .from("social_accounts")
