@@ -154,7 +154,7 @@ Sempre:
         },
       ],
       {
-        model: 'gpt-4',
+          model: 'pro',
         temperature: 0.7,
         responseFormat: 'json_object',
       }
