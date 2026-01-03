@@ -15,7 +15,8 @@ import type { SERPResult as DBSERPResult } from '@/lib/types/domain';
  */
 export async function trackSERPPosition(
   keywordId: string,
-  keyword: string
+  keyword: string,
+  clientId?: string
 ): Promise<DBSERPResult[]> {
   const supabase = await createClient();
 
@@ -91,6 +92,7 @@ export async function trackSERPPosition(
       }
     }
 
+    const clientContentCount = results.filter(r => r.is_client_content).length;
     logger.info(`Tracked SERP for keyword: ${keyword}`, {
       keywordId,
       resultsCount: results.length,
