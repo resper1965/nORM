@@ -9,6 +9,7 @@ import {
   Bot,
   Rss,
 } from "lucide-react";
+import Link from "next/link";
 import { getDashboardMetrics } from "@/lib/data/dashboard";
 import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 
