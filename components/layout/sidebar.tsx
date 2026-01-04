@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -28,6 +29,25 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [userName, setUserName] = useState<string>("Usuário");
+  const [userEmail, setUserEmail] = useState<string>("");
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email || "");
+        // Try to get name from user metadata or profile
+        const name = user.user_metadata?.name || 
+                     user.user_metadata?.full_name ||
+                     user.email?.split('@')[0] ||
+                     "Usuário";
+        setUserName(name);
+      }
+    };
+    loadUser();
+  }, []);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -106,24 +126,27 @@ export function Sidebar() {
 
       <div className="p-4 border-t border-glass-border">
         <div className="flex items-center gap-3">
-          <div className="relative size-10 rounded-full overflow-hidden border border-white/10">
-            {/* Using generic avatar for now */}
-            <img
-              alt="Commander Profile"
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2mcCQoIP8DgjplUSw9lZUWn39z_4YePYsZ9XbdJ5kYWC8KAcWLkVIKFS6PQ7sz6HPNjat9MMnnGeZKtaSRMFobo1xkAgJk5n7BSpkjc6iLVepR1xhevspa4mv7RuFVFxM5pdxe3FTNK4zKnD24dzmOnlNaKlEM3gkfFdTl5ReIbbyGaLOxJDxIAs7yCKFzdzArXnfxVhjZMpMjSM-yu1SMC47tyLFB_gWNUAXc6alYgXIcjAUm9XWGpSGoQ7E4vXH-96sDwf9bzOC"
-            />
+          <div className="relative size-10 rounded-full overflow-hidden border border-white/10 bg-primary/20 flex items-center justify-center">
+            {userEmail ? (
+              <div className="w-full h-full flex items-center justify-center text-primary font-bold text-lg">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-slate-400">
+                <Users className="w-5 h-5" />
+              </div>
+            )}
             <div className="absolute bottom-0 right-0 size-2.5 bg-green-500 border-2 border-[#101c22] rounded-full"></div>
           </div>
           <div className="hidden lg:block overflow-hidden flex-1">
             <p className="text-sm font-medium text-white truncate">
-              Cmdr. Shepard
+              {userName}
             </p>
             <button
               onClick={handleLogout}
               className="text-xs text-slate-500 hover:text-red-400 truncate flex items-center gap-1"
             >
-              <LogOut className="w-3 h-3" /> Log Out
+              <LogOut className="w-3 h-3" /> Sair
             </button>
           </div>
         </div>
