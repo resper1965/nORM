@@ -48,13 +48,8 @@ export async function trackSERPPosition(
     const serpResponse = await checkSERPPosition(keyword);
 
     // Batch check which URLs belong to client
-    // Filter out any undefined/null URLs and ensure type safety
-    const urlList: string[] = [];
-    for (const result of serpResponse.results) {
-      if (result.url) {
-        urlList.push(result.url);
-      }
-    }
+    // SERPResult.url is always string, but TypeScript needs explicit check
+    const urlList = serpResponse.results.map(r => r.url).filter(Boolean) as string[];
     const clientContentMap = await batchCheckClientContent(urlList, clientId);
 
     // Save results to database
