@@ -202,9 +202,12 @@ export default async function DashboardPage() {
             )}
           </div>
           <div className="p-4 border-t border-glass-border">
-            <button className="w-full py-2 rounded-lg border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider hover:bg-primary/10 transition-colors">
+            <Link
+              href="/reputation/alerts"
+              className="w-full py-2 rounded-lg border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider hover:bg-primary/10 transition-colors flex items-center justify-center"
+            >
               View Full Feed
-            </button>
+            </Link>
           </div>
         </div>
       </div>

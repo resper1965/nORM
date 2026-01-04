@@ -47,7 +47,7 @@ export function WelcomeBanner() {
           </Link>
 
           <Link
-            href="/clients"
+            href="/clients/new"
             className="flex items-center gap-3 p-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all group"
           >
             <div className="size-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
