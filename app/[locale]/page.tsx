@@ -107,21 +107,21 @@ export default function LandingPage() {
                   className="size-8 rounded-full bg-slate-700 border-2 border-background-dark bg-cover"
                   style={{
                     backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDmllAvxLyPSShu3ZktL3S2LIOkT03B8RPXaw46Fzb144OYFa2bJW1U7gzXK5dVK2yxNwZbNuP7Uk0ZCEt7pDPKIwXi1BzFfFy3V4nhqvblHWvg9D47jFVKdSnb-7dsHrFb2GEayz6xHtOYwxzecStsN2j4mUgMZlo7Up42FtdXnWAxsKOuqMbtdSDio3G-BtVmI2pCY2vgvSEnCUkSk7dq-uV8V0AKz-fmFO6ZB-bdM2LBZnw6wMCUUSXQUr74QSzIGBE0bL37tK1Q')",
+                      "linear-gradient(135deg, rgba(13, 162, 231, 0.1) 0%, rgba(13, 162, 231, 0.05) 100%)",
                   }}
                 ></div>
                 <div
                   className="size-8 rounded-full bg-slate-700 border-2 border-background-dark bg-cover"
                   style={{
                     backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB1RUXGtuxhHcutQ1d_kXGcuN03m6cclyGgpngtS05AR00XIqVQUBj-Lo5cK9Sr2bEJz8m8I-tmbm3dcivPhZTCc5A366yq4qx5CejHDp9DXsw958H1VYQa3WTATiWIEWqWfcMRF0DZHEpEn4idb-PHsihPb2u6ZtKqjjoioL2ek43KsdCFupIJmvVmBB1FjEFmVI16wWVwPnLw79eSKx5_ki4erYpiBzrv7OEO1SNDjB1-QFrdwS8MDoRxGhNh8iZncd56Wepzf1jQ')",
+                      "linear-gradient(135deg, rgba(13, 162, 231, 0.1) 0%, rgba(13, 162, 231, 0.05) 100%)",
                   }}
                 ></div>
                 <div
                   className="size-8 rounded-full bg-slate-700 border-2 border-background-dark bg-cover"
                   style={{
                     backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAYvppcefd9zWBcit-jnIpqbLo5hoAGp9lYLsaqa2R1djxla7BOKLNZtnkw0u8c-G3EM9KbnvVV36lud9sa9JvcG-sBIIKDSF-1v_9eOrIWjd8a6nt74EiXwAfX063CwFK8gahdiUcdJjxznBScNgAUtalrxtaNpESEzTmuyY7bIfSgqu27PRGcUC0s2ASGvcXLmB8L9EHEd2z8lKpDoj22IVHz19moHUj1JlQjL-NV3vD39F1R45-ONipe_NZv94ukuj1bt-cI3WYd')",
+                      "linear-gradient(135deg, rgba(13, 162, 231, 0.1) 0%, rgba(13, 162, 231, 0.05) 100%)",
                   }}
                 ></div>
               </div>

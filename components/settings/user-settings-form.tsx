@@ -38,18 +38,17 @@ export function UserSettingsForm({ user, profile }: UserSettingsFormProps) {
         }
       }
 
-      // Update profile
-      const { error: profileError } = await supabase
-        .from('users')
-        .upsert({
-          id: user.id,
-          email: user.email,
-          full_name: fullName || null,
-          updated_at: new Date().toISOString(),
+      // Update user metadata instead of separate users table
+      if (fullName !== (user.user_metadata?.full_name || '')) {
+        const { error: metadataError } = await supabase.auth.updateUser({
+          data: {
+            full_name: fullName || null,
+          },
         });
 
-      if (profileError) {
-        throw new Error('Failed to update profile');
+        if (metadataError) {
+          throw new Error('Failed to update profile');
+        }
       }
 
       setSuccess(true);

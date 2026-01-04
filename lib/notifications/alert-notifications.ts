@@ -41,17 +41,14 @@ export async function getAlertRecipients(clientId: string): Promise<AlertRecipie
     return recipients;
   }
 
-  // Get primary user (client owner)
-  const { data: owner } = await supabase
-    .from('users')
-    .select('id, email, name')
-    .eq('id', client.user_id)
-    .single();
+  // Get primary user (client owner) from auth.users
+  // Use admin API to get user details
+  const { data: { user: owner }, error: userError } = await supabase.auth.admin.getUserById(client.user_id);
 
-  if (owner) {
+  if (owner && !userError) {
     recipients.push({
-      email: owner.email,
-      name: owner.name || 'User',
+      email: owner.email || '',
+      name: owner.user_metadata?.full_name || owner.user_metadata?.name || 'User',
       userId: owner.id,
     });
   }

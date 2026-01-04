@@ -8,3 +8,5 @@ export default async function IntegrationsPage({
   const { locale } = await params;
   redirect(`/${locale}/settings`);
 }
+
+export const dynamic = 'force-dynamic';

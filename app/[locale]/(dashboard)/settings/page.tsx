@@ -14,12 +14,10 @@ export default async function SettingsPage() {
     redirect('/login');
   }
 
-  // Get user profile
-  const { data: profile } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', user.id)
-    .single();
+  // Get user profile from metadata
+  const profile = {
+    full_name: user.user_metadata?.full_name || null,
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
