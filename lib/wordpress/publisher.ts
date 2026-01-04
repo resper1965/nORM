@@ -10,7 +10,6 @@ import { decrypt } from '@/lib/utils/encryption';
 import { NotFoundError, ExternalAPIError } from '@/lib/errors/errors';
 import type { GeneratedContent } from '@/lib/types/domain';
 import { generateComprehensiveSchema, injectSchemaMarkup } from '@/lib/seo/schema-generator';
-import { injectSchemaMarkup } from '@/lib/seo/schema-injector';
 
 /**
  * Get WordPress site config from database (decrypted)
