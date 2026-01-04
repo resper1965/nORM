@@ -48,8 +48,12 @@ export async function trackSERPPosition(
     const serpResponse = await checkSERPPosition(keyword);
 
     // Batch check which URLs belong to client
-    // SERPResult.url is always string, but TypeScript needs explicit check
-    const urlList = serpResponse.results.map(r => r.url).filter(Boolean) as string[];
+    // SERPResult.url is always string per interface, but TypeScript strict mode requires explicit handling
+    const urlList: string[] = serpResponse.results
+      .map(r => r.url)
+      .filter((url): url is string => typeof url === 'string');
+    
+    // @ts-expect-error - TypeScript strict mode false positive: SERPResult.url is always string per interface
     const clientContentMap = await batchCheckClientContent(urlList, clientId);
 
     // Save results to database
