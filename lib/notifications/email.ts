@@ -97,7 +97,7 @@ export async function sendAlertEmail(
             <p>${alert.message}</p>
             <div style="text-align: center; margin: 20px 0;">
               <a href="${alert.dashboardUrl}" class="button">Ver Dashboard</a>
-              <a href="${alert.dashboardUrl}/alerts" class="button">Ver Alertas</a>
+              <a href="${alert.dashboardUrl}/reputation/alerts" class="button">Ver Alertas</a>
             </div>
           </div>
           <div class="footer">
