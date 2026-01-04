@@ -202,13 +202,22 @@ export async function getClientContentStats(clientId: string) {
     .eq('client_id', clientId);
 
   // Count SERP results with client content
-  const { count: serpClientContent } = await supabase
-    .from('serp_results')
-    .select('sr.*, k.client_id', { count: 'exact', head: true })
-    .eq('is_client_content', true)
-    .eq('k.client_id', clientId)
-    .from('serp_results sr')
-    .innerJoin('keywords k', 'sr.keyword_id', 'k.id');
+  // Get keywords for client first, then count SERP results
+  const { data: keywords } = await supabase
+    .from('keywords')
+    .select('id')
+    .eq('client_id', clientId)
+    .eq('is_active', true);
+
+  const keywordIds = keywords?.map(k => k.id) || [];
+  
+  const { count: serpClientContent } = keywordIds.length > 0
+    ? await supabase
+        .from('serp_results')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_client_content', true)
+        .in('keyword_id', keywordIds)
+    : { count: 0 };
 
   return {
     publishedArticles: publishedCount || 0,
