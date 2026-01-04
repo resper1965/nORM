@@ -86,15 +86,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(
-      --font-sans,
-      "Montserrat",
-      "Inter",
-      system-ui,
-      -apple-system,
-      "Segoe UI",
-      sans-serif
-    );
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
     letter-spacing: 0.01em;
   }
 

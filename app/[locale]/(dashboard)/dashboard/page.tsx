@@ -10,12 +10,15 @@ import {
   Rss,
 } from "lucide-react";
 import { getDashboardMetrics } from "@/lib/data/dashboard";
+import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 
 export default async function DashboardPage() {
   const metrics = await getDashboardMetrics();
+  const hasData = metrics.globalScore.value > 0 || metrics.mentionsVolume.value > 0 || metrics.recentAlerts.length > 0;
 
   return (
     <div className="space-y-6">
+      {!hasData && <WelcomeBanner />}
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
         {/* Global Reputation Score */}

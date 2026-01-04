@@ -9,13 +9,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
-// Temporarily disabled Google Fonts due to network issues in build
-// const montserrat = Montserrat({
-//   subsets: ["latin"],
-//   variable: "--font-sans",
-//   weight: ["400", "500", "600", "700"],
-//   display: "swap",
-// });
+// Using Inter as primary font (loaded via link tag)
+// Montserrat disabled to avoid build issues
 
 export const metadata: Metadata = {
   title: "nORM - Online Reputation Manager",
@@ -75,7 +70,7 @@ export default async function LocaleLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={cn("font-sans")}>
+      <body className={cn("font-sans")} style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             {children}
