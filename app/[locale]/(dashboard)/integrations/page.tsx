@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
-export default function IntegrationsRedirect() {
+export default async function IntegrationsPage() {
   redirect('/settings');
 }
