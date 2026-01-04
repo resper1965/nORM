@@ -251,7 +251,7 @@ function createGroupedAlertsEmail(group: GroupedAlert, dashboardUrl: string): st
             <a href="${dashboardUrl}" style="display: inline-block; padding: 12px 30px; background: #00ADE8; color: white; text-decoration: none; border-radius: 6px; margin: 5px; font-weight: 500;">
               Ver Dashboard
             </a>
-            <a href="${dashboardUrl}/alerts" style="display: inline-block; padding: 12px 30px; background: #6B7280; color: white; text-decoration: none; border-radius: 6px; margin: 5px; font-weight: 500;">
+            <a href="${dashboardUrl}/reputation/alerts" style="display: inline-block; padding: 12px 30px; background: #6B7280; color: white; text-decoration: none; border-radius: 6px; margin: 5px; font-weight: 500;">
               Gerenciar Alertas
             </a>
           </div>
